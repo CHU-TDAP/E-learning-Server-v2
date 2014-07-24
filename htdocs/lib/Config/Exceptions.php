@@ -1,4 +1,4 @@
-<?php namespace UElearning\Config;
+<?php namespace UElearning\Config\Exception;
 /**
  * @file
  * 設定檔的例外

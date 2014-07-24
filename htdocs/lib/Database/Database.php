@@ -10,16 +10,17 @@
  */
 require_once UELEARNING_LIB_ROOT.'Database/MySQLDB.php';
 require_once UELEARNING_LIB_ROOT.'Database/Exceptions.php';
+use UElearning\Database\Exception;
 
 /**
- * 資料庫整體管理
+ * 資料庫操作抽象類別
  * 
- * 所有對於資料庫的操作（包含查詢、新增、修改、刪除），一律使用這個物件來操作。
+ * 請根據一個資料表創建一個類別，並繼承此類別。所有對於資料表的操作（包含查詢、新增、修改、刪除），一律使用新創已繼承的類別物件。
  * 
- * 例如:
+ * 基本的操作方式例如:
  * 
  *     use UElearning\Database;
- *     $db = new Database(array(
+ *     $db = new Database\[資料表類別](array(
  *         'type' => 'mysql',
  *         'host' => 'localhost',
  *         'port' => '3306',
@@ -29,14 +30,14 @@ require_once UELEARNING_LIB_ROOT.'Database/Exceptions.php';
  *         'prefix' => 'chu_'
  *         ));
  *
- * 一個資料表為一個類別，如果要對某資料表進行操作，請參閱
+ * 實際範例可參考 `DBAdmin` 類別的說明文件
  *
  * @author          Yuan Chiu <chyuaner@gmail.com>
  * @version         3.0
  * @package         UElearning
  * @subpackage      Database
  */
-class Database {
+abstract class Database {
     
     /**
      * 資料庫伺服器類型
@@ -107,6 +108,7 @@ class Database {
      *            'prefix' => 'chu_' )
      * 若不填寫將會直接使用設定在`config.php`的常數
      * 
+     * @throws UElearning\Database\Exception\DatabaseNoSupportException
      * @author Yuan Chiu <chyuaner@gmail.com>
      * @since 3.0.0
      */
@@ -137,7 +139,7 @@ class Database {
             $this->connDB = new MySQLDB($this->db_name, $this->db_host, $this->db_port, $this->db_user, $this->db_passwd);
         }
         else {
-            throw new DatabaseNoSupportException($this->db_type);
+            throw new Exception\DatabaseNoSupportException($this->db_type);
         }
     }
     
@@ -160,27 +162,6 @@ class Database {
      * @since 3.0.0
      */ 
     public function connectTest() {
-        // TODO: Fill code in
-        
-    }
-    
-    /**
-     * 建立資料庫
-     * 
-     * 在資料庫系統內建立一個資料庫。
-     * （注意！需有建立資料庫的權限）
-     * 
-     */ 
-    public function createDB() {
-        // TODO: Fill code in
-        
-    }
-    
-    /**
-     * 建立所有所需的資料表
-     * 
-     */ 
-    public function createAllTable() {
         // TODO: Fill code in
         
     }
