@@ -1,7 +1,9 @@
 # 設定檔
+htdocs/config.php
 
 # 建立測試用的檔案
 test.php
+htdocs/tests/
 
 # KDE Dolphin自己產生的垃圾
 *.directory
@@ -13,7 +15,8 @@ test.php
 # GitEye產生的
 .project
 
-# phpdoc產生的垃圾檔案
+# phpdoc產生的檔案
+docs/
 docs/phpdoc-cache-*
 
 # PHP Composer

@@ -10,3 +10,11 @@
     * pdo_mysql
     * zip
 * MariaDB 5.5.31 (可用MySQL)
+
+
+## 開發文件
+已將整份專案使用[PHPDocumentor](http://www.phpdoc.org/)產生出[開發文件網站](docs/index.html)
+
+產生指令:
+
+    phpdoc -d ./htdocs/lib -t ./docs/

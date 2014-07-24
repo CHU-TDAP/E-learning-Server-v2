@@ -10,46 +10,36 @@
 use \PDO;
 
 /**
- * 資料庫連接專用類別
+ * 資料庫連接專用類別，採用自PDO
  *
  * @extends PDO
  * @author Yuan Chiu <chyuaner@gmail.com>
- * @link https://github.com/CHU-TDAP/
- * @version Version 2.0
+ * @version 3.0
  * @see https://github.com/shuliu/myPDO
+ * @package         UElearning
+ * @subpackage      Database
  */
-class PDODB extends PDO {
+class MySQLDB extends PDO {
+    
     /**
      * 連結資料庫
      *
-     * @access public
+     * @param string $dbname 資料庫名稱
+     * @param string $host 資料庫伺服器位址
+     * @param int $port 資料庫伺服器連接埠 
+     * @param string $user 資料庫伺服器帳號
+     * @param string $passwd 資料庫伺服器密碼
      * @author Yuan Chiu <me@yuaner.tw>
-     * @version 2
+     * @since 3.0.0
      */
-    public function __construct(){
-        parent::__construct("mysql:dbname=".DB_NAME.";host:".DB_HOST.";
-                             charset=utf8", 
-                            DB_USER, DB_PASS);
+    public function __construct($dbname, $host, $port, $user, $passwd){
+        parent::__construct("mysql:dbname=".$dbname.";host:".$host."port=".$port.";
+                             charset=utf8", DB_USER, DB_PASS);
 
         //配合PHP< 5.3.6 PDO沒有charset用的
         //參考: http://gdfan1114.wordpress.com/2013/06/24/php-5-3-6-%E7%89%88-pdo-%E9%85%8D%E5%90%88%E5%AD%98%E5%8F%96%E8%B3%87%E6%96%99%E5%BA%AB%E6%99%82%E7%9A%84%E4%B8%AD%E6%96%87%E5%95%8F%E9%A1%8C/
         $this->exec("set names utf8");
         
-    }
-
-    // ========================================================================
-    /**
-     * 取得帶有前綴字元的完整資料表名稱
-     *
-     * @access public
-     * @param string $inputName 資料表名稱
-     * @return string 完整的資料表名稱
-     * 
-     * @author Yuan Chiu <me@yuaner.tw>
-     * @version 3
-     */
-    public function table($inputName){
-        return DB_PREFIX.$inputName;
     }
 
     // ========================================================================
