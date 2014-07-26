@@ -32,7 +32,7 @@ class UserControl {
      * @return bool 已有相同的帳號名稱
      * @since 3.0.0
      */ 
-    public function isHave($userName) {
+    public function isExist($userName) {
         // TODO: Fill code in 
     }
     
