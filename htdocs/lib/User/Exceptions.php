@@ -50,7 +50,6 @@ class UserNoFoundException extends UserException {
     }
 }
 
-
 /**
  * 使用者登入密碼錯誤
  * @since 3.0.0
@@ -58,6 +57,16 @@ class UserNoFoundException extends UserException {
 class UserPasswordErrException extends UserException {
     public function __construct($userId) {
         parent::__construct($userId, 'User: "'.$this->type.'" password is wrong.');
+    }
+}
+
+/**
+ * 此帳號未啟用
+ * @since 3.0.0
+ */ 
+class UserNoActivatedException extends UserException {
+    public function __construct($userId) {
+        parent::__construct($userId, 'User: "'.$this->type.'" is no activated.');
     }
 }
 
@@ -71,4 +80,3 @@ class UserIdExistException extends UserException {
         parent::__construct($userId, 'UserId: "'.$this->type.'" is exist.');
     }
 }
-
