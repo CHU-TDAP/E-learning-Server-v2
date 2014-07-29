@@ -1,0 +1,7 @@
+{
+    "name": "uelearning",
+    "description": "UElearning",
+    "require": {
+        "symfony/console": "2.5.*"
+    }
+}
