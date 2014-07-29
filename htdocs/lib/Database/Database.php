@@ -15,7 +15,8 @@ use UElearning\Database\Exception;
 /**
  * 資料庫操作抽象類別
  * 
- * 請根據一個資料表創建一個類別，並繼承此類別。所有對於資料表的操作（包含查詢、新增、修改、刪除），一律使用新創已繼承的類別物件。
+ * 請根據一個資料表創建一個類別，並繼承此類別。
+ * 所有對於資料表的操作（包含查詢、新增、修改、刪除），一律使用新創已繼承的類別物件。
  * 
  * 基本的操作方式例如:
  * 
@@ -136,7 +137,11 @@ abstract class Database {
         
         // 檢查是否有支援所設定的DBMS
         if($this->db_type == 'mysql') {
-            $this->connDB = new MySQLDB($this->db_name, $this->db_host, $this->db_port, $this->db_user, $this->db_passwd);
+            $this->connDB = new MySQLDB($this->db_name
+                                        , $this->db_host
+                                        , $this->db_port
+                                        , $this->db_user
+                                        , $this->db_passwd);
         }
         else {
             throw new Exception\DatabaseNoSupportException($this->db_type);

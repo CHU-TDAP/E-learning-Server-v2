@@ -33,12 +33,13 @@ class MySQLDB extends PDO {
      * @since 3.0.0
      */
     public function __construct($dbname, $host, $port, $user, $passwd){
-        parent::__construct("mysql:dbname=".$dbname.";host:".$host."port=".$port.";
-                             charset=utf8", DB_USER, DB_PASS);
+        parent::__construct('mysql:dbname='.$dbname
+                            .';host:'.$host.';port='.$port
+                            .';charset=utf8', DB_USER, DB_PASS);
 
         //配合PHP< 5.3.6 PDO沒有charset用的
         //參考: http://gdfan1114.wordpress.com/2013/06/24/php-5-3-6-%E7%89%88-pdo-%E9%85%8D%E5%90%88%E5%AD%98%E5%8F%96%E8%B3%87%E6%96%99%E5%BA%AB%E6%99%82%E7%9A%84%E4%B8%AD%E6%96%87%E5%95%8F%E9%A1%8C/
-        $this->exec("set names utf8");
+        $this->exec('set names utf8');
         
     }
 
@@ -58,7 +59,9 @@ class MySQLDB extends PDO {
     public function ErrorMsg(){
         $err = parent ::errorinfo();
         if( $err[0]!='00000' ){
-            return array('errorCode'=>$err[0],'number'=>$err[1],'message'=>$err[2]);
+            return array('errorCode'=>$err[0]
+                         ,'number'=>$err[1]
+                         ,'message'=>$err[2]);
         }else{
             return null;
         }
