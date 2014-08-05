@@ -1,13 +1,12 @@
-<?php namespace UElearning\Database;
+<?php
 /**
- * @file
  * 整體資料庫操作
  *
  * 此檔案針對整體資料庫的功能，像是建立此資料庫、建立表格、清空...等等
- * 
- * @package         UElearning
- * @subpackage      Database
  */
+
+namespace UElearning\Database;
+
 require_once UELEARNING_LIB_ROOT.'Database/Database.php';
 require_once UELEARNING_LIB_ROOT.'Database/Exceptions.php';
 

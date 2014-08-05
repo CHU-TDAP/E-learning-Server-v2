@@ -1,20 +1,21 @@
-<?php namespace UElearning\Database\Exception;
+<?php
 /**
- * @file
- * 設定檔的例外
- * 
- * @package         UElearning
- * @subpackage      Database
- * 
+ * 資料庫相關的例外檔案
  */
+
+namespace UElearning\Database\Exception;
 
 /**
  * 沒有支援的資料庫系統例外
  * @since 3.0.0
  */ 
 class DatabaseNoSupportException extends \UnexpectedValueException {
-    private $type;
     
+    /**
+     * 欲使用的資料庫系統名稱
+     * @type string
+     */ 
+    private $type;
     
     /**
      * 沒有支援的資料庫系統

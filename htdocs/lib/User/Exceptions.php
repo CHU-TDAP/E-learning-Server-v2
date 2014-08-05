@@ -1,16 +1,15 @@
-<?php namespace UElearning\User\Exception;
+<?php
 /**
- * @file
- * 設定檔的例外
- * 
- * @package         UElearning
- * @subpackage      User
- * 
+ * 使用者帳號群組相關例外類別檔案
  */
+
+namespace UElearning\User\Exception;
 
 /**
  * 使用者帳號例外
  * @since 3.0.0
+ * @package         UElearning
+ * @subpackage      User
  */ 
 abstract class UserException extends \UnexpectedValueException {
     
@@ -22,7 +21,7 @@ abstract class UserException extends \UnexpectedValueException {
     
     /**
      * 使用者帳號例外
-     * @param array $userId 輸入的使用者名稱
+     * @param string $userId 輸入的使用者名稱
      * @param string $description 描述
      */ 
     public function __construct($userId, $description) {
@@ -45,6 +44,10 @@ abstract class UserException extends \UnexpectedValueException {
  * @since 3.0.0
  */ 
 class UserNoFoundException extends UserException {
+    /**
+     * 沒有找到此帳號
+     * @param string $userId 輸入的使用者名稱
+     */ 
     public function __construct($userId) {
         parent::__construct($userId, 'User: "'.$this->type.'" is no found.');
     }
@@ -55,6 +58,10 @@ class UserNoFoundException extends UserException {
  * @since 3.0.0
  */ 
 class UserPasswordErrException extends UserException {
+    /**
+     * 沒有找到此帳號
+     * @param string $userId 輸入的使用者名稱
+     */ 
     public function __construct($userId) {
         parent::__construct($userId, 'User: "'.$this->type.'" password is wrong.');
     }
@@ -65,6 +72,10 @@ class UserPasswordErrException extends UserException {
  * @since 3.0.0
  */ 
 class UserNoActivatedException extends UserException {
+    /**
+     * 此帳號未啟用
+     * @param string $userId 輸入的使用者名稱
+     */ 
     public function __construct($userId) {
         parent::__construct($userId, 'User: "'.$this->type.'" is no activated.');
     }
@@ -76,6 +87,10 @@ class UserNoActivatedException extends UserException {
  * @since 3.0.0
  */ 
 class UserIdExistException extends UserException {
+    /**
+     * 已有重複的使用者名稱
+     * @param string $userId 輸入的使用者名稱
+     */ 
     public function __construct($userId) {
         parent::__construct($userId, 'UserId: "'.$this->type.'" is exist.');
     }

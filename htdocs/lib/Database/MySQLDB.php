@@ -1,11 +1,12 @@
-<?php namespace UElearning\Database;
+<?php
 /**
- * @file
  * 資料庫連接專用
  *
  * 有用到的Define:
  * DB_NAME, DB_HOST, DB_USER, DB_PASS
  */
+
+namespace UElearning\Database;
 
 use \PDO;
 

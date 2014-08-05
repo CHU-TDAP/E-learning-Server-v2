@@ -1,17 +1,15 @@
-<?php namespace UElearning\User;
+<?php 
 /**
- * @file
  * 管理使用者的操作
- *
- * @package         UElearning
- * @subpackage      User
  */
 
+namespace UElearning\User;
+
 /**
- * 使用者帳號管理
+ * 管理使用者的操作
  * 
  * @author          Yuan Chiu <chyuaner@gmail.com>
- * @version         3.0
+ * @version         2.0.0
  * @package         UElearning
  * @subpackage      User
  */ 
@@ -19,7 +17,7 @@ class UserControl {
     
     /**
      * 建立使用者
-     * @since 3.0.0
+     * @since 2.0.0
      */ 
     public function create() {
        // TODO: Fill code in 
@@ -30,7 +28,7 @@ class UserControl {
      * 
      * @param string $userName 帳號名稱
      * @return bool 已有相同的帳號名稱
-     * @since 3.0.0
+     * @since 2.0.0
      */ 
     public function isExist($userName) {
         // TODO: Fill code in 

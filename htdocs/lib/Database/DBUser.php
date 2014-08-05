@@ -1,13 +1,12 @@
-<?php namespace UElearning\Database;
+<?php
 /**
- * @file
  * 使用者資料表
  *
  * 此檔案針對使用者資料表的功能。
- * 
- * @package         UElearning
- * @subpackage      Database
  */
+
+namespace UElearning\Database;
+
 require_once UELEARNING_LIB_ROOT.'Database/Database.php';
 require_once UELEARNING_LIB_ROOT.'Database/Exceptions.php';
 

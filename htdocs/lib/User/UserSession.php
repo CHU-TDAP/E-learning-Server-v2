@@ -1,7 +1,7 @@
 <?php 
 /**
-* 使用者登入階段管理類別檔案
-*/
+ * 使用者登入階段管理類別檔案
+ */
 
 namespace UElearning\User;
 

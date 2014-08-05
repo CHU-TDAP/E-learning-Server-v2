@@ -1,11 +1,10 @@
-<?php namespace UElearning\Config\Exception;
+<?php
 /**
- * @file
- * 設定檔的例外
- * 
- * @package         UElearning
- * @subpackage      Config
+ * 設定檔的例外檔案
  */
 
-class ConfigNoFoundException extends \UnexpectedValueException {}
+namespace UElearning\Config\Exception;
+
+/*class ConfigNoFoundException extends \UnexpectedValueException {}
 class ConfigErrException extends \UnexpectedValueException {}
+*/
