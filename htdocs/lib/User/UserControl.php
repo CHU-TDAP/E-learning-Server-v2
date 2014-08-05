@@ -35,16 +35,5 @@ class UserControl {
     public function isExist($userName) {
         // TODO: Fill code in 
     }
-    
-    /**
-     * 使用者登入
-     * @param string $userId 帳號名稱
-     * @param string $password 密碼
-     * @return string 登入session token
-     * @since 3.0.0
-     */ 
-    public function login($userId, $password) {
-        // TODO: Fill code in 
-        // 如果登入錯誤，就丟例外
-    }
+
 }
