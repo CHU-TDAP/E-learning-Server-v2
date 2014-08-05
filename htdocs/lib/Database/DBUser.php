@@ -17,7 +17,7 @@ require_once UELEARNING_LIB_ROOT.'Database/Exceptions.php';
  * 
  *
  * @author          Yuan Chiu <chyuaner@gmail.com>
- * @version         3.0
+ * @version         2.0.0
  * @package         UElearning
  * @subpackage      Database
  */

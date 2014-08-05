@@ -34,7 +34,7 @@ use UElearning\Database\Exception;
  * 實際範例可參考 `DBAdmin` 類別的說明文件
  *
  * @author          Yuan Chiu <chyuaner@gmail.com>
- * @version         3.0
+ * @version         2.0.0
  * @package         UElearning
  * @subpackage      Database
  */
@@ -111,7 +111,7 @@ abstract class Database {
      * 
      * @throws UElearning\Database\Exception\DatabaseNoSupportException
      * @author Yuan Chiu <chyuaner@gmail.com>
-     * @since 3.0.0
+     * @since 2.0.0
      */
     public function __construct($conf = null) {
         
@@ -155,7 +155,7 @@ abstract class Database {
      * @return string 完整的資料表名稱
      * 
      * @author Yuan Chiu <chyuaner@gmail.com>
-     * @since 3.0.0
+     * @since 2.0.0
      */ 
     public function table($tableName) {
        return $this->db_prefix.$tableName;
@@ -164,7 +164,7 @@ abstract class Database {
     /**
      * 測試資料庫有無連接成功
      * 
-     * @since 3.0.0
+     * @since 2.0.0
      */ 
     public function connectTest() {
         // TODO: Fill code in

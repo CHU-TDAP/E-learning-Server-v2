@@ -7,7 +7,7 @@ namespace UElearning\User\Exception;
 
 /**
  * 使用者帳號例外
- * @since 3.0.0
+ * @since 2.0.0
  * @package         UElearning
  * @subpackage      User
  */ 
@@ -41,7 +41,7 @@ abstract class UserException extends \UnexpectedValueException {
 // 使用者登入 ======================================================================
 /**
  * 沒有找到此帳號
- * @since 3.0.0
+ * @since 2.0.0
  */ 
 class UserNoFoundException extends UserException {
     /**
@@ -55,7 +55,7 @@ class UserNoFoundException extends UserException {
 
 /**
  * 使用者登入密碼錯誤
- * @since 3.0.0
+ * @since 2.0.0
  */ 
 class UserPasswordErrException extends UserException {
     /**
@@ -69,7 +69,7 @@ class UserPasswordErrException extends UserException {
 
 /**
  * 此帳號未啟用
- * @since 3.0.0
+ * @since 2.0.0
  */ 
 class UserNoActivatedException extends UserException {
     /**
@@ -84,7 +84,7 @@ class UserNoActivatedException extends UserException {
 // 建立使用者 ======================================================================
 /**
  * 已有重複的使用者名稱
- * @since 3.0.0
+ * @since 2.0.0
  */ 
 class UserIdExistException extends UserException {
     /**

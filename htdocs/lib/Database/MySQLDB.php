@@ -15,7 +15,7 @@ use \PDO;
  *
  * @extends PDO
  * @author Yuan Chiu <chyuaner@gmail.com>
- * @version 3.0
+ * @version 2.0.0
  * @see https://github.com/shuliu/myPDO
  * @package         UElearning
  * @subpackage      Database
@@ -31,7 +31,7 @@ class MySQLDB extends PDO {
      * @param string $user 資料庫伺服器帳號
      * @param string $passwd 資料庫伺服器密碼
      * @author Yuan Chiu <me@yuaner.tw>
-     * @since 3.0.0
+     * @since 2.0.0
      */
     public function __construct($dbname, $host, $port, $user, $passwd){
         parent::__construct('mysql:dbname='.$dbname
@@ -53,7 +53,7 @@ class MySQLDB extends PDO {
      * @access public
      * @return array 錯誤訊息
      * 
-     * @since 2013.8.6
+     * @since 2.0.0
      * @author shuliu <https://github.com/shuliu>
      * @see https://github.com/shuliu/myPDO/blob/master/PDO.class.php
      */

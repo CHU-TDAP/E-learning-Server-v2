@@ -7,7 +7,7 @@ namespace UElearning\Database\Exception;
 
 /**
  * 沒有支援的資料庫系統例外
- * @since 3.0.0
+ * @since 2.0.0
  */ 
 class DatabaseNoSupportException extends \UnexpectedValueException {
     
