@@ -1,0 +1,9 @@
+<!-- colors為true可以讓測試結果加上顏色方塊
+     bootstrap可以自行定義init程式(例如define一些變數) -->
+<phpunit colors="true" bootstrap="htdocs/config.php">
+    <testsuites>
+        <testsuite name="all">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

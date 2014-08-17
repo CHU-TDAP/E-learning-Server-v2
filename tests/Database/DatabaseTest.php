@@ -1,6 +1,6 @@
 <?php
 /**
- * InstallTest
+ * DatabaseTest
  *
  * @package         UElearning
  * @author          Yuan Chiu <chyuaner@gmail.com>
@@ -22,8 +22,6 @@ class InstallTest extends \PHPUnit_Framework_TestCase
             // 建立資料庫管理物件
             $dbAdmin = new Database\DBAdmin();
             
-            // 建立所有所需的資料表
-            $dbAdmin->createAllTable();
         } 
         // 若設定的DBMS不被支援 則丟出例外
         catch (Database\Exception\DatabaseNoSupportException $e) {
