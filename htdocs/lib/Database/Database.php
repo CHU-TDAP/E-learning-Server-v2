@@ -48,43 +48,43 @@ abstract class Database {
      * 
      * @type string 
      */
-    private $db_type;
+    protected $db_type;
     
     /**
      * 資料庫伺服器位址
      * @type string
      */
-    private $db_host;
+    protected $db_host;
     
     /**
      * 資料庫伺服器連結埠
      * @type string
      */
-    private $db_port;
+    protected $db_port;
     
     /**
      * 資料庫帳號
      * @type string
      */
-    private $db_user;
+    protected $db_user;
     
     /**
      * 資料庫密碼
      * @type string
      */
-    private $db_passwd;
+    protected $db_passwd;
     
     /**
      * 資料庫名稱
      * @type string
      */
-    private $db_name;
+    protected $db_name;
     
     /**
      * 資料表前綴字元
      * @type string
      */
-    private $db_prefix;
+    protected $db_prefix;
     
     // ------------------------------------------------------------------------
     
@@ -92,7 +92,7 @@ abstract class Database {
      * 資料庫連結物件
      * @type UElearning\Database\PDODB
      */
-    private $connDB;
+    protected $connDB;
     
     // ========================================================================
     

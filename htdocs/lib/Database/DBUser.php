@@ -22,11 +22,6 @@ require_once UELEARNING_LIB_ROOT.'Database/Exceptions.php';
  * @subpackage      Database
  */
 class DBUser extends Database {
-    /**
-     * 資料表名稱
-     * @type string
-     */ 
-    private $form_name = 'user';
     
     
 }

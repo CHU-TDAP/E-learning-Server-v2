@@ -57,7 +57,7 @@ class MySQLDB extends PDO {
      * @author shuliu <https://github.com/shuliu>
      * @see https://github.com/shuliu/myPDO/blob/master/PDO.class.php
      */
-    public function ErrorMsg(){
+    public function errorMsg(){
         $err = parent ::errorinfo();
         if( $err[0]!='00000' ){
             return array('errorCode'=>$err[0]
