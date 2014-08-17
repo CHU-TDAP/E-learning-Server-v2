@@ -8,7 +8,7 @@
 namespace UElearning;
 
 require_once __DIR__.'/../htdocs/config.php';
-require_once UELEARNING_LIB_ROOT.'Database/DBAdmin.php';
+require_once UELEARNING_LIB_ROOT.'/Database/DBAdmin.php';
 
 class InstallTest extends \PHPUnit_Framework_TestCase
 {

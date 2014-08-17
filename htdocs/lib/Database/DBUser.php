@@ -7,8 +7,8 @@
 
 namespace UElearning\Database;
 
-require_once UELEARNING_LIB_ROOT.'Database/Database.php';
-require_once UELEARNING_LIB_ROOT.'Database/Exceptions.php';
+require_once UELEARNING_LIB_ROOT.'/Database/Database.php';
+require_once UELEARNING_LIB_ROOT.'/Database/Exceptions.php';
 
 /**
  * 使用者帳號資料表
