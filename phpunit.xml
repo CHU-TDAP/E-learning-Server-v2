@@ -4,6 +4,7 @@
     <testsuites>
         <testsuite name="all">
             <directory>tests</directory>
+            <exclude>tests/InstallTest.php</exclude>
         </testsuite>
     </testsuites>
 </phpunit>

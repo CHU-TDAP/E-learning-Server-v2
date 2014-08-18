@@ -23,5 +23,66 @@ require_once UELEARNING_LIB_ROOT.'/Database/Exceptions.php';
  */
 class DBUser extends Database {
     
+    const FORM_USER = 'User';
+    
+    /**
+     * 新增一個使用者
+     * @param string $uId 使用者名稱
+     * @param string $password 密碼
+     * @param string $gId 群組
+     * @param string $cId 班級
+     * @param string $enable 啟用此帳號
+     * @param string $l_mode 學習模式
+     * @param string $m_mode 教材模式
+     * @param string $nickName 暱稱
+     * @param string $realName 姓名
+     * @param string $email 電子郵件地址
+     * @param string $memo 備註
+     */ 
+    public function insertUser($uId, $password, $gId, $cId, $enable,
+                     $l_mode, $m_mode, 
+                     $nickName, $realName, $email, $memo){
+        
+        // 檢查是否有支援所設定的DBMS
+        if($this->db_type == 'mysql') {
+            
+            //紀錄使用者帳號進資料庫
+            $sqlString = "INSERT INTO ".$this->table(self::FORM_USER). "(`UID`, `UPassword`, `GID`, `CID`, `UEnabled`, `UBuild_Time`, `LMode`, `MMode`, `UNickname`, `UReal_Name`, `UEmail`, `UMemo`) VALUES ( :id , :passwd, :gid , :cid , :enable , NOW() , :lmode , :mmode , :nickname , :realname , :email , :memo )";
+            
+            $query = $this->connDB->prepare($sqlString);
+            $query->bindParam(":id", $uId);
+            $query->bindParam(":passwd", $uPassword);
+            $query->bindParam(":gid", $gId);
+            $query->bindParam(":cid", $cId);
+            $query->bindParam(":enable", $enable);
+            $query->bindParam(":lmode", $l_mode);
+            $query->bindParam(":mmode", $m_mode);
+            $query->bindParam(":nickname", $nickName);
+            $query->bindParam(":realname", $realName);
+            $query->bindParam(":email", $email);
+            $query->bindParam(":memo", $memo);
+            $query->execute();
+        }
+        else {
+            throw new Exception\DatabaseNoSupportException($this->db_type);
+        }
+                
+    }
+    
+    /**
+     * 移除一位使用者
+     * @param string $uId 使用者名稱
+     */ 
+    public function deleteUser($uId) {
+        if($this->db_type == 'mysql') {
+            $sqlString = "DELETE FROM ".$this->table(self::FORM_USER). " WHERE `UID` = :id ";
+            $query = $this->connDB->prepare($sqlString);
+            $query->bindParam(":id", $uId);
+            $query->execute();
+        }
+        else {
+            throw new Exception\DatabaseNoSupportException($this->db_type);
+        }
+    }
     
 }
