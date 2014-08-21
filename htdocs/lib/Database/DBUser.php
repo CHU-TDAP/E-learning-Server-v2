@@ -51,7 +51,7 @@ class DBUser extends Database {
             
             $query = $this->connDB->prepare($sqlString);
             $query->bindParam(":id", $uId);
-            $query->bindParam(":passwd", $uPassword);
+            $query->bindParam(":passwd", $password);
             $query->bindParam(":gid", $gId);
             $query->bindParam(":cid", $cId);
             $query->bindParam(":enable", $enable);
@@ -67,6 +67,26 @@ class DBUser extends Database {
             throw new Exception\DatabaseNoSupportException($this->db_type);
         }
                 
+    }
+    
+    /**
+     * 查詢一位使用者帳號資料
+     * @param string $uId 使用者名稱
+     * @return array 使用者資料 (TODO 格式待補)
+     */ 
+    public function queryUser($uId) {
+        
+        $sqlString = "SELECT * FROM ".$db->table('User')." WHERE `UID` = :uid";
+		
+		$query = $this->prepare($sqlString);
+		$query->bindParam(':uid',$this->thisUID);
+		$query->execute();
+		
+		$result = $query->fetchAll();
+		$this->infoArray = $result;
+		return $this->infoArray;
+        
+        // TODO unTested
     }
     
     /**

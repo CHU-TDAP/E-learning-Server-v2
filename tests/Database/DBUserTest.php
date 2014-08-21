@@ -41,7 +41,6 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
         $this->db->insertUser($uId, $uPassword, $gId, $cId, $enable,
                               $l_mode, $m_mode, 
                               $nickName, $realName, $email, $memo);
-        
     }
     
     /**
@@ -53,9 +52,13 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
         $this->db->deleteUser($uId);
     }
     
+    /**
+     * 測試時要填的資料
+     */ 
     public function userDataProvider(){
         return array(
-            array('yuan', 'pass123', 'admin', null, true, 'harf-line-learn', 1, '元兒～', 'Yuan Chiu', 'chyuaner@gmail.com', null)
+            array('yuan_unittest', 'pass123', 'admin', null, true, 'harf-line-learn', 1, '元兒～', 'Yuan Chiu', 'chyuaner@gmail.com', null),
+            array('eee_unittest', 'qqqssss', 'admin', null, 1, 'harf-line-learn', '1', 'sss', 'Yuan Chiu', 'chyuanesr@gmail.com', null)
         );
     }
 }
