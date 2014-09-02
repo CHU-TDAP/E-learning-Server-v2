@@ -9,7 +9,7 @@
 namespace UElearning\Database;
 
 require_once UELEARNING_LIB_ROOT.'/Database/MySQLDB.php';
-require_once UELEARNING_LIB_ROOT.'/Database/Exceptions.php';
+require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
 use UElearning\Database\Exception;
 
 /**

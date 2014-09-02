@@ -49,7 +49,7 @@ class UserNoFoundException extends UserException {
      * @param string $userId 輸入的使用者名稱
      */ 
     public function __construct($userId) {
-        parent::__construct($userId, 'User: "'.$this->type.'" is no found.');
+        parent::__construct($userId, 'User: "'.$userId.'" is no found.');
     }
 }
 
@@ -63,7 +63,7 @@ class UserPasswordErrException extends UserException {
      * @param string $userId 輸入的使用者名稱
      */ 
     public function __construct($userId) {
-        parent::__construct($userId, 'User: "'.$this->type.'" password is wrong.');
+        parent::__construct($userId, 'User: "'.$userId.'" password is wrong.');
     }
 }
 
@@ -77,7 +77,7 @@ class UserNoActivatedException extends UserException {
      * @param string $userId 輸入的使用者名稱
      */ 
     public function __construct($userId) {
-        parent::__construct($userId, 'User: "'.$this->type.'" is no activated.');
+        parent::__construct($userId, 'User: "'.$userId.'" is no activated.');
     }
 }
 
@@ -92,6 +92,6 @@ class UserIdExistException extends UserException {
      * @param string $userId 輸入的使用者名稱
      */ 
     public function __construct($userId) {
-        parent::__construct($userId, 'UserId: "'.$this->type.'" is exist.');
+        parent::__construct($userId, 'UserId: "'.$userId.'" is exist.');
     }
 }

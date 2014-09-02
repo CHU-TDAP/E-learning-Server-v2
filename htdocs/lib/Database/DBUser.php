@@ -8,7 +8,7 @@
 namespace UElearning\Database;
 
 require_once UELEARNING_LIB_ROOT.'/Database/Database.php';
-require_once UELEARNING_LIB_ROOT.'/Database/Exceptions.php';
+require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
 
 /**
  * 使用者帳號資料表
@@ -47,7 +47,11 @@ class DBUser extends Database {
         if($this->db_type == 'mysql') {
             
             //紀錄使用者帳號進資料庫
-            $sqlString = "INSERT INTO ".$this->table(self::FORM_USER). "(`UID`, `UPassword`, `GID`, `CID`, `UEnabled`, `UBuild_Time`, `LMode`, `MMode`, `UNickname`, `UReal_Name`, `UEmail`, `UMemo`) VALUES ( :id , :passwd, :gid , :cid , :enable , NOW() , :lmode , :mmode , :nickname , :realname , :email , :memo )";
+            $sqlString = "INSERT INTO ".$this->table('User').
+                " (`UID`, `UPassword`, `GID`, `CID`, `UEnabled`, `UBuild_Time`,
+                `LMode`, `MMode`, `UNickname`, `UReal_Name`, `UEmail`, `UMemo`)
+                VALUES ( :id , :passwd, :gid , :cid , :enable , NOW() , 
+                :lmode , :mmode , :nickname , :realname , :email , :memo )";
             
             $query = $this->connDB->prepare($sqlString);
             $query->bindParam(":id", $uId);
@@ -76,17 +80,37 @@ class DBUser extends Database {
      */ 
     public function queryUser($uId) {
         
-        $sqlString = "SELECT * FROM ".$db->table('User')." WHERE `UID` = :uid";
+        $sqlString = "SELECT * FROM ".$this->table('User').
+                     " WHERE `UID` = :uid";
 		
-		$query = $this->prepare($sqlString);
-		$query->bindParam(':uid',$this->thisUID);
+		$query = $this->connDB->prepare($sqlString);
+		$query->bindParam(':uid', $uId);
 		$query->execute();
 		
-		$result = $query->fetchAll();
-		$this->infoArray = $result;
-		return $this->infoArray;
-        
-        // TODO unTested
+		$queryResultAll = $query->fetchAll();
+        if( count($queryResultAll) >= 1 ) {
+            $queryResult = $queryResultAll[0];
+
+            $result = array( 
+                'user_id'            => $queryResult['UID'],
+                'password'           => $queryResult['UPassword'],
+                'group_id'           => $queryResult['GID'],
+                'class_id'           => $queryResult['CID'],
+                'enable'             => $queryResult['UEnabled'],
+                'build_time'         => $queryResult['UBuild_Time'],
+                'learnStyle_mode'    => $queryResult['LMode'],
+                'material_mode'      => $queryResult['MMode'],
+                'nickname'           => $queryResult['UNickname'],
+                'realname'           => $queryResult['UReal_Name'],
+                'email'              => $queryResult['UEmail'],
+                'memo'               => $queryResult['UMemo']
+            );
+
+            return $result;
+        }
+        else {
+            return null;
+        }
     }
     
     /**
@@ -94,8 +118,11 @@ class DBUser extends Database {
      * @param string $uId 使用者名稱
      */ 
     public function deleteUser($uId) {
+        
         if($this->db_type == 'mysql') {
-            $sqlString = "DELETE FROM ".$this->table(self::FORM_USER). " WHERE `UID` = :id ";
+            $sqlString = "DELETE FROM ".$this->table(self::FORM_USER). 
+                         " WHERE `UID` = :id ";
+            
             $query = $this->connDB->prepare($sqlString);
             $query->bindParam(":id", $uId);
             $query->execute();

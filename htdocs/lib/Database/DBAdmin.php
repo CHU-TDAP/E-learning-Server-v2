@@ -8,7 +8,7 @@
 namespace UElearning\Database;
 
 require_once UELEARNING_LIB_ROOT.'/Database/Database.php';
-require_once UELEARNING_LIB_ROOT.'/Database/Exceptions.php';
+require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
 
 /**
  * 資料庫整體管理

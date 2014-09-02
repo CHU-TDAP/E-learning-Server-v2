@@ -5,6 +5,11 @@
 
 namespace UElearning\User;
 
+require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
+require_once UELEARNING_LIB_ROOT.'/User/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/Exception.php';
+use UElearning\Database;
+
 /**
  * 管理使用者的操作
  * 
@@ -18,23 +23,111 @@ class UserAdmin {
     /**
      * 建立使用者
      * 
+     * 建立使用者範例:
+     * 
+     *     try {
+     *         $userAdmin = new User\UserAdmin();
+     *         $userAdmin->create(
+     *             array( 'user_id' => 'eric',
+     *                    'password' => 'pass123',
+     *                    'group_id' => 'admin',
+     *                    'enable' => true,
+     *                    'nickname' => '艾瑞克',
+     *                    'email' => 'eric@example.com'
+     *         ));
+     *     
+     *     }
+     *     // 若已有重複帳號名稱
+     *     catch (User\Exception\UserIdExistException $e) {
+     *         echo 'Is exist user: ',  $e->getUserId();
+     *     }
+     * 
      * @param array $userInfoArray 使用者資訊陣列，格式為:
-     *     array( 'userId' => 'root',
-     *            'password' => 'pass123',
-     *            'password_encrypt' => null, // (optional) 預設為null
-     *            'groupId' => 'user',
-     *            'classId' => '5-2', // (optional)
-     *            'enable' => true, // (optional) 預設為true
-     *            'learnStyle_mode' => 'harf-line-learn', // (optional)
-     *            'material_mode' => 1, // (optional)
-     *            'nickname' => 'eric', // (optional)
-     *            'realname' => 'Eric Chiu', // (optional)
-     *            'email' => 'eric@example.tw', // (optional)
-     *            'memo' => '' ) // (optional)
+     *     array( 'user_id'            => 'root',
+     *            'password'           => 'pass123',
+     *            'password_encrypt'   => null,              // (optional) 預設為null
+     *            'password_encrypted' => null,              // (optional) 預設為false
+     *            'group_id'           => 'user',
+     *            'class_id'           => '5-2',             // (optional)
+     *            'enable'             => true,              // (optional) 預設為true
+     *            'learnStyle_mode'    => 'harf-line-learn', // (optional)
+     *            'material_mode'      => 1,                 // (optional)
+     *            'nickname'           => 'eric',            // (optional)
+     *            'realname'           => 'Eric Chiu',       // (optional)
+     *            'email'              => 'eric@example.tw', // (optional)
+     *            'memo'               => '' )               // (optional)
      * @since 2.0.0
      */ 
     public function create($userInfoArray) {
-       // TODO: Fill code in 
+        
+        // 檢查必填項目有無填寫
+        if(isset($userInfoArray)) {
+            
+            // 若無填寫
+            if( !isset($userInfoArray['user_id'])  ||
+                !isset($userInfoArray['password']) ||
+                !isset($userInfoArray['group_id']) ) {
+                throw new UElearning\Exception\NoDataException();
+            }
+            // 若此id已存在
+            else if($this->isExist($userInfoArray['user_id'])) {
+                throw new Exception\UserIdExistException(
+                    $userInfoArray['user_id'] );
+            }
+            // 沒有問題
+            else {
+                
+                // 處理未帶入的資料
+                if( !isset($userInfoArray['class_id']) ){
+                    $userInfoArray['class_id'] = null;
+                }
+                if( !isset($userInfoArray['enable']) ){
+                    $userInfoArray['enable'] = true;
+                }
+                if( !isset($userInfoArray['learnStyle_mode']) ){
+                    $userInfoArray['learnStyle_mode'] = null;
+                }
+                if( !isset($userInfoArray['material_mode']) ){
+                    $userInfoArray['material_mode'] = null;
+                }
+                if( !isset($userInfoArray['nickname']) ){
+                    $userInfoArray['nickname'] = null;
+                }
+                if( !isset($userInfoArray['realname']) ){
+                    $userInfoArray['realname'] = null;
+                }
+                if( !isset($userInfoArray['email']) ){
+                    $userInfoArray['email'] = null;
+                }
+                if( !isset($userInfoArray['memo']) ){
+                    $userInfoArray['memo'] = null;
+                }
+                
+                // 進行密碼加密
+                /*if( isset($userInfoArray['userId']) ) {
+                    // TODO: 密碼加密
+                }*/
+                // 加密後的密碼
+                $passwdEncrypted = $userInfoArray['password'];
+                
+                // 新增一筆使用者資料進資料庫
+                $db = new Database\DBUser();
+                $db->insertUser(
+                    $userInfoArray['user_id'], 
+                    $passwdEncrypted, 
+                    $userInfoArray['group_id'], 
+                    $userInfoArray['class_id'], 
+                    $userInfoArray['enable'], 
+                    $userInfoArray['learnStyle_mode'], 
+                    $userInfoArray['material_mode'], 
+                    $userInfoArray['nickname'], 
+                    $userInfoArray['realname'], 
+                    $userInfoArray['email'], 
+                    $userInfoArray['memo']
+                );
+            }
+        }
+        else throw Exception\NoDataException();
     }
     
     /**
@@ -45,7 +138,12 @@ class UserAdmin {
      * @since 2.0.0
      */ 
     public function isExist($userName) {
-        // TODO: Fill code in 
+        
+        $db = new Database\DBUser();
+        $info = $db->queryUser($userName);
+        
+        if( $info != null ) return true;
+        else return false;
     }
 
 }
