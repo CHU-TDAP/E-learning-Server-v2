@@ -71,12 +71,14 @@ class UserAdminTest extends \PHPUnit_Framework_TestCase
      */ 
     public function testDeleteUser($uId)
     {
-        // TODO: 待UserAdmin的移除功能寫好後，請改用UserAdmin
-        require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
-        
         // 建立資料庫管理物件
-        $db = new Database\DBUser();
-        $db->deleteUser($uId);
+        $userAdmin = new UserAdmin();
+        
+        // 移除此使用者
+        $userAdmin->remove($uId); 
+        
+        // 檢查是否已確實建立
+        $this->assertEquals($userAdmin->isExist($uId), false);
         
     }
     

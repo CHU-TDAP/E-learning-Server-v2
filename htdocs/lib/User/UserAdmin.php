@@ -56,6 +56,7 @@ class UserAdmin {
      *            'realname'           => 'Eric Chiu',       // (optional)
      *            'email'              => 'eric@example.tw', // (optional)
      *            'memo'               => '' )               // (optional)
+     * @throw UElearning\User\Exception\UserIdExistException
      * @since 2.0.0
      */ 
     public function create($userInfoArray) {
@@ -144,6 +145,31 @@ class UserAdmin {
         
         if( $info != null ) return true;
         else return false;
+    }
+    
+    /**
+     * 移除此使用者
+     * 
+     * @param string $userName 帳號名稱
+     * @throw UElearning\User\Exception\UserNoFoundException
+     * @since 2.0.0
+     */ 
+    public function remove($userName) {
+        
+        // 若有此使用者
+        if($this->isExist($userName)) {
+            
+            // TODO: 檢查所有關聯的資料，確認是否可以移除
+            
+            // 移除資料庫中的使用者
+            $db = new Database\DBUser();
+            $db->deleteUser($userName);
+        }
+        // 若沒有這位使用者
+        else {
+            throw new Exception\UserNoFoundException($userName);
+        }
+        
     }
 
 }
