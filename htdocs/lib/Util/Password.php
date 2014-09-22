@@ -1,0 +1,153 @@
+<?php
+/**
+ * 密碼以及加密相關的函式庫
+ */
+
+namespace UElearning\Util;
+
+/**
+ * 密碼以及加密相關的函式庫
+ * 
+ *
+ * @author          Yuan Chiu <chyuaner@gmail.com>
+ * @version         2.0.0
+ * @package         UElearning
+ * @subpackage      Util
+ */
+class Password {
+    
+    /**
+     * 取得亂數字串
+     *
+     *     The MIT License
+     *
+     *     Copyright (c) 2007 Tsung-Hao
+     *    
+     *     Permission is hereby granted, free of charge, to any person obtaining a copy
+     *     of this software and associated documentation files (the "Software"), to deal
+     *     in the Software without restriction, including without limitation the rights
+     *     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     *     copies of the Software, and to permit persons to whom the Software is
+     *     furnished to do so, subject to the following conditions:
+     *     
+     *     The above copyright notice and this permission notice shall be included in
+     *     all copies or substantial portions of the Software.
+     *     
+     *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     *     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     *     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     *     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     *     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     *     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     *     THE SOFTWARE.
+     *     
+     * @author tsung http://plog.longwin.com.tw
+     * @desc http://blog.longwin.com.tw/2007/11/php_snap_image_block_2007/
+     * @param int $password_len 字串長度(幾個字)
+     * @return string 亂數產生產生後的字串
+     *
+     */
+    public function generator($password_len)
+    {
+        $password = '';
+
+        // remove o,0,1,l
+        $word = 'abcdefghijkmnpqrstuvwxyz!@#%^*()-ABCDEFGHIJKLMNPQRSTUVWXYZ;{}[]23456789';
+        $len = strlen($word);
+
+        for ($i = 0; $i < $password_len; $i++) {
+            $password .= $word[rand() % $len];
+        }
+
+        return $password;
+    }
+    
+    /**
+     * 加密這段字
+     * 
+     * @param string $text 原本字串
+     * @return string 加密後結果字串
+     * @since 2.0.0
+     */ 
+    public function encrypt($text){
+        // TODO: 尚未測試
+        
+        // 從config.php設定檔取得預設加密方式
+        switch(ENCRYPT_MODE){
+            case "MD5":
+            case "md5":
+                return $this->md5Encrypt($text);
+                break;
+            case "SHA1":
+            case "sha1":
+                return $this->sha1Encrypt($text);
+                break;
+            case "CRYPT":
+            case "crypt":
+                return $this->cryptEncrypt($text);
+                break;
+            default:
+                return $text;
+                break;
+        }
+    }
+    
+    /**
+     * 加密這段字
+     * 
+     * @param string $encrypted 已加密字串
+     * @param string $text 原本字串
+     * @return bool true代表與加密後字串一樣
+     * @since 2.0.0
+     */ 
+    public function checkSame($encrypted, $text) {
+        // TODO: 尚未測試
+        
+        // 加密此字串
+        $textToEncypt = $this->encrypt($text);
+        
+        // 判斷是否吻合
+        if( $textToEncypt == $encrypted ) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    // ------------------------------------------------------------------------
+    
+    /**
+     * MD5加密這段字
+     * 
+     * @param string $text 原本字串
+     * @return string 加密後結果字串
+     * @since 2.0.0
+     */ 
+    public function md5Encrypt($text){
+        return md5($text);
+    }
+    
+    /**
+     * SHA1加密這段字
+     * 
+     * @param string $text 原本字串
+     * @return string 加密後結果字串
+     * @since 2.0.0
+     */ 
+    public function sha1Encrypt($text){
+        return sha1($text);
+    }
+    
+    /**
+     * CRYPT加密這段字
+     * 
+     * @param string $text 原本字串
+     * @return string 加密後結果字串
+     * @since 2.0.0
+     */ 
+    public function cryptEncrypt($text){
+        return crypt($text);
+    }
+    
+}
