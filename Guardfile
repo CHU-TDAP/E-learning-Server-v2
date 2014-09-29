@@ -10,6 +10,7 @@ notification :growl
 # Linux用的通知中心
 notification :libnotify
 
+#PHPDoc
 guard :shell do
   watch(%r{htdocs/.+\.(php)}) do
     system 'phpdoc', '-d', './htdocs/lib', '-t', './docs/'

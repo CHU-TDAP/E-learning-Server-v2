@@ -1,3 +1,4 @@
+source 'https://rubygems.org'
 group :development do
   gem 'guard'
   gem 'guard-livereload', require: false
@@ -6,4 +7,5 @@ group :development do
   gem 'rb-fsevent'                                                                  
   gem 'ruby_gntp'
   gem 'growl'
+  gem 'libnotify'
 end
