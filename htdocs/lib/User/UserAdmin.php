@@ -8,7 +8,9 @@ namespace UElearning\User;
 require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
 require_once UELEARNING_LIB_ROOT.'/User/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/Util/Password.php';
 use UElearning\Database;
+use UElearning\Util;
 
 /**
  * 管理使用者的操作
@@ -105,11 +107,8 @@ class UserAdmin {
                 }
                 
                 // 進行密碼加密
-                /*if( isset($userInfoArray['userId']) ) {
-                    // TODO: 密碼加密
-                }*/
-                // 加密後的密碼
-                $passwdEncrypted = $userInfoArray['password'];
+                $passUtil = new Util\Password();
+                $passwdEncrypted = $passUtil->encrypt( $userInfoArray['password'] );
                 
                 // 新增一筆使用者資料進資料庫
                 $db = new Database\DBUser();

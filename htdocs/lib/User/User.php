@@ -5,4 +5,430 @@
 
 namespace UElearning\User;
 
-// TODO: write this code
+require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
+require_once UELEARNING_LIB_ROOT.'/User/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/Util/Password.php';
+use UElearning\Database;
+use UElearning\Util;
+
+/**
+ * 使用者處理專用類別
+ * 
+ * 一個物件即代表這一位使用者
+ * 
+ * 建立此物件範例: 
+ * 
+ *     require_once __DIR__.'/../config.php';
+ *     require_once UELEARNING_LIB_ROOT.'/User/User.php';
+ *     use UElearning\User;
+ *     
+ *     try {
+ *         $user = new User\User('yuan');
+ *         // TODO: 在這邊寫下要針對這位使用者作什麼事？
+ *     }
+ *     catch (User\Exception\UserNoFoundException $e) {
+ *         echo 'No Found user: '. $e->getUserId();
+ *     }
+ * 
+ * @version         2.0.0
+ * @package         UElearning
+ * @subpackage      User
+ */
+class User {
+    
+    /**
+     * 使用者ID
+     * @type string 
+     */
+	protected $uId;
+    
+    // ------------------------------------------------------------------------
+    
+	/**
+	 * 查詢到此帳號的所有資訊的結果
+	 * 
+	 * 由 $this->getQuery() 抓取資料表中所有資訊，並放在此陣列裡
+	 * @type array
+	 */
+	protected $queryResultArray;
+    
+	/**
+	 * 從資料庫取得此帳號查詢
+	 *
+     * @throw UElearning\User\Exception\UserNoFoundException 
+	 * @since 2.0.0
+	 */
+	protected function getQuery(){
+        // 從資料庫查詢使用者
+        $db       = new Database\DBUser();
+        $userInfo = $db->queryUser($this->uId);
+
+        // 判斷有沒有這位使用者
+        if( $userInfo != null ) {
+            $this->queryResultArray = $userInfo;
+        }
+        else throw new Exception\UserNoFoundException($this->uId);
+	}
+    
+    /**
+	 * 從資料庫更新此帳號設定
+	 *
+	 * @since 2.0.0
+	 */
+	protected function setUpdate($field, $value){
+        /// 將新設定寫進資料庫裡
+		$db = new Database\DBUser();
+        $db->changeUserData($this->uId, $field, $value);
+        $this->getQuery();
+	}
+    
+    
+    
+    // ========================================================================
+	
+	/**
+	 * 建構子
+	 *
+	 * @param string $inputUID 使用者ID
+     * @since 2.0.0
+	 */
+	public function __construct($inputUID){
+		$this->uId = $inputUID;
+		$this->getQuery();
+	}
+	
+    // ========================================================================
+	
+	/**
+	 * 取得帳號名稱
+	 *
+	 * @return string 帳號名稱
+     * @since 2.0.0
+	 */
+	public function getUsername(){
+		return $this->uId;
+	}
+    
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 驗證密碼是否錯誤
+	 *
+	 * @param string $inputPasswd 密碼
+	 * @return bool true:密碼正確，false:密碼錯誤
+     * @since 2.0.0
+	 */
+	public function isPasswordCorrect($inputPasswd){
+		$passUtil    = new Util\Password();
+        $this_passwd = $this->queryResultArray['password'];
+        return $passUtil->checkSame($this_passwd, $inputPasswd);
+	}
+	
+	/**
+	 * 更改密碼
+	 * 
+	 * @param  string $newPasswd     新密碼
+	 * @param  string $newPasswdMode 新密碼加密方式（可省略）
+	 * @return string 狀態回傳
+     * @since 2.0.0
+	 */
+	public function changePassword($newPasswd){
+        // 進行密碼加密
+        $passUtil = new Util\Password();
+        $passwdEncrypted = $passUtil->encrypt($newPasswd);
+        
+        // 將新密碼寫進資料庫裡
+		$this->setUpdate('password', $passwdEncrypted);
+	}
+    
+	// ========================================================================
+		
+	/**
+	 * 取得帳號建立時間
+	 *
+	 * @return string 建立時間
+     * @since 2.0.0
+	 */
+	public function getCreateTime(){
+		return $this->queryResultArray['build_time'];
+	}
+	// ========================================================================
+	
+	/**
+	 * 取得所在群組
+	 *
+	 * @return string 群組ID
+     * @since 2.0.0
+	 */
+	public function getGroup(){
+		return $this->queryResultArray['group_id'];
+	}
+	
+	/**
+	 * 取得所在群組顯式名稱
+	 *
+	 * @return string 群組名稱
+     * @since 2.0.0
+	 */
+	public function getGroupName(){
+		// TODO: getGroupName
+	}
+	
+	/**
+	 * 設定所在群組
+	 *
+	 * @param string $toGroup 群組ID
+     * @since 2.0.0
+	 */
+	public function setGroup($toGroup){
+		// TODO: setGroup
+		
+	
+	}
+    
+	// ------------------------------------------------------------------------
+    
+	/**
+	 * 取得所在班級
+	 *
+	 * @return string 班級ID
+     * @since 2.0.0
+	 */
+	public function getClass(){
+		return $this->queryResultArray['class_id'];
+	}
+	
+	/**
+	 * 取得所在群組顯式名稱
+	 *
+	 * @return string 班級名稱
+     * @since 2.0.0
+	 */
+	public function getClassName(){
+		// TODO: getGroupName
+	}
+	
+	/**
+	 * 設定所在群組
+	 *
+	 * @param string $toGroup 班級ID
+     * @since 2.0.0
+	 */
+	public function setClass($toClass){
+		// TODO: setGroup
+		
+	
+	}
+    
+    // ========================================================================
+	
+	/**
+	 * 取得帳號啟用狀態
+	 *
+	 * @return bool 是否已啟用
+     * @since 2.0.0
+	 */
+	public function isEnable(){
+        return $this->queryResultArray['enable'];
+	}
+	
+	/**
+	 * 設定帳號啟用狀態
+	 *
+	 * @param bool $isActive 是否為啟用
+	 * @since 2.0.0
+     */
+	public function setEnable($isActive){
+        // TODO: 防呆，至少一個帳號是啟用的
+        
+        // 將新設定寫進資料庫裡
+		$this->setUpdate('enable', $isActive);
+	}
+	
+	// ========================================================================
+    
+    /**
+	 * 取得這個人的學習導引風格
+	 *
+	 * @return string 學習導引風格
+     * @since 2.0.0
+	 */
+	public function getLearnStyle(){
+		// TODO: 
+	}
+	
+	/**
+	 * 設定這個人的學習導引風格
+	 *
+	 * @param string $style 學習導引風格
+     * @since 2.0.0
+	 */
+	public function setLearnStyle($style){
+		// TODO
+		
+	
+	}
+    
+    /**
+	 * 取得這個人的教材風格
+	 *
+	 * @return string 教材風格
+     * @since 2.0.0
+	 */
+	public function getMaterialStyle(){
+		// TODO: 
+	}
+	
+	/**
+	 * 設定這個人的教材風格
+	 *
+	 * @param string $style 教材風格
+     * @since 2.0.0
+	 */
+	public function setMaterialStyle($style){
+		// TODO
+		
+	
+	}
+    
+    // ========================================================================
+	
+    /**
+	 * 取得名稱
+	 *
+	 * @return string 依照有填入多少名字 <br />優先順序: 暱稱→真實名字→帳號名稱
+     * @since 2.0.0
+	 */
+	public function getName(){
+        // TODO: 代修正
+		if($this->getNickName() != "") {
+			return $this->getNickName();
+		}
+		else if($this->getRealName() != "") {
+			return $this->getRealName();
+		}
+		else {
+			return $this->getUsername();
+		}
+	}
+    
+    // ------------------------------------------------------------------------
+    
+    /**
+	 * 取得暱稱
+	 *
+	 * @return string 暱稱
+     * @since 2.0.0
+	 */
+	public function getNickName(){
+		return $this->queryResultArray['nickname'];
+	}
+	
+	/**
+	 * 修改暱稱
+	 *
+	 * @param string $input 新暱稱
+     * @since 2.0.0
+	 */
+	public function setNickName($input){
+		// 將新設定寫進資料庫裡
+		$this->setUpdate('nickname', $input);
+	}
+    
+	// ------------------------------------------------------------------------
+    
+	/**
+	 * 取得真實姓名
+	 *
+	 * @return string 真實姓名
+     * @since 2.0.0
+	 */
+	public function getRealName(){
+		return $this->queryResultArray['realname'];
+	}
+	
+	/**
+	 * 修改真實姓名
+	 *
+	 * @param string $input 新真實姓名
+     * @since 2.0.0
+	 */
+	public function setRealName($input){
+		// 將新設定寫進資料庫裡
+		$this->setUpdate('realname', $input);
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 取得帳號Email
+	 *
+	 * @return string 使用者資訊的Email
+     * @since 2.0.0
+	 */
+	public function getEmail(){
+		return $this->queryResultArray['email'];
+	}
+	
+	/**
+	 * 修改帳號Email
+	 *
+	 * @param string $input 新Email
+     * @since 2.0.0
+	 */
+	public function setEmail($input){
+		// 將新設定寫進資料庫裡
+        $db->changeUserData($this->uId, 'email', $input);
+	}
+    
+    // ------------------------------------------------------------------------
+	
+	/**
+	 * 取得帳號備註資訊
+	 *
+	 * @return string 使用者帳號備註資訊
+     * @since 2.0.0
+	 */
+	public function getMemo(){
+		return $this->queryResultArray['memo'];
+	}
+	
+	/**
+	 * 修改帳號備註資訊
+	 *
+	 * @param string $input 新的帳號備註資訊
+     * @since 2.0.0
+	 */
+	public function setMemo($input){
+		$this->setUpdate('memo', $input);
+	}
+    
+	// ========================================================================
+	
+	/**
+	 * 取得權限清單
+	 *
+	 * @access public
+	 * @return array 權限清單
+	 */
+	 public function getPermissionList() {
+		$thisGroup = new UserGroup($this->getQueryInfo("GID"));
+		return $thisGroup->getPermissionList();
+		
+	 }
+	 
+	/**
+	 * 是否擁有此權限
+	 *
+	 * @access public
+	 * @global string $FORM_USER 在/config/db_table_config.php的使用者資料表名稱
+	 * @global string $FORM_USER_GROUP 在/config/db_table_config.php的使用者群組資料表名稱
+	 * @param string $permissionName 權限名稱
+	 * @return bool 是否擁有
+	 */
+	 public function havePermission($permissionName) {
+		// TODO
+	 }
+	 
+}

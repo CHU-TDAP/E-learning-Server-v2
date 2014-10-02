@@ -25,7 +25,7 @@ class PasswordTest extends \PHPUnit_Framework_TestCase
      * 
      * @dataProvider pass_dataProvider
      */ 
-    public function testCheckSame($data){
+    public function testCheckSame($value){
         
         // 加密字串
         $encode = $this->passUtil->encrypt($value);

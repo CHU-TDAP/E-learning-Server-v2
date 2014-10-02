@@ -31,8 +31,6 @@ class UserAdminTest extends \PHPUnit_Framework_TestCase
             $userAdmin->create(
                 array( 'user_id'            => $uId,
                       'password'           => $uPassword,
-                      //'password_encrypt'   => null, 
-                      //'password_encrypted' => null, 
                       'group_id'           => $gId,
                       'class_id'           => $cId,   
                       'enable'             => $enable,

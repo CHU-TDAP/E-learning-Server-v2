@@ -8,6 +8,18 @@ namespace UElearning\Util;
 /**
  * 密碼以及加密相關的函式庫
  * 
+ * 使用範例:
+ * 
+ *     require_once __DIR__.'/../config.php';
+ *     require_once UELEARNING_LIB_ROOT.'/Util/Password.php';
+ *     use UElearning\Util;
+ *     
+ *     $passUtil = new Util\Password();
+ *     echo $passUtil->generator(10); // 產生10個字的密碼
+ *     echo $passUtil->encrypt('abc'); // 加密此字串
+ *
+ *     // 核對與加密後是否吻合
+ *     echo $passUtil->checkSame('a9993e364706816aba3e25717850c26c9cd0d89d', 'abc');
  *
  * @author          Yuan Chiu <chyuaner@gmail.com>
  * @version         2.0.0
@@ -47,8 +59,7 @@ class Password {
      * @return string 亂數產生產生後的字串
      *
      */
-    public function generator($password_len)
-    {
+    public function generator($password_len){
         $password = '';
 
         // remove o,0,1,l
@@ -70,8 +81,6 @@ class Password {
      * @since 2.0.0
      */ 
     public function encrypt($text){
-        // TODO: 尚未測試
-        
         // 從config.php設定檔取得預設加密方式
         switch(ENCRYPT_MODE){
             case "MD5":
@@ -101,8 +110,6 @@ class Password {
      * @since 2.0.0
      */ 
     public function checkSame($encrypted, $text) {
-        // TODO: 尚未測試
-        
         // 加密此字串
         $textToEncypt = $this->encrypt($text);
         

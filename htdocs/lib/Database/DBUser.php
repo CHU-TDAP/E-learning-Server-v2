@@ -27,17 +27,41 @@ class DBUser extends Database {
     
     /**
      * 新增一個使用者
-     * @param string $uId 使用者名稱
+     * 
+     * 範例: 
+     * 
+     *     require_once __DIR__.'/../config.php';
+     *     require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
+     *     use UElearning\Database;
+     * 
+     *     try {
+     *         $db = new Database\DBUser();
+     *         
+     *         $db->insertUser('eric', 'passwd', 'user', null, 1, 'harf-line-learn', '1', '偉人', 'Eric Chiou', 'eric@example.com', null);
+     *         
+     *         echo 'Finish';
+     *     }
+     *     
+     *     
+     *     // 若設定的DBMS不被支援 則丟出例外
+     *     catch (Database\Exception\DatabaseNoSupportException $e) {
+     *         echo 'No Support in ',  $e->getType();
+     *     } catch (Exception $e) {
+     *         echo 'Caught other exception: ',  $e->getMessage();
+     *         echo '<h2>'. $e->getCode() .'</h2>';
+     *     }
+     * 
+     * @param string $uId      使用者名稱
      * @param string $password 密碼
-     * @param string $gId 群組
-     * @param string $cId 班級
-     * @param string $enable 啟用此帳號
-     * @param string $l_mode 學習模式
-     * @param string $m_mode 教材模式
+     * @param string $gId      群組
+     * @param string $cId      班級
+     * @param string $enable   啟用此帳號
+     * @param string $l_mode   學習模式
+     * @param string $m_mode   教材模式
      * @param string $nickName 暱稱
      * @param string $realName 姓名
-     * @param string $email 電子郵件地址
-     * @param string $memo 備註
+     * @param string $email    電子郵件地址
+     * @param string $memo     備註
      */ 
     public function insertUser($uId, $password, $gId, $cId, $enable,
                      $l_mode, $m_mode, 
@@ -75,8 +99,47 @@ class DBUser extends Database {
     
     /**
      * 查詢一位使用者帳號資料
+     * 
+     * 
+     * 範例: 
+     * 
+     *     require_once __DIR__.'/../config.php';
+     *     require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
+     *     use UElearning\Database;
+     * 
+     *     try {
+     *         $db = new Database\DBUser();
+     *         
+     *         $userInfo = $db->queryUser('yuan');
+     *         echo '<pre>'; print_r($userInfo); echo '</pre>';
+     *     }
+     *     
+     *     
+     *     // 若設定的DBMS不被支援 則丟出例外
+     *     catch (Database\Exception\DatabaseNoSupportException $e) {
+     *         echo 'No Support in ',  $e->getType();
+     *     } catch (Exception $e) {
+     *         echo 'Caught other exception: ',  $e->getMessage();
+     *         echo '<h2>'. $e->getCode() .'</h2>';
+     *     }
+     * 
      * @param string $uId 使用者名稱
-     * @return array 使用者資料 (TODO 格式待補)
+     * @return array 使用者資料陣列，格式為: 
+     *     array( 
+     *         'user_id'            => <帳號名稱>,
+     *         'password'           => <密碼>,
+     *         'group_id'           => <群組>,
+     *         'class_id'           => <班級>,
+     *         'enable'             => <啟用>,
+     *         'build_time'         => <建立日期>,
+     *         'learnStyle_mode'    => <偏好學習導引模式>,
+     *         'material_mode'      => <偏好教材模式>,
+     *         'nickname'           => <暱稱>,
+     *         'realname'           => <真實姓名>,
+     *         'email'              => <電子郵件地址>,
+     *         'memo'               => <備註>
+     *     );
+     * 
      */ 
     public function queryUser($uId) {
         
@@ -111,6 +174,49 @@ class DBUser extends Database {
         else {
             return null;
         }
+    }
+    
+    /**
+     * 修改一位使用者的資料內容
+     * 
+     * 範例:
+     * 
+     *     $db = new Database\DBUser();
+     *     $db->changeUserData('yuan', 'memo', 'hahaha');
+     * 
+     * @param string $uId   使用者名稱
+     * @param string $field 欄位名稱
+     * @param string $value 內容
+     */ 
+    public function changeUserData($uId, $field, $value) {
+        // UPDATE `UElearning`.`chu__User` SET `UMemo` = '測試者' WHERE `chu__User`.`UID` = 'yuan';
+        
+        $sqlField = null;
+        switch($field) {
+            case 'user_id':         $sqlField = 'UID';         break;
+            case 'password':        $sqlField = 'UPassword';   break;
+            case 'group_id':        $sqlField = 'GID';         break;
+            case 'class_id':        $sqlField = 'CID';         break;
+            case 'enable':          $sqlField = 'UEnabled';    break;
+            case 'build_time':      $sqlField = 'UBuild_Time'; break;
+            case 'learnStyle_mode': $sqlField = 'LMode';       break;
+            case 'material_mode':   $sqlField = 'MMode';       break;
+            case 'nickname':        $sqlField = 'UNickname';   break;
+            case 'realname':        $sqlField = 'UReal_Name';  break;
+            case 'email':           $sqlField = 'UEmail';      break;
+            case 'memo':            $sqlField = 'UMemo';       break;
+            default:                $sqlField = $field;        break;
+        }
+        
+        
+        $sqlString = "UPDATE ".$this->table('User').
+                     " SET `".$sqlField."` = :value".
+                     " WHERE `UID` = :uid";
+        
+        $query = $this->connDB->prepare($sqlString);
+		$query->bindParam(':uid', $uId);
+        $query->bindParam(':value', $value);
+		$query->execute();
     }
     
     /**
