@@ -70,6 +70,37 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * 測試更改使用者資料
+     * 
+     * @dataProvider userDataProvider
+     */
+    public function testChangeUser($uId, $uPassword, $gId, $cId, $enable,
+                                   $l_mode, $m_mode, 
+                                   $nickName, $realName, $email, $memo){
+        
+        $afterData = 'sfisjojjoij';
+        
+        // 記下更改前的資料
+        $info = $this->db->queryUser($uId);
+        $beforeData = $info['memo'];
+        
+        // 更改資料
+        $this->db->changeUserData($uId, 'memo', $afterData);
+        
+        // 檢查更改後的結果
+        $info = $this->db->queryUser($uId);
+        $this->assertEquals($info['memo'], $afterData);
+        
+        // 改回來
+        $this->db->changeUserData($uId, 'memo', $beforeData);
+        
+        // 檢查有沒有改回來
+        $info = $this->db->queryUser($uId);
+        $this->assertEquals($info['memo'], $beforeData);
+    }
+    
+    
+    /**
      * 測試移除使用者
      * 
      * @dataProvider userDataProvider

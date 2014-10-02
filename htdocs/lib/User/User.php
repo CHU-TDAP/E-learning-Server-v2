@@ -230,7 +230,8 @@ class User {
      * @since 2.0.0
 	 */
 	public function isEnable(){
-        return $this->queryResultArray['enable'];
+        if($this->queryResultArray['enable'] == 0) return false;
+        else return true;
 	}
 	
 	/**
@@ -379,7 +380,7 @@ class User {
 	 */
 	public function setEmail($input){
 		// 將新設定寫進資料庫裡
-        $db->changeUserData($this->uId, 'email', $input);
+        $this->setUpdate('email', $input);
 	}
     
     // ------------------------------------------------------------------------

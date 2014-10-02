@@ -14,7 +14,7 @@ class UserAdminTest extends \PHPUnit_Framework_TestCase
 {
     
     /**
-     * 測試安裝初始化資料庫
+     * 測試建立使用者
      * 
      * @dataProvider userDataProvider
      */
