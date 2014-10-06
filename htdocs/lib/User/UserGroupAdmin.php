@@ -5,6 +5,10 @@
 
 namespace UElearning\User;
 
+require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
+require_once UELEARNING_LIB_ROOT.'/User/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/Exception.php';
+use UElearning\Database;
 
 /**
  * 管理使用者權限群組的操作
@@ -22,8 +26,8 @@ class UserGroupAdmin {
      * 建立使用者範例:
      * 
      *     try {
-     *         $userAdmin = new User\UserAdmin();
-     *         $userAdmin->create(
+     *         $groupAdmin = new User\UserGroupAdmin();
+     *         $groupAdmin->create(
      *             array( 'group_id' => 'student',
      *                    'name' => '學生',
      *                    'memo' => null,
@@ -48,71 +52,48 @@ class UserGroupAdmin {
      */ 
     public function create($groupArray) {
         
-        /*// 檢查必填項目有無填寫
-        if(isset($userInfoArray)) {
+        // 檢查有無填寫
+        if(isset($groupArray)) {
             
-            // 若無填寫
-            if( !isset($userInfoArray['user_id'])  ||
-                !isset($userInfoArray['password']) ||
-                !isset($userInfoArray['group_id']) ) {
+            // 若必填項目無填寫
+            if( !isset($groupArray['group_id']) ) {
                 throw new UElearning\Exception\NoDataException();
             }
             // 若此id已存在
-            else if($this->isExist($userInfoArray['user_id'])) {
-                throw new Exception\UserIdExistException(
-                    $userInfoArray['user_id'] );
+            else if( $this->isExist($groupArray['group_id']) ) {
+                throw new Exception\GroupIdExistException(
+                    $groupArray['group_id'] );
             }
             // 沒有問題
             else {
                 
                 // 處理未帶入的資料
-                if( !isset($userInfoArray['class_id']) ){
-                    $userInfoArray['class_id'] = null;
+                if( !isset($groupArray['name']) ){
+                    $groupArray['name'] = null;
                 }
-                if( !isset($userInfoArray['enable']) ){
-                    $userInfoArray['enable'] = true;
+                // 處理未帶入的資料
+                if( !isset($groupArray['memo']) ){
+                    $groupArray['memo'] = null;
                 }
-                if( !isset($userInfoArray['learnStyle_mode']) ){
-                    $userInfoArray['learnStyle_mode'] = null;
+                if( !isset($groupArray['auth_server_admin']) ){
+                    $groupArray['auth_server_admin'] = false;
                 }
-                if( !isset($userInfoArray['material_mode']) ){
-                    $userInfoArray['material_mode'] = null;
+                if( !isset($groupArray['auth_client_admin']) ){
+                    $groupArray['auth_client_admin'] = false;
                 }
-                if( !isset($userInfoArray['nickname']) ){
-                    $userInfoArray['nickname'] = null;
-                }
-                if( !isset($userInfoArray['realname']) ){
-                    $userInfoArray['realname'] = null;
-                }
-                if( !isset($userInfoArray['email']) ){
-                    $userInfoArray['email'] = null;
-                }
-                if( !isset($userInfoArray['memo']) ){
-                    $userInfoArray['memo'] = null;
-                }
-                
-                // 進行密碼加密
-                $passUtil = new Util\Password();
-                $passwdEncrypted = $passUtil->encrypt( $userInfoArray['password'] );
                 
                 // 新增一筆使用者資料進資料庫
                 $db = new Database\DBUser();
-                $db->insertUser(
-                    $userInfoArray['user_id'], 
-                    $passwdEncrypted, 
-                    $userInfoArray['group_id'], 
-                    $userInfoArray['class_id'], 
-                    $userInfoArray['enable'], 
-                    $userInfoArray['learnStyle_mode'], 
-                    $userInfoArray['material_mode'], 
-                    $userInfoArray['nickname'], 
-                    $userInfoArray['realname'], 
-                    $userInfoArray['email'], 
-                    $userInfoArray['memo']
+                $db->insertGroup(
+                    $groupArray['group_id'], 
+                    $groupArray['name'], 
+                    $groupArray['memo'], 
+                    $groupArray['auth_server_admin'], 
+                    $groupArray['auth_client_admin']
                 );
             }
         }
-        else throw Exception\NoDataException();*/
+        else throw Exception\NoDataException();
     }
     
     /**
@@ -124,36 +105,47 @@ class UserGroupAdmin {
      */ 
     public function isExist($group_id) {
         
-        /*$db = new Database\DBUser();
-        $info = $db->queryUser($userName);
+        $db = new Database\DBUser();
+        $info = $db->queryGroup($group_id);
         
         if( $info != null ) return true;
-        else return false;*/
+        else return false;
     }
     
     /**
      * 移除此群組
      * 
+     * 範例: 
+     * 
+     *     try {
+     *         $groupAdmin = new User\UserGroupAdmin();
+     *         $groupAdmin->remove('test_student');
+     *     
+     *     }
+     *     catch (User\Exception\GroupNoFoundException $e) {
+     *         echo 'No Found group: ',  $e->getGroupId(); 
+     *     }
+     *
      * @param string $group_id 群組ID
      * @throw UElearning\User\Exception\GroupNoFoundException
      * @since 2.0.0
      */ 
     public function remove($group_id) {
-        /*
+        
         // 若有此使用者
-        if($this->isExist($userName)) {
+        if($this->isExist($group_id)) {
             
             // TODO: 檢查所有關聯的資料，確認是否可以移除
             
             // 移除資料庫中的使用者
             $db = new Database\DBUser();
-            $db->deleteUser($userName);
+            $db->deleteGroup($group_id);
         }
         // 若沒有這位使用者
         else {
-            throw new Exception\UserNoFoundException($userName);
+            throw new Exception\GroupNoFoundException($group_id);
         }
-        */
+        
     }
 
 }

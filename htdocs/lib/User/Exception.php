@@ -95,3 +95,66 @@ class UserIdExistException extends UserException {
         parent::__construct($userId, 'UserId: "'.$userId.'" is exist.');
     }
 }
+
+// ============================================================================
+
+/**
+ * 使用者群組例外
+ * @since 2.0.0
+ * @package         UElearning
+ * @subpackage      User
+ */ 
+abstract class GroupException extends \UnexpectedValueException {
+    
+    /**
+     * 指定的使用者群組ID
+     * @type string
+     */ 
+    private $groupId;
+    
+    /**
+     * 使用者帳號例外
+     * @param string $groupId 輸入的使用者群組ID
+     * @param string $description 描述
+     */ 
+    public function __construct($groupId, $description) {
+        $this->groupId = $groupId;
+        parent::__construct($description);
+    }
+    
+    /**
+     * 取得輸入的資料庫系統名稱
+     * @return string 錯誤訊息內容
+     */ 
+    public function getGroupId() {
+        return $this->groupId;
+    }
+}
+
+/**
+ * 已有重複的使用者群組ID
+ * @since 2.0.0
+ */ 
+class GroupIdExistException extends GroupException {
+    /**
+     * 已有重複的使用者名稱
+     * @param string $groupId 輸入的使用者群組ID
+     */ 
+    public function __construct($groupId) {
+        parent::__construct($groupId, 'GroupId: "'.$groupId.'" is exist.');
+    }
+}
+
+/**
+ * 沒有找到此使用者群組ID
+ * @since 2.0.0
+ */ 
+class GroupNoFoundException extends GroupException {
+    /**
+     * 沒有找到此帳號
+     * @param string $groupId 輸入的使用者群組ID
+     */ 
+    public function __construct($groupId) {
+        parent::__construct($groupId, 'Group: "'.$groupId.'" is no found.');
+    }
+}

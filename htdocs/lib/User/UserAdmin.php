@@ -149,6 +149,16 @@ class UserAdmin {
     /**
      * 移除此使用者
      * 
+     * 範例: 
+     * 
+     *     try {
+     *         $userAdmin = new User\UserAdmin();
+     *         $userAdmin->remove('eric');
+     *     }
+     *     catch (User\Exception\UserNoFoundException $e) {
+     *         echo 'No Found user: ',  $e->getUserId(); 
+     *     }
+     * 
      * @param string $userName 帳號名稱
      * @throw UElearning\User\Exception\UserNoFoundException
      * @since 2.0.0
@@ -168,7 +178,6 @@ class UserAdmin {
         else {
             throw new Exception\UserNoFoundException($userName);
         }
-        
     }
 
 }

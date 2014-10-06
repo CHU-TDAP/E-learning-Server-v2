@@ -68,7 +68,7 @@ class DBUser extends Database {
                      $nickName, $realName, $email, $memo){
         
         // 檢查是否有支援所設定的DBMS
-        if($this->db_type == 'mysql') {
+        //if($this->db_type == 'mysql') {
             
             //紀錄使用者帳號進資料庫
             $sqlString = "INSERT INTO ".$this->table('User').
@@ -90,11 +90,30 @@ class DBUser extends Database {
             $query->bindParam(":email", $email);
             $query->bindParam(":memo", $memo);
             $query->execute();
-        }
-        else {
-            throw new Exception\DatabaseNoSupportException($this->db_type);
-        }
+        //}
+        //else {
+        //    throw new Exception\DatabaseNoSupportException($this->db_type);
+        //}
                 
+    }
+    
+    /**
+     * 移除一位使用者
+     * @param string $uId 使用者名稱
+     */ 
+    public function deleteUser($uId) {
+        
+        //if($this->db_type == 'mysql') {
+            $sqlString = "DELETE FROM ".$this->table(self::FORM_USER). 
+                         " WHERE `UID` = :id ";
+            
+            $query = $this->connDB->prepare($sqlString);
+            $query->bindParam(":id", $uId);
+            $query->execute();
+        //}
+        //else {
+        //    throw new Exception\DatabaseNoSupportException($this->db_type);
+        //}
     }
     
     /**
@@ -151,6 +170,7 @@ class DBUser extends Database {
 		$query->execute();
 		
 		$queryResultAll = $query->fetchAll();
+        // 如果有查到一筆以上
         if( count($queryResultAll) >= 1 ) {
             $queryResult = $queryResultAll[0];
 
@@ -171,6 +191,66 @@ class DBUser extends Database {
 
             return $result;
         }
+        // 若都沒查到的話
+        else {
+            return null;
+        }
+    }
+    
+    /**
+     * 查詢所有的使用者帳號資料
+     * 
+     * @return array 使用者資料陣列，格式為: 
+     *     
+     *     array(
+     *         array( 
+     *             'user_id'            => <帳號名稱>,
+     *             'password'           => <密碼>,
+     *             'group_id'           => <群組>,
+     *             'class_id'           => <班級>,
+     *             'enable'             => <啟用>,
+     *             'build_time'         => <建立日期>,
+     *             'learnStyle_mode'    => <偏好學習導引模式>,
+     *             'material_mode'      => <偏好教材模式>,
+     *             'nickname'           => <暱稱>,
+     *             'realname'           => <真實姓名>,
+     *             'email'              => <電子郵件地址>,
+     *             'memo'               => <備註>
+     *         )
+     *     );
+     * 
+     */ 
+    public function queryAllUser() {
+        
+        $sqlString = "SELECT * FROM ".$this->table('User');
+		
+		$query = $this->connDB->prepare($sqlString);
+		$query->execute();
+		
+		$queryResultAll = $query->fetchAll();
+        // 如果有查到一筆以上
+        if( count($queryResultAll) >= 1 ) {
+            // 製作回傳結果陣列
+            $result = array();
+            foreach($queryResultAll as $key => $thisResult) { 
+                array_push($result,
+                    array( 'user_id'            => $thisResult['UID'],
+                           'password'           => $thisResult['UPassword'],
+                           'group_id'           => $thisResult['GID'],
+                           'class_id'           => $thisResult['CID'],
+                           'enable'             => $thisResult['UEnabled'],
+                           'build_time'         => $thisResult['UBuild_Time'],
+                           'learnStyle_mode'    => $thisResult['LMode'],
+                           'material_mode'      => $thisResult['MMode'],
+                           'nickname'           => $thisResult['UNickname'],
+                           'realname'           => $thisResult['UReal_Name'],
+                           'email'              => $thisResult['UEmail'],
+                           'memo'               => $thisResult['UMemo'])
+                );
+            }
+            return $result;
+        }
+        // 若都沒查到的話
         else {
             return null;
         }
@@ -219,23 +299,132 @@ class DBUser extends Database {
 		$query->execute();
     }
     
+    // ========================================================================
+    
     /**
-     * 移除一位使用者
-     * @param string $uId 使用者名稱
+     * 插入群組資料
+     * 
+     * @param string $gId              群組ID
+     * @param string $name             群組顯示名稱
+     * @param string $memo             備註
+     * @param string $auth_admin       Server端管理權
+     * @param string $auth_clientAdmin Client端管理權
      */ 
-    public function deleteUser($uId) {
+    public function insertGroup($gId, $name, $memo, $auth_admin, $auth_clientAdmin) {
         
-        if($this->db_type == 'mysql') {
-            $sqlString = "DELETE FROM ".$this->table(self::FORM_USER). 
-                         " WHERE `UID` = :id ";
+        // 紀錄使用者帳號進資料庫
+        $sqlString = "INSERT INTO ".$this->table('AGroup').
+            " (`GID`, `GName`, `GMemo`, `GAuth_Admin`, `GAuth_ClientAdmin`)
+            VALUES ( :id , :name, :memo , :auth_admin , :auth_clientAdmin )";
+
+        $query = $this->connDB->prepare($sqlString);
+        $query->bindParam(":id", $gId);
+        $query->bindParam(":name", $name);
+        $query->bindParam(":memo", $memo);
+        $query->bindParam(":auth_admin", $auth_admin);
+        $query->bindParam(":auth_clientAdmin", $auth_clientAdmin);
+        $query->execute();
+    }
+    
+    /**
+     * 移除一個使用者群組
+     * @param string $gId 
+     */ 
+    public function deleteGroup($gId) {
+        
+        $sqlString = "DELETE FROM ".$this->table('AGroup'). 
+                         " WHERE `GID` = :id ";
             
-            $query = $this->connDB->prepare($sqlString);
-            $query->bindParam(":id", $uId);
-            $query->execute();
+        $query = $this->connDB->prepare($sqlString);
+        $query->bindParam(":id", $gId);
+        $query->execute();
+    }
+    
+    /**
+     * 查詢一個使用者群組資料
+     * 
+     * @return array 使用者群組資料陣列，格式為: 
+     *     
+     *     array( 'group_id'         => <群組ID>,
+     *            'name'             => <群組顯示名稱>,
+     *            'memo'             => <備註>,
+     *            'auth_admin'       => <Server端管理權>,
+     *            'auth_clientAdmin' => <Client端管理權>
+     *     );
+     * 
+     */ 
+    public function queryGroup($gId) {
+    
+        $sqlString = "SELECT * FROM ".$this->table('AGroup').
+                     " WHERE `GID` = :gid";
+		
+		$query = $this->connDB->prepare($sqlString);
+		$query->bindParam(':gid', $gId);
+		$query->execute();
+		
+        $queryResultAll = $query->fetchAll();
+        // 如果有查到一筆以上
+        if( count($queryResultAll) >= 1 ) {
+            $thisResult = $queryResultAll[0];
+            // 製作回傳結果陣列
+            $result = array('group_id'          => $thisResult['GID'],
+                            'name'              => $thisResult['GName'],
+                            'memo'              => $thisResult['GMemo'],
+                            'auth_admin'        => $thisResult['GAuth_Admin'],
+                            'auth_clientAdmin'  => $thisResult['GAuth_ClientAdmin']
+            );
+            return $result;
         }
+        // 若都沒查到的話
         else {
-            throw new Exception\DatabaseNoSupportException($this->db_type);
+            return null;
         }
     }
+    
+    /**
+     * 查詢所有的使用者群組資料
+     * 
+     * @return array 使用者群組資料陣列，格式為: 
+     *     
+     *     array(
+     *         array( 
+     *             'group_id'         => <群組ID>,
+     *             'name'             => <群組顯示名稱>,
+     *             'memo'             => <備註>,
+     *             'auth_admin'       => <Server端管理權>,
+     *             'auth_clientAdmin' => <Client端管理權>
+     *         )
+     *     );
+     * 
+     */ 
+    public function queryAllGroup() {
+    
+        $sqlString = "SELECT * FROM ".$this->table('AGroup');
+        
+		$query = $this->connDB->prepare($sqlString);
+		$query->execute();
+		
+        $queryResultAll = $query->fetchAll();
+        // 如果有查到一筆以上
+        if( count($queryResultAll) >= 1 ) {
+            // 製作回傳結果陣列
+            $result = array();
+            foreach($queryResultAll as $key => $thisResult) { 
+                array_push($result,
+                    array( 'group_id'          => $thisResult['GID'],
+                           'name'              => $thisResult['GName'],
+                           'memo'              => $thisResult['GMemo'],
+                           'auth_admin'        => $thisResult['GAuth_Admin'],
+                           'auth_clientAdmin'  => $thisResult['GAuth_ClientAdmin'])
+                );
+            }
+            return $result;
+        }
+        // 若都沒查到的話
+        else {
+            return null;
+        }
+    }
+    
     
 }

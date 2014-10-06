@@ -70,6 +70,17 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * 測試查詢所有使用者
+     * 
+     * 僅測試是否能成功執行，不驗證結果
+     */
+    public function testQueryAllUser(){
+        
+        // 查詢使用者
+        $infoAll = $this->db->queryAllUser();
+    }
+    
+    /**
      * 測試更改使用者資料
      * 
      * @dataProvider userDataProvider
@@ -121,6 +132,54 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
             array('eee_unittest', 'qqqssss', 'admin', null, 1, 
                   'harf-line-learn', '1', 
                   'sss', 'Yuan Chiu', 'chyuanesr@gmail.com', null)
+        );
+    }
+    
+    // ========================================================================
+    
+    /**
+     * 測試建立群組
+     * 
+     * @dataProvider groupDataProvider
+     */
+    public function testCreateGroup($gId, $name, $memo, $auth_admin, $auth_clientAdmin){
+        
+        $this->db->insertGroup($gId, $name, $memo, $auth_admin, $auth_clientAdmin);
+    }
+    
+    /**
+     * 測試查詢群組
+     * 
+     * @dataProvider groupDataProvider
+     */
+    public function testQueryGroup($gId, $name, $memo, $auth_admin, $auth_clientAdmin){
+        // 查詢使用者
+        $info = $this->db->queryGroup($gId);
+        
+        // 比對資料是否吻合
+        $this->assertEquals($info['group_id'],         $gId);
+        $this->assertEquals($info['name'],             $name);
+        $this->assertEquals($info['memo'],             $memo);
+        $this->assertEquals($info['auth_admin'],       $auth_admin);
+        $this->assertEquals($info['auth_clientAdmin'], $auth_clientAdmin);
+    }
+    
+    /**
+     * 測試移除使用者
+     * 
+     * @dataProvider groupDataProvider
+     */
+    public function testDeleteGroup($gId) {
+        $this->db->deleteGroup($gId);
+    }
+    
+    /**
+     * 測試時要填的資料
+     */ 
+    public function groupDataProvider(){
+        return array(
+            array('testG_a', '測試用群組a', null, '1', '0'),
+            array('testG_b', '測試用群組b', 'testhahaha Groups', '0', '1')
         );
     }
 }
