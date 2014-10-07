@@ -49,6 +49,7 @@ class UserGroup {
 	 * 查詢到此帳號的所有資訊的結果
 	 * 
 	 * 由 $this->getQuery() 抓取資料表中所有資訊，並放在此陣列裡
+     * 
 	 * @type array
 	 */
 	protected $queryResultArray;
@@ -60,6 +61,7 @@ class UserGroup {
 	 * @since 2.0.0
 	 */
 	protected function getQuery(){
+        
         // 從資料庫查詢群組
         $db       = new Database\DBUser();
         $groupInfo = $db->queryGroup($this->gId);
@@ -77,6 +79,7 @@ class UserGroup {
 	 * @since 2.0.0
 	 */
 	protected function setUpdate($field, $value){
+        
         /// 將新設定寫進資料庫裡
 		$db = new Database\DBUser();
         $db->changeGroupData($this->gId, $field, $value);
@@ -138,7 +141,6 @@ class UserGroup {
      * @since 2.0.0
 	 */
 	public function setName($name){
-		// 將新設定寫進資料庫裡
 		$this->setUpdate('name', $name);
 	}
 	
@@ -177,21 +179,56 @@ class UserGroup {
 	/**
 	 * 是否擁有此權限
 	 *
-	 * @param string $permissionName 權限名稱
-	 * @return bool 是否擁有
+	 * @param  string $permissionName 權限名稱
+	 * @return bool   是否擁有
+     * @throw UElearning\User\Exception\PermissionNoFoundException
+     * @since 2.0.0
 	 */
 	public function havePermission($permissionName) {
-		// TODO: 是否擁有此權限
+		switch($permissionName) {
+            case 'server_admin':
+            case 'serverAdmin':
+            case 'ServerAdmin':
+                return $this->queryResultArray['auth_admin'];
+                break;
+            
+            case 'client_admin':
+            case 'clientAdmin':
+            case 'ClientAdmin':
+                return $this->queryResultArray['auth_clientAdmin'];
+                break;
+            
+            default:
+                throw new PermissionNoFoundException('$permissionName');
+                return false;
+        }
 	}
     
     /**
 	 * 設定擁有此權限
 	 *
-	 * @param string $permissionName 權限名稱
-	 * @return bool 是否擁有
+	 * @param  string $permissionName 權限名稱
+     * @param  string $setBool        是否給予
+	 * @return bool   是否擁有
+     * @throw UElearning\User\Exception\PermissionNoFoundException
+     * @since 2.0.0
 	 */
 	public function setPermission($permissionName, $setBool) {
-		// TODO: 設定擁有此權限
+		switch($permissionName) {
+            case 'server_admin':
+            case 'serverAdmin':
+            case 'ServerAdmin':
+                $this->setUpdate('auth_admin', $setBool);
+                break;
+            
+            case 'client_admin':
+            case 'clientAdmin':
+            case 'ClientAdmin':
+                $this->setUpdate('auth_clientAdmin', $setBool);
+                break;
+            default:
+                throw new PermissionNoFoundException('$permissionName');
+        }
 	}
 	 
 }

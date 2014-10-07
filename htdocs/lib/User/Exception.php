@@ -158,3 +158,38 @@ class GroupNoFoundException extends GroupException {
         parent::__construct($groupId, 'Group: "'.$groupId.'" is no found.');
     }
 }
+
+// ============================================================================
+
+/**
+ * 使用者群組例外
+ * @since 2.0.0
+ * @package         UElearning
+ * @subpackage      User
+ */ 
+class PermissionNoFoundException extends \UnexpectedValueException {
+    
+    /**
+     * 指定的使用者群組ID
+     * @type string
+     */ 
+    private $permissionName;
+    
+    /**
+     * 使用者帳號例外
+     * @param string $groupId 輸入的使用者群組ID
+     * @param string $description 描述
+     */ 
+    public function __construct($permissionName) {
+        $this->permissionName = $permissionName;
+        parent::__construct('No Found Permission: '.$this->permissionName);
+    }
+    
+    /**
+     * 取得輸入的資料庫系統名稱
+     * @return string 錯誤訊息內容
+     */ 
+    public function getName() {
+        return $this->permissionName;
+    }
+}

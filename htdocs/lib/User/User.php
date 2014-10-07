@@ -6,6 +6,8 @@
 namespace UElearning\User;
 
 require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
+require_once UELEARNING_LIB_ROOT.'/User/UserGroupAdmin.php';
+require_once UELEARNING_LIB_ROOT.'/User/UserGroup.php';
 require_once UELEARNING_LIB_ROOT.'/User/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Util/Password.php';
@@ -25,7 +27,11 @@ use UElearning\Util;
  *     
  *     try {
  *         $user = new User\User('yuan');
- *         // TODO: 在這邊寫下要針對這位使用者作什麼事？
+ *         
+ *         $user->changePassword('123456');
+ *         echo $user->isPasswordCorrect('123456');
+ *         
+ *         echo 'NickName: '.$user->getNickName();
  *     }
  *     catch (User\Exception\UserNoFoundException $e) {
  *         echo 'No Found user: '. $e->getUserId();
@@ -104,6 +110,16 @@ class User {
 	 * @return string 帳號名稱
      * @since 2.0.0
 	 */
+	public function getId(){
+		return $this->uId;
+	}
+    
+    /**
+	 * 取得帳號名稱
+	 *
+	 * @return string 帳號名稱
+     * @since 2.0.0
+	 */
 	public function getUsername(){
 		return $this->uId;
 	}
@@ -170,18 +186,52 @@ class User {
      * @since 2.0.0
 	 */
 	public function getGroupName(){
-		// TODO: getGroupName
+        
+        // 群組ID
+        $groupID = $this->queryResultArray['group_id'];
+        
+        // 取得群組名稱
+		try {
+            $group = new User\UserGroup($groupID);
+            return $group->getName();
+        }
+        catch (Exception\GroupNoFoundException $e) {
+            throw $e;
+        }
 	}
 	
 	/**
 	 * 設定所在群組
 	 *
+     * 範例: 
+     *      
+     *     try {
+     *         $user = new User\User('yuan');
+     *         try {
+     *             $user->setGroup('student');
+     *         }
+     *         catch (User\Exception\GroupNoFoundException $e) {
+     *             echo 'No Group to set: '. $e->getGroupId();
+     *         }
+     *         echo $user->getGroup();
+     *     }
+     *     catch (User\Exception\UserNoFoundException $e) {
+     *         echo 'No Found user: '. $e->getUserId();
+     *     }
+     *
 	 * @param string $toGroup 群組ID
      * @since 2.0.0
 	 */
 	public function setGroup($toGroup){
-		// TODO: setGroup
 		
+		// 檢查有此群組
+        $groupAdmin = new UserGroupAdmin();
+        if($groupAdmin->isExist($toGroup)) {
+            $this->setUpdate('group_id', $toGroup);
+        }
+        else {
+            throw new Exception\GroupNoFoundException($toGroup);
+        }
 	
 	}
     
@@ -198,13 +248,13 @@ class User {
 	}
 	
 	/**
-	 * 取得所在群組顯式名稱
+	 * 取得所在群組顯示名稱
 	 *
 	 * @return string 班級名稱
      * @since 2.0.0
 	 */
 	public function getClassName(){
-		// TODO: getGroupName
+		// TODO: 取得所在群組顯示名稱
 	}
 	
 	/**
@@ -214,9 +264,7 @@ class User {
      * @since 2.0.0
 	 */
 	public function setClass($toClass){
-		// TODO: setGroup
-		
-	
+		// TODO: 設定所在群組
 	}
     
     // ========================================================================
@@ -254,7 +302,7 @@ class User {
      * @since 2.0.0
 	 */
 	public function getLearnStyle(){
-		// TODO: 
+		// TODO: 取得這個人的學習導引風格
 	}
 	
 	/**
@@ -264,7 +312,7 @@ class User {
      * @since 2.0.0
 	 */
 	public function setLearnStyle($style){
-		// TODO
+		// TODO: 設定這個人的學習導引風格
 		
 	
 	}
@@ -276,7 +324,7 @@ class User {
      * @since 2.0.0
 	 */
 	public function getMaterialStyle(){
-		// TODO: 
+		// TODO: 取得這個人的教材風格
 	}
 	
 	/**
@@ -286,7 +334,7 @@ class User {
      * @since 2.0.0
 	 */
 	public function setMaterialStyle($style){
-		// TODO
+		// TODO: 設定這個人的教材風格
 		
 	
 	}
@@ -300,7 +348,7 @@ class User {
      * @since 2.0.0
 	 */
 	public function getName(){
-        // TODO: 代修正
+        // TODO: 待修正-取得名稱
 		if($this->getNickName() != "") {
 			return $this->getNickName();
 		}
@@ -408,26 +456,25 @@ class User {
 	/**
 	 * 取得權限清單
 	 *
-	 * @access public
 	 * @return array 權限清單
+     * @since  2.0.0
 	 */
 	 public function getPermissionList() {
 		$thisGroup = new UserGroup($this->getQueryInfo("GID"));
 		return $thisGroup->getPermissionList();
-		
 	 }
 	 
 	/**
 	 * 是否擁有此權限
 	 *
-	 * @access public
-	 * @global string $FORM_USER 在/config/db_table_config.php的使用者資料表名稱
-	 * @global string $FORM_USER_GROUP 在/config/db_table_config.php的使用者群組資料表名稱
-	 * @param string $permissionName 權限名稱
-	 * @return bool 是否擁有
+	 * @param  string $permissionName 權限名稱
+	 * @return bool   是否擁有
+     * @throw  UElearning\User\Exception\PermissionNoFoundException
+     * @since  2.0.0
 	 */
 	 public function havePermission($permissionName) {
-		// TODO
+		$thisGroup = new UserGroup($this->getQueryInfo("GID"));
+        return $thisGroup->havePermission($permissionName);
 	 }
 	 
 }
