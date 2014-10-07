@@ -129,7 +129,7 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
                   'harf-line-learn', 1, 
                   '元兒～', 'Yuan Chiu', 'chyuaner@gmail.com', null),
             
-            array('eee_unittest', 'qqqssss', 'admin', null, 1, 
+            array('eee_unittest', 'qqqssss', 'admin', null, 0, 
                   'harf-line-learn', '1', 
                   'sss', 'Yuan Chiu', 'chyuanesr@gmail.com', null)
         );
@@ -205,8 +205,12 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
      */ 
     public function groupDataProvider(){
         return array(
-            array('testG_a', '測試用群組a', null, '1', '0'),
-            array('testG_b', '測試用群組b', 'testhahaha Groups', '0', '1')
+            array('testG_a', '測試用群組a', null, 1, 0),
+            array('testG_b', '測試用群組b', 'testhahaha Groups', 0, 1)
         );
     }
+    
+    // ========================================================================
+    
+    // TODO: ClassGroup Test
 }

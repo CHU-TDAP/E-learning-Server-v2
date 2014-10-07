@@ -276,8 +276,7 @@ class User {
      * @since 2.0.0
 	 */
 	public function isEnable(){
-        if($this->queryResultArray['enable'] == 0) return false;
-        else return true;
+        return $this->queryResultArray['enable'];
 	}
 	
 	/**

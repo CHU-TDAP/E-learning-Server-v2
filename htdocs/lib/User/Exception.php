@@ -42,6 +42,8 @@ abstract class UserException extends \UnexpectedValueException {
 /**
  * 沒有找到此帳號
  * @since 2.0.0
+ * @package         UElearning
+ * @subpackage      User
  */ 
 class UserNoFoundException extends UserException {
     /**
@@ -56,6 +58,8 @@ class UserNoFoundException extends UserException {
 /**
  * 使用者登入密碼錯誤
  * @since 2.0.0
+ * @package         UElearning
+ * @subpackage      User
  */ 
 class UserPasswordErrException extends UserException {
     /**
@@ -70,6 +74,8 @@ class UserPasswordErrException extends UserException {
 /**
  * 此帳號未啟用
  * @since 2.0.0
+ * @package         UElearning
+ * @subpackage      User
  */ 
 class UserNoActivatedException extends UserException {
     /**
@@ -85,6 +91,8 @@ class UserNoActivatedException extends UserException {
 /**
  * 已有重複的使用者名稱
  * @since 2.0.0
+ * @package         UElearning
+ * @subpackage      User
  */ 
 class UserIdExistException extends UserException {
     /**
@@ -134,6 +142,8 @@ abstract class GroupException extends \UnexpectedValueException {
 /**
  * 已有重複的使用者群組ID
  * @since 2.0.0
+ * @package         UElearning
+ * @subpackage      User
  */ 
 class GroupIdExistException extends GroupException {
     /**
@@ -148,6 +158,8 @@ class GroupIdExistException extends GroupException {
 /**
  * 沒有找到此使用者群組ID
  * @since 2.0.0
+ * @package         UElearning
+ * @subpackage      User
  */ 
 class GroupNoFoundException extends GroupException {
     /**
@@ -162,7 +174,41 @@ class GroupNoFoundException extends GroupException {
 // ============================================================================
 
 /**
- * 使用者群組例外
+ * 已有重複的使用者群組ID
+ * @since 2.0.0
+ * @package         UElearning
+ * @subpackage      User
+ */ 
+class ClassIdExistException extends GroupException {
+    /**
+     * 已有重複的使用者名稱
+     * @param string $groupId 輸入的使用者群組ID
+     */ 
+    public function __construct($groupId) {
+        parent::__construct($groupId, 'ClassId: "'.$groupId.'" is exist.');
+    }
+}
+
+/**
+ * 沒有找到此使用者群組ID
+ * @since 2.0.0
+ * @package         UElearning
+ * @subpackage      User
+ */ 
+class ClassNoFoundException extends GroupException {
+    /**
+     * 沒有找到此帳號
+     * @param string $groupId 輸入的使用者群組ID
+     */ 
+    public function __construct($groupId) {
+        parent::__construct($groupId, 'Class Group: "'.$groupId.'" is no found.');
+    }
+}
+
+// ============================================================================
+
+/**
+ * 沒有此權限例外
  * @since 2.0.0
  * @package         UElearning
  * @subpackage      User

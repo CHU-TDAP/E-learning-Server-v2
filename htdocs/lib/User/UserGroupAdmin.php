@@ -23,7 +23,7 @@ class UserGroupAdmin {
     /**
      * 建立群組
      * 
-     * 建立使用者範例:
+     * 建立使用者群組範例:
      * 
      *     try {
      *         $groupAdmin = new User\UserGroupAdmin();
@@ -36,12 +36,12 @@ class UserGroupAdmin {
      *         ));
      *     
      *     }
-     *     // 若已有重複帳號名稱
+     *     // 若已有重複群組ID
      *     catch (User\Exception\GroupIdExistException $e) {
      *         echo 'Is exist group: ',  $e->getGroupId();
      *     }
      * 
-     * @param array $groupArray 使用者資訊陣列，格式為:
+     * @param array $groupArray 使用者群組資訊陣列，格式為:
      *     array( 'group_id'              => 'student',
      *            'name'                  => '學生',
      *            'memo'                  => null,     // (optional) 預設為null

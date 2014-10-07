@@ -174,12 +174,17 @@ class DBUser extends Database {
         if( count($queryResultAll) >= 1 ) {
             $queryResult = $queryResultAll[0];
 
+            if($queryResult['UEnabled'] != '0') {
+                $output_enable = true;
+            }
+            else { $output_enable = false; }
+            
             $result = array( 
                 'user_id'            => $queryResult['UID'],
                 'password'           => $queryResult['UPassword'],
                 'group_id'           => $queryResult['GID'],
                 'class_id'           => $queryResult['CID'],
-                'enable'             => $queryResult['UEnabled'],
+                'enable'             => $output_enable,
                 'build_time'         => $queryResult['UBuild_Time'],
                 'learnStyle_mode'    => $queryResult['LMode'],
                 'material_mode'      => $queryResult['MMode'],
@@ -233,12 +238,18 @@ class DBUser extends Database {
             // 製作回傳結果陣列
             $result = array();
             foreach($queryResultAll as $key => $thisResult) { 
+                
+                if($thisResult['UEnabled'] != '0') {
+                    $output_enable = true;
+                }
+                else { $output_enable = false; }
+                
                 array_push($result,
                     array( 'user_id'            => $thisResult['UID'],
                            'password'           => $thisResult['UPassword'],
                            'group_id'           => $thisResult['GID'],
                            'class_id'           => $thisResult['CID'],
-                           'enable'             => $thisResult['UEnabled'],
+                           'enable'             => $output_enable,
                            'build_time'         => $thisResult['UBuild_Time'],
                            'learnStyle_mode'    => $thisResult['LMode'],
                            'material_mode'      => $thisResult['MMode'],
@@ -366,13 +377,23 @@ class DBUser extends Database {
         // 如果有查到一筆以上
         if( count($queryResultAll) >= 1 ) {
             $thisResult = $queryResultAll[0];
+            
+            // 轉換成boolean
+            if($thisResult['GAuth_Admin'] != '0') {
+                $output_auth_admin = true;
+            } else { $output_auth_admin = false; }
+
+            if($thisResult['GAuth_ClientAdmin'] != '0') {
+                $output_auth_clientAdmin = true;
+            } else { $output_auth_clientAdmin = false; }
+            
             // 製作回傳結果陣列
             $result = array('group_id'          => $thisResult['GID'],
                             'name'              => $thisResult['GName'],
                             'memo'              => $thisResult['GMemo'],
                             'build_time'        => $thisResult['GBuild_Time'],
-                            'auth_admin'        => $thisResult['GAuth_Admin'],
-                            'auth_clientAdmin'  => $thisResult['GAuth_ClientAdmin']
+                            'auth_admin'        => $output_auth_admin,
+                            'auth_clientAdmin'  => $output_auth_clientAdmin
             );
             return $result;
         }
@@ -411,13 +432,24 @@ class DBUser extends Database {
             // 製作回傳結果陣列
             $result = array();
             foreach($queryResultAll as $key => $thisResult) { 
+                
+                // 轉換成boolean
+                if($thisResult['GAuth_Admin'] != '0') {
+                    $output_auth_admin = true;
+                } else { $output_auth_admin = false; }
+                
+                if($thisResult['GAuth_ClientAdmin'] != '0') {
+                    $output_auth_clientAdmin = true;
+                } else { $output_auth_clientAdmin = false; }
+                
+                // 插入一筆資料
                 array_push($result,
                     array( 'group_id'          => $thisResult['GID'],
                            'name'              => $thisResult['GName'],
                            'memo'              => $thisResult['GMemo'],
                            'build_time'        => $thisResult['GBuild_Time'],
-                           'auth_admin'        => $thisResult['GAuth_Admin'],
-                           'auth_clientAdmin'  => $thisResult['GAuth_ClientAdmin'])
+                           'auth_admin'        => $output_auth_admin,
+                           'auth_clientAdmin'  => $output_auth_clientAdmin)
                 );
             }
             return $result;
@@ -436,7 +468,7 @@ class DBUser extends Database {
      *     $db = new Database\DBUser();
      *     $db->changeGroupData('student', 'name', '學生');
      * 
-     * @param string $uId   使用者名稱
+     * @param string $gId   群組ID
      * @param string $field 欄位名稱
      * @param string $value 內容
      */ 
@@ -464,4 +496,175 @@ class DBUser extends Database {
 		$query->execute();
     }
     
+    // ========================================================================
+    
+    /**
+     * 插入班級資料
+     * 
+     * @param  string $cId  班級ID
+     * @param  string $name 班級顯示名稱
+     * @param  string $memo 備註
+     * @return int    剛剛新增的ID
+     */ 
+    public function insertClassGroup($cId, $name, $memo) {
+        
+        // 紀錄使用者帳號進資料庫
+        $sqlString = "INSERT INTO ".$this->table('CGroup').
+            " (`CID`, `CName`, `CMemo`, `CBuild_Time`)
+            VALUES ( :id , :name, :memo , NOW() )";
+
+        $query = $this->connDB->prepare($sqlString);
+        $query->bindParam(":id", $cId);
+        $query->bindParam(":name", $name);
+        $query->bindParam(":memo", $memo);
+        $query->execute();
+        
+        // 取得剛剛加入的ID
+        $sqlString = "SELECT LAST_INSERT_ID()";
+        $query = $this->connDB->query($sqlString);
+        $queryResult = $query->fetch();
+        return $queryResult[0];
+    }
+    
+    /**
+     * 移除一個班級
+     * @param string $cId 
+     */ 
+    public function deleteClassGroup($cId) {
+        
+        $sqlString = "DELETE FROM ".$this->table('CGroup'). 
+                         " WHERE `CID` = :id ";
+            
+        $query = $this->connDB->prepare($sqlString);
+        $query->bindParam(":id", $cId);
+        $query->execute();
+    }
+    
+    /**
+     * 查詢一個班級資料
+     * 
+     * @return array 班級資料陣列，格式為: 
+     *     
+     *     array( 'class_id'         => <班級ID>,
+     *            'name'             => <班級顯示名稱>,
+     *            'memo'             => <備註>,
+     *            'build_time'       => <建立時間>
+     *     );
+     * 
+     */ 
+    public function queryClassGroup($cId) {
+    
+        $sqlString = "SELECT * FROM ".$this->table('CGroup').
+                     " WHERE `CID` = :cid";
+		
+		$query = $this->connDB->prepare($sqlString);
+		$query->bindParam(':cid', $cId);
+		$query->execute();
+		
+        $queryResultAll = $query->fetchAll();
+        // 如果有查到一筆以上
+        if( count($queryResultAll) >= 1 ) {
+            $thisResult = $queryResultAll[0];
+            // 製作回傳結果陣列
+            $result = array('class_id'          => $thisResult['CID'],
+                            'name'              => $thisResult['CName'],
+                            'memo'              => $thisResult['CMemo'],
+                            'build_time'        => $thisResult['CBuild_Time']
+            );
+            return $result;
+        }
+        // 若都沒查到的話
+        else {
+            return null;
+        }
+    }
+    
+    /**
+     * 查詢所有的班級資料
+     * 
+     * @return array 班級資料陣列，格式為: 
+     *     
+     *     array(
+     *         array( 
+     *             'class_id'         => <班級ID>,
+     *             'name'             => <班級顯示名稱>,
+     *             'memo'             => <備註>,
+     *             'build_time'       => <建立時間>
+     *         )
+     *     );
+     * 
+     */ 
+    public function queryAllClassGroup() {
+    
+        $sqlString = "SELECT * FROM ".$this->table('CGroup');
+        
+		$query = $this->connDB->prepare($sqlString);
+		$query->execute();
+		
+        $queryResultAll = $query->fetchAll();
+        // 如果有查到一筆以上
+        if( count($queryResultAll) >= 1 ) {
+            // 製作回傳結果陣列
+            $result = array();
+            foreach($queryResultAll as $key => $thisResult) { 
+                array_push($result,
+                    array( 'class_id'          => $thisResult['CID'],
+                           'name'              => $thisResult['CName'],
+                           'memo'              => $thisResult['CMemo'],
+                           'build_time'        => $thisResult['CBuild_Time'])
+                );
+            }
+            return $result;
+        }
+        // 若都沒查到的話
+        else {
+            return null;
+        }
+    }
+    
+    /**
+     * 修改一個群組的資料內容
+     * 
+     * 範例:
+     * 
+     *     $db = new Database\DBUser();
+     *     $db->changeClassGroupData(2, 'name', '五年一班');
+     * 
+     * @param string $cId   班級ID
+     * @param string $field 欄位名稱
+     * @param string $value 內容
+     */ 
+    public function changeClassGroupData($cId, $field, $value) {
+        
+        $sqlField = null;
+        switch($field) {
+            case 'class_id':         $sqlField = 'CID';                 break;
+            case 'name':             $sqlField = 'CName';               break;
+            case 'memo':             $sqlField = 'CMemo';               break;
+            default:                 $sqlField = $field;                break;
+        }
+        
+        
+        $sqlString = "UPDATE ".$this->table('CGroup').
+                     " SET `".$sqlField."` = :value".
+                     " WHERE `CID` = :cid";
+        
+        $query = $this->connDB->prepare($sqlString);
+		$query->bindParam(':cid', $cId);
+        $query->bindParam(':value', $value);
+		$query->execute();
+    }
+    
+    /**
+     * 設定自動編號的起始值
+     * @param int $num 自動編號起始值
+     */ 
+    public function setClassGroupIDAutoIncrement($num) {
+        
+        // TODO: 不帶值的話，以最後編號為起頭
+        $sqlString = "ALTER TABLE ".$this->table('CGroup').
+                     " AUTO_INCREMENT = $num";
+        
+        $this->connDB->exec($sqlString);
+    }
 }
