@@ -165,6 +165,33 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * 測試修改群組
+     * 
+     * @dataProvider groupDataProvider
+     */
+    public function testChangeGroup($gId, $name, $memo, $auth_admin, $auth_clientAdmin){
+        $afterData = 'sfisjojjoij';
+        
+        // 記下更改前的資料
+        $info = $this->db->queryGroup($gId);
+        $beforeData = $info['memo'];
+        
+        // 更改資料
+        $this->db->changeGroupData($gId, 'memo', $afterData);
+        
+        // 檢查更改後的結果
+        $info = $this->db->queryGroup($gId);
+        $this->assertEquals($info['memo'], $afterData);
+        
+        // 改回來
+        $this->db->changeGroupData($gId, 'memo', $beforeData);
+        
+        // 檢查有沒有改回來
+        $info = $this->db->queryGroup($gId);
+        $this->assertEquals($info['memo'], $beforeData);
+    }
+    
+    /**
      * 測試移除使用者
      * 
      * @dataProvider groupDataProvider

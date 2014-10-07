@@ -314,8 +314,8 @@ class DBUser extends Database {
         
         // 紀錄使用者帳號進資料庫
         $sqlString = "INSERT INTO ".$this->table('AGroup').
-            " (`GID`, `GName`, `GMemo`, `GAuth_Admin`, `GAuth_ClientAdmin`)
-            VALUES ( :id , :name, :memo , :auth_admin , :auth_clientAdmin )";
+            " (`GID`, `GName`, `GMemo`, `GBuild_Time`, `GAuth_Admin`, `GAuth_ClientAdmin`)
+            VALUES ( :id , :name, :memo , NOW(), :auth_admin , :auth_clientAdmin )";
 
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":id", $gId);
@@ -370,6 +370,7 @@ class DBUser extends Database {
             $result = array('group_id'          => $thisResult['GID'],
                             'name'              => $thisResult['GName'],
                             'memo'              => $thisResult['GMemo'],
+                            'build_time'        => $thisResult['GBuild_Time'],
                             'auth_admin'        => $thisResult['GAuth_Admin'],
                             'auth_clientAdmin'  => $thisResult['GAuth_ClientAdmin']
             );
@@ -414,6 +415,7 @@ class DBUser extends Database {
                     array( 'group_id'          => $thisResult['GID'],
                            'name'              => $thisResult['GName'],
                            'memo'              => $thisResult['GMemo'],
+                           'build_time'        => $thisResult['GBuild_Time'],
                            'auth_admin'        => $thisResult['GAuth_Admin'],
                            'auth_clientAdmin'  => $thisResult['GAuth_ClientAdmin'])
                 );
@@ -426,5 +428,40 @@ class DBUser extends Database {
         }
     }
     
+    /**
+     * 修改一個群組的資料內容
+     * 
+     * 範例:
+     * 
+     *     $db = new Database\DBUser();
+     *     $db->changeGroupData('student', 'name', '學生');
+     * 
+     * @param string $uId   使用者名稱
+     * @param string $field 欄位名稱
+     * @param string $value 內容
+     */ 
+    public function changeGroupData($gId, $field, $value) {
+        // UPDATE `UElearning`.`chu__User` SET `UMemo` = '測試者' WHERE `chu__User`.`UID` = 'yuan';
+        
+        $sqlField = null;
+        switch($field) {
+            case 'group_id':         $sqlField = 'UID';                 break;
+            case 'name':             $sqlField = 'GName';               break;
+            case 'memo':             $sqlField = 'GMemo';               break;
+            case 'auth_admin':       $sqlField = 'GAuth_Admin';         break;
+            case 'auth_clientAdmin': $sqlField = 'GAuth_ClientAdmin';   break;
+            default:                 $sqlField = $field;                break;
+        }
+        
+        
+        $sqlString = "UPDATE ".$this->table('AGroup').
+                     " SET `".$sqlField."` = :value".
+                     " WHERE `GID` = :gid";
+        
+        $query = $this->connDB->prepare($sqlString);
+		$query->bindParam(':gid', $gId);
+        $query->bindParam(':value', $value);
+		$query->execute();
+    }
     
 }
