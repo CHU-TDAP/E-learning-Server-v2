@@ -17,6 +17,10 @@ use UElearning\Database;
  * 
  * 範例: 
  * 
+ *     require_once __DIR__.'/../config.php';
+ *     require_once UELEARNING_LIB_ROOT.'/User/UserGroup.php'
+ *     use UElearning\User;
+ * 
  *     try {
  *         $group = new User\UserGroup('testG');
  *         echo $group->getName();
