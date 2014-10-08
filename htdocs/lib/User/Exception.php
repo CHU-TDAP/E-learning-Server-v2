@@ -238,4 +238,39 @@ class PermissionNoFoundException extends \UnexpectedValueException {
     public function getName() {
         return $this->permissionName;
     }
+    
+}
+
+// ============================================================================
+
+/**
+ * 找不到此登入階段
+ * @since 2.0.0
+ * @package         UElearning
+ * @subpackage      User
+ */ 
+class LoginTokenNoFoundException extends \UnexpectedValueException {
+
+    /**
+     * 登入階段Token
+     * @type string
+     */ 
+    private $token;
+
+    /**
+     * 找不到此登入階段例外
+     * @param string $token 登入階段Token
+     */ 
+    public function __construct($token) {
+        $this->token = $token;
+        parent::__construct('No Found Login Token: '.$this->token);
+    }
+
+    /**
+     * 取得輸入的登入階段Token
+     * @return string 登入階段Token
+     */ 
+    public function getToken() {
+        return $this->token;
+    }
 }
