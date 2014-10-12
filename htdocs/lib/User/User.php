@@ -8,6 +8,8 @@ namespace UElearning\User;
 require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
 require_once UELEARNING_LIB_ROOT.'/User/UserGroupAdmin.php';
 require_once UELEARNING_LIB_ROOT.'/User/UserGroup.php';
+require_once UELEARNING_LIB_ROOT.'/User/ClassGroupAdmin.php';
+require_once UELEARNING_LIB_ROOT.'/User/ClassGroup.php';
 require_once UELEARNING_LIB_ROOT.'/User/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Util/Password.php';
@@ -232,7 +234,6 @@ class User {
         else {
             throw new Exception\GroupNoFoundException($toGroup);
         }
-	
 	}
     
 	// ------------------------------------------------------------------------
@@ -248,23 +249,69 @@ class User {
 	}
 	
 	/**
-	 * 取得所在群組顯示名稱
+	 * 取得所在班級名稱
 	 *
 	 * @return string 班級名稱
      * @since 2.0.0
 	 */
 	public function getClassName(){
 		// TODO: 取得所在群組顯示名稱
+        // 群組ID
+        $classID = $this->queryResultArray['class_id'];
+        
+        // 檢查有此群組
+        if(isset($classID)) {
+            // 取得群組名稱
+            try {
+                $group = new ClassGroup($classID);
+                return $group->getName();
+            }
+            catch (Exception\ClassNoFoundException $e) {
+                throw $e;
+            }
+        }
+        else return null;
 	}
 	
 	/**
-	 * 設定所在群組
-	 *
-	 * @param string $toGroup 班級ID
+	 * 設定所在班級
+	 * 
+     * 範例: 
+     * 
+     *     try {
+     *         $user = new User\User('yuan');
+     *     
+     *         try {
+     *             $user->setClass(1);
+     *         }
+     *         catch (User\Exception\ClassNoFoundException $e) {
+     *             echo 'No Class to set: '. $e->getGroupId();
+     *         }
+     *     }
+     *     catch (User\Exception\UserNoFoundException $e) {
+     *         echo 'No Found user: '. $e->getUserId();
+     *     }
+     * 
+	 * @param string $toClass 班級ID
      * @since 2.0.0
 	 */
 	public function setClass($toClass){
-		// TODO: 設定所在群組
+        
+		// 檢查有此群組
+        if(isset($toClass)) {
+            
+            $classGroupAdmin = new ClassGroupAdmin();
+            if($classGroupAdmin->isExist($toClass)) {
+                $this->setUpdate('class_id', $toClass);
+            }
+            else {
+                throw new Exception\ClassNoFoundException($toGroup);
+            }
+        }
+        else {
+            $this->setUpdate('class_id', null);
+        }
+        
 	}
     
     // ========================================================================

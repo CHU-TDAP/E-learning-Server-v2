@@ -27,9 +27,14 @@ class UserSession {
      * 
      * 範例: 
      * 
+     *     require_once __DIR__.'/../config.php';
+     *     require_once UELEARNING_LIB_ROOT.'/User/UserSession.php';
+     *     use UElearning\User;
+     *     
      *     try {
      *         $session = new User\UserSession();
-     *         echo 'Token: '$session->login('yuan', '123456', 'browser');
+     *         $loginToken = $session->login('yuan', 'password', 'browser');
+     *         echo 'Token: '.$loginToken;
      *     }
      *     catch (User\Exception\UserNoFoundException $e) {
      *         echo 'No Found user: '. $e->getUserId();
@@ -162,6 +167,25 @@ class UserSession {
     
     /**
      * 取得使用者物件
+     * 
+     * 範例: 
+     * 
+     *     try {
+     *         // 正常寫法
+     *         $userSession = new User\UserSession();
+     *         $user = $userSession->getUser(‘YZ8@(3fYb[!f!A^E4^6b4LuqxSXgZ2FJ’);
+     *     
+     *         // 簡短寫法（PHP 5.4以上才支援）
+     *         //$user = (new User\UserSession())->getUser('YZ8@(3fYb[!f!A^E4^6b4LuqxSXgZ2FJ');
+     *     
+     *         // 撈帳號資料
+     *         echo '暱稱: '.$user->getNickName(); // 取得暱稱
+     *         echo '本名: '.$user->getRealName(); // 取得本名
+     *     }
+     *     catch (User\Exception\LoginTokenNoFoundException $e) {
+     *         echo 'No Found Token: '. $e->getToken();
+     *     }
+     * 
      * @param string $token 登入階段token
      * @return User 使用者物件
      * @throw \UElearning\User\Exception\LoginTokenNoFoundException

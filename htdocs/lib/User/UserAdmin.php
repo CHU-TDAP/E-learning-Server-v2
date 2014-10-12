@@ -26,6 +26,10 @@ class UserAdmin {
      * 建立使用者
      * 
      * 建立使用者範例:
+     *     
+     *     require_once __DIR__.'/../config.php';
+     *     require_once UELEARNING_LIB_ROOT.'/User/UserAdmin.php';
+     *     use UElearning\User;
      * 
      *     try {
      *         $userAdmin = new User\UserAdmin();
@@ -35,13 +39,13 @@ class UserAdmin {
      *                    'group_id' => 'admin',
      *                    'enable' => true,
      *                    'nickname' => '艾瑞克',
-     *                    'email' => 'eric@example.com'
-     *         ));
+     *                    'email' => 'eric@example.com' )
+     *         );
      *     
      *     }
      *     // 若已有重複帳號名稱
      *     catch (User\Exception\UserIdExistException $e) {
-     *         echo 'Is exist user: ',  $e->getUserId();
+     *          echo 'Is exist user: ',  $e->getUserId();
      *     }
      * 
      * @param array $userInfoArray 使用者資訊陣列，格式為:
