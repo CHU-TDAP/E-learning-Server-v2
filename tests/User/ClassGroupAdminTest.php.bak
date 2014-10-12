@@ -1,0 +1,92 @@
+<?php
+/**
+ * ClassGroupAdminTest.php
+ *
+ * @package         UElearning
+ * @author          Yuan Chiu <chyuaner@gmail.com>
+ */
+namespace UElearning;
+
+require_once UELEARNING_LIB_ROOT.'/User/ClassGroupAdmin.php';
+use UElearning\User\ClassGroupAdmin;
+
+class ClassGroupAdminTest extends \PHPUnit_Framework_TestCase
+{
+    
+    protected $classId;
+    
+    protected function setUp(){
+        $this->classId = array();
+    }
+    
+    /**
+     * 測試建立群組
+     * 
+     * @dataProvider groupDataProvider
+     */
+    public function testCreateGroup($cId, $name, $memo){
+        
+        try {
+            $groupAdmin = new User\ClassGroupAdmin();
+            $newId = null;
+            $newId = $groupAdmin->create(
+                array( 'class_id' => $cId,
+                       'name'     => $name,
+                       'memo'     => $memo
+            ));
+            
+            array_push($this->classId, $newId);
+            print_r($this->classId);
+        }
+        // 若已有重複帳號名稱
+        catch (User\Exception\ClassIdExistException $e) {
+            throw $e;
+        }
+        
+    }
+    
+    /**
+     * 測試查詢群組
+     * 
+     * @dataProvider groupDataProvider
+     */
+    public function testCheckExist($cId){
+        
+        if(isset($cid)) {
+            $groupAdmin = new User\ClassGroupAdmin();
+            // 比對資料是否吻合
+            $this->assertEquals($groupAdmin->isExist($cId), true);
+        }
+    }
+    
+    /**
+     * 測試移除使用者
+     * @depends testCreateGroup
+     */
+    public function testDeleteGroup() {
+        print_r($this->classId);
+        foreach($this->classId as $thisId) {
+            
+            try {
+                $groupAdmin = new User\ClassGroupAdmin();
+                $groupAdmin->remove($thisId);
+
+                $this->assertEquals($groupAdmin->isExist($thisId), false);
+            }
+            catch (User\Exception\ClassNoFoundException $e) {
+                throw $e;
+            }
+        }
+    }
+    
+    /**
+     * 測試時要填的資料
+     */ 
+    public function groupDataProvider(){
+        return array(
+            array(null, '測試用群組a', null),
+            array(2859, '測試用群組b', 'testhahaha Groups')
+        );
+    }
+    
+}
