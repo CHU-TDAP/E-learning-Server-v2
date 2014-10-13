@@ -7,6 +7,8 @@
 
 namespace UElearning\Database;
 
+use UElearning\Exception;
+
 require_once UELEARNING_LIB_ROOT.'/Database/Database.php';
 require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
 
@@ -44,7 +46,7 @@ class DBUser extends Database {
      *     
      *     
      *     // 若設定的DBMS不被支援 則丟出例外
-     *     catch (Database\Exception\DatabaseNoSupportException $e) {
+     *     catch (Exception\DatabaseNoSupportException $e) {
      *         echo 'No Support in ',  $e->getType();
      *     } catch (Exception $e) {
      *         echo 'Caught other exception: ',  $e->getMessage();
@@ -125,6 +127,7 @@ class DBUser extends Database {
      *     require_once __DIR__.'/../config.php';
      *     require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
      *     use UElearning\Database;
+     *     use UElearning\Exception;
      * 
      *     try {
      *         $db = new Database\DBUser();
@@ -135,7 +138,7 @@ class DBUser extends Database {
      *     
      *     
      *     // 若設定的DBMS不被支援 則丟出例外
-     *     catch (Database\Exception\DatabaseNoSupportException $e) {
+     *     catch (Exception\DatabaseNoSupportException $e) {
      *         echo 'No Support in ',  $e->getType();
      *     } catch (Exception $e) {
      *         echo 'Caught other exception: ',  $e->getMessage();

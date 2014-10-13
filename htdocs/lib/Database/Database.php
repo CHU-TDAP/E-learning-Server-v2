@@ -10,7 +10,7 @@ namespace UElearning\Database;
 
 require_once UELEARNING_LIB_ROOT.'/Database/MySQLDB.php';
 require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
-use UElearning\Database\Exception;
+use UElearning\Exception;
 
 /**
  * 資料庫操作抽象類別
@@ -109,7 +109,7 @@ abstract class Database {
      *            'prefix' => 'chu_' )
      * 若不填寫將會直接使用設定在`config.php`的常數
      * 
-     * @throws UElearning\Database\Exception\DatabaseNoSupportException
+     * @throws UElearning\Exception\DatabaseNoSupportException
      * @author Yuan Chiu <chyuaner@gmail.com>
      * @since 2.0.0
      */

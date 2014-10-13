@@ -3,7 +3,7 @@
  * 資料庫相關的例外檔案
  */
 
-namespace UElearning\Database\Exception;
+namespace UElearning\Exception;
 
 /**
  * 沒有支援的資料庫系統例外

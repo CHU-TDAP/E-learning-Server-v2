@@ -9,6 +9,7 @@ require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
 require_once UELEARNING_LIB_ROOT.'/User/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Util/Password.php';
+use UElearning\Exception;
 use UElearning\Database;
 use UElearning\Util;
 
@@ -30,6 +31,7 @@ class UserAdmin {
      *     require_once __DIR__.'/../config.php';
      *     require_once UELEARNING_LIB_ROOT.'/User/UserAdmin.php';
      *     use UElearning\User;
+     *     use UElearning\Exception;
      * 
      *     try {
      *         $userAdmin = new User\UserAdmin();
@@ -44,7 +46,7 @@ class UserAdmin {
      *     
      *     }
      *     // 若已有重複帳號名稱
-     *     catch (User\Exception\UserIdExistException $e) {
+     *     catch (Exception\UserIdExistException $e) {
      *          echo 'Is exist user: ',  $e->getUserId();
      *     }
      * 
@@ -62,7 +64,7 @@ class UserAdmin {
      *            'realname'           => 'Eric Chiu',       // (optional)
      *            'email'              => 'eric@example.tw', // (optional)
      *            'memo'               => '' )               // (optional)
-     * @throw UElearning\User\Exception\UserIdExistException
+     * @throw UElearning\Exception\UserIdExistException
      * @since 2.0.0
      */ 
     public function create($userInfoArray) {
@@ -74,7 +76,7 @@ class UserAdmin {
             if( !isset($userInfoArray['user_id'])  ||
                 !isset($userInfoArray['password']) ||
                 !isset($userInfoArray['group_id']) ) {
-                throw new UElearning\Exception\NoDataException();
+                throw new Exception\NoDataException();
             }
             // 若此id已存在
             else if($this->isExist($userInfoArray['user_id'])) {
@@ -159,12 +161,12 @@ class UserAdmin {
      *         $userAdmin = new User\UserAdmin();
      *         $userAdmin->remove('eric');
      *     }
-     *     catch (User\Exception\UserNoFoundException $e) {
+     *     catch (Exception\UserNoFoundException $e) {
      *         echo 'No Found user: ',  $e->getUserId(); 
      *     }
      * 
      * @param string $userName 帳號名稱
-     * @throw UElearning\User\Exception\UserNoFoundException
+     * @throw UElearning\Exception\UserNoFoundException
      * @since 2.0.0
      */ 
     public function remove($userName) {

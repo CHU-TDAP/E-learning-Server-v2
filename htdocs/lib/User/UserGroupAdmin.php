@@ -9,6 +9,7 @@ require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
 require_once UELEARNING_LIB_ROOT.'/User/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Exception.php';
 use UElearning\Database;
+use UElearning\Exception;
 
 /**
  * 管理使用者權限群組的操作
@@ -37,7 +38,7 @@ class UserGroupAdmin {
      *     
      *     }
      *     // 若已有重複群組ID
-     *     catch (User\Exception\GroupIdExistException $e) {
+     *     catch (Exception\GroupIdExistException $e) {
      *         echo 'Is exist group: ',  $e->getGroupId();
      *     }
      * 
@@ -47,7 +48,7 @@ class UserGroupAdmin {
      *            'memo'                  => null,     // (optional) 預設為null
      *            'auth_server_admin'     => false,    // (optional) 預設為false
      *            'auth_client_admin'     => false )   // (optional) 預設為false
-     * @throw UElearning\User\Exception\GroupIdExistException
+     * @throw UElearning\Exception\GroupIdExistException
      * @since 2.0.0
      */ 
     public function create($groupArray) {
@@ -57,7 +58,7 @@ class UserGroupAdmin {
             
             // 若必填項目無填寫
             if( !isset($groupArray['group_id']) ) {
-                throw new UElearning\Exception\NoDataException();
+                throw new Exception\NoDataException();
             }
             // 若此id已存在
             else if( $this->isExist($groupArray['group_id']) ) {
@@ -122,12 +123,12 @@ class UserGroupAdmin {
      *         $groupAdmin->remove('test_student');
      *     
      *     }
-     *     catch (User\Exception\GroupNoFoundException $e) {
+     *     catch (Exception\GroupNoFoundException $e) {
      *         echo 'No Found group: ',  $e->getGroupId(); 
      *     }
      *
      * @param string $group_id 群組ID
-     * @throw UElearning\User\Exception\GroupNoFoundException
+     * @throw UElearning\Exception\GroupNoFoundException
      * @since 2.0.0
      */ 
     public function remove($group_id) {

@@ -6,9 +6,9 @@
 namespace UElearning\User;
 
 require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
-require_once UELEARNING_LIB_ROOT.'/User/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Exception.php';
 use UElearning\Database;
+use UElearning\Exception;
 
 /**
  * 管理班級群組的操作
@@ -35,7 +35,7 @@ class ClassGroupAdmin {
      *         echo '你剛建立:'.$newId;
      *     }
      *     // 若已有重複班級ID
-     *     catch (User\Exception\ClassIdExistException $e) {
+     *     catch (Exception\ClassIdExistException $e) {
      *         echo 'Is exist class: ',  $e->getGroupId();
      *     }
      * 
@@ -44,7 +44,7 @@ class ClassGroupAdmin {
      *            'name'                  => '學生',
      *            'memo'                  => null )
      * @return int 剛剛新增進去的ID
-     * @throw UElearning\User\Exception\ClassIdExistException
+     * @throw UElearning\Exception\ClassIdExistException
      * @since 2.0.0
      */ 
     public function create($classGroupArray) {
@@ -116,12 +116,12 @@ class ClassGroupAdmin {
      *         $groupAdmin->remove(2);
      *     
      *     }
-     *     catch (User\Exception\ClassNoFoundException $e) {
+     *     catch (Exception\ClassNoFoundException $e) {
      *         echo 'No Found class: ',  $e->getGroupId(); 
      *     }
      *
      * @param int $class_id 班級ID
-     * @throw UElearning\User\Exception\ClassNoFoundException
+     * @throw UElearning\Exception\ClassNoFoundException
      * @since 2.0.0
      */ 
     public function remove($class_id) {

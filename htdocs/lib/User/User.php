@@ -10,9 +10,9 @@ require_once UELEARNING_LIB_ROOT.'/User/UserGroupAdmin.php';
 require_once UELEARNING_LIB_ROOT.'/User/UserGroup.php';
 require_once UELEARNING_LIB_ROOT.'/User/ClassGroupAdmin.php';
 require_once UELEARNING_LIB_ROOT.'/User/ClassGroup.php';
-require_once UELEARNING_LIB_ROOT.'/User/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Util/Password.php';
+use UElearning\Exception;
 use UElearning\Database;
 use UElearning\Util;
 
@@ -26,6 +26,7 @@ use UElearning\Util;
  *     require_once __DIR__.'/../config.php';
  *     require_once UELEARNING_LIB_ROOT.'/User/User.php';
  *     use UElearning\User;
+ *     use UElearning\Exception;
  *     
  *     try {
  *         $user = new User\User('yuan');
@@ -35,7 +36,7 @@ use UElearning\Util;
  *         
  *         echo 'NickName: '.$user->getNickName();
  *     }
- *     catch (User\Exception\UserNoFoundException $e) {
+ *     catch (Exception\UserNoFoundException $e) {
  *         echo 'No Found user: '. $e->getUserId();
  *     }
  * 
@@ -64,7 +65,7 @@ class User {
 	/**
 	 * 從資料庫取得此帳號查詢
 	 *
-     * @throw UElearning\User\Exception\UserNoFoundException 
+     * @throw UElearning\Exception\UserNoFoundException 
 	 * @since 2.0.0
 	 */
 	protected function getQuery(){
@@ -185,6 +186,7 @@ class User {
 	 * 取得所在群組顯示名稱
 	 *
 	 * @return string 群組名稱
+     * @throw UElearning\Exception\GroupNoFoundException
      * @since 2.0.0
 	 */
 	public function getGroupName(){
@@ -212,16 +214,17 @@ class User {
      *         try {
      *             $user->setGroup('student');
      *         }
-     *         catch (User\Exception\GroupNoFoundException $e) {
+     *         catch (Exception\GroupNoFoundException $e) {
      *             echo 'No Group to set: '. $e->getGroupId();
      *         }
      *         echo $user->getGroup();
      *     }
-     *     catch (User\Exception\UserNoFoundException $e) {
+     *     catch (Exception\UserNoFoundException $e) {
      *         echo 'No Found user: '. $e->getUserId();
      *     }
      *
 	 * @param string $toGroup 群組ID
+     * @throw UElearning\Exception\GroupNoFoundException
      * @since 2.0.0
 	 */
 	public function setGroup($toGroup){
@@ -252,6 +255,7 @@ class User {
 	 * 取得所在班級名稱
 	 *
 	 * @return string 班級名稱
+     * @throw UElearning\Exception\ClassNoFoundException
      * @since 2.0.0
 	 */
 	public function getClassName(){
@@ -284,15 +288,16 @@ class User {
      *         try {
      *             $user->setClass(1);
      *         }
-     *         catch (User\Exception\ClassNoFoundException $e) {
+     *         catch (Exception\ClassNoFoundException $e) {
      *             echo 'No Class to set: '. $e->getGroupId();
      *         }
      *     }
-     *     catch (User\Exception\UserNoFoundException $e) {
+     *     catch (Exception\UserNoFoundException $e) {
      *         echo 'No Found user: '. $e->getUserId();
      *     }
      * 
 	 * @param string $toClass 班級ID
+     * @throw UElearning\Exception\ClassNoFoundException
      * @since 2.0.0
 	 */
 	public function setClass($toClass){
@@ -305,7 +310,7 @@ class User {
                 $this->setUpdate('class_id', $toClass);
             }
             else {
-                throw new Exception\ClassNoFoundException($toGroup);
+                throw new Exception\ClassNoFoundException($toClass);
             }
         }
         else {

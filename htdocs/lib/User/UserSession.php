@@ -11,6 +11,7 @@ require_once UELEARNING_LIB_ROOT.'/Util/Password.php';
 require_once UELEARNING_LIB_ROOT.'/Database/DBUserSession.php';
 use UElearning\Util;
 use UElearning\Database;
+use UElearning\Exception;
 
 /**
  * 使用者登入階段管理
@@ -30,19 +31,20 @@ class UserSession {
      *     require_once __DIR__.'/../config.php';
      *     require_once UELEARNING_LIB_ROOT.'/User/UserSession.php';
      *     use UElearning\User;
+     *     use UElearning\Exception;
      *     
      *     try {
      *         $session = new User\UserSession();
      *         $loginToken = $session->login('yuan', 'password', 'browser');
      *         echo 'Token: '.$loginToken;
      *     }
-     *     catch (User\Exception\UserNoFoundException $e) {
+     *     catch (Exception\UserNoFoundException $e) {
      *         echo 'No Found user: '. $e->getUserId();
      *     }
-     *     catch (User\Exception\UserPasswordErrException $e) {
+     *     catch (Exception\UserPasswordErrException $e) {
      *         echo 'User Password wrong: '. $e->getUserId();
      *     }
-     *     catch (User\Exception\UserNoActivatedException $e) {
+     *     catch (Exception\UserNoActivatedException $e) {
      *         echo 'User No Activiated: '. $e->getUserId();
      *     }
      * 
@@ -50,9 +52,9 @@ class UserSession {
      * @param  string  $password   密碼
      * @param  string  $agent      用什麼裝置登入
      * @return string  登入session  token
-     * @throw  UElearning\User\Exception\UserNoFoundException
-     * @throw  UElearning\User\Exception\UserPasswordErrException
-     * @throw  UElearning\User\Exception\UserNoActivatedException
+     * @throw  UElearning\Exception\UserNoFoundException
+     * @throw  UElearning\Exception\UserPasswordErrException
+     * @throw  UElearning\Exception\UserNoActivatedException
      * @since  2.0.0
      */ 
     public function login($userId, $password, $agent) {
@@ -90,7 +92,7 @@ class UserSession {
             }
         }
         // 沒有找到使用者
-        catch (User\Exception\UserNoFoundException $e) {
+        catch (Exception\UserNoFoundException $e) {
             echo 'No Found user: '. $e->getUserId();
         }
     }
@@ -106,12 +108,12 @@ class UserSession {
      *         $session = new User\UserSession();
      *         $session->logout('YdcfzqUuuRAR]4h6u4^Ew-qa4A-kvD5C');
      *     }
-     *     catch (User\Exception\LoginTokenNoFoundException $e) {
+     *     catch (Exception\LoginTokenNoFoundException $e) {
      *         echo 'No Login by token: '. $e->getToken();
      *     }
      * 
      * @param string $token 登入階段token
-     * @throw \UElearning\User\Exception\LoginTokenNoFoundException
+     * @throw \UElearning\Exception\LoginTokenNoFoundException
      * @since 2.0.0
      */ 
     public function logout($token) {
@@ -132,7 +134,7 @@ class UserSession {
      * 將其他已登入的裝置登出
      * @param string $token 登入階段token
      * @return int 已登出數量
-     * @throw \UElearning\User\Exception\LoginTokenNoFoundException
+     * @throw \UElearning\Exception\LoginTokenNoFoundException
      * @since 2.0.0
      */ 
     public function logoutOtherSession($token) {
@@ -182,13 +184,13 @@ class UserSession {
      *         echo '暱稱: '.$user->getNickName(); // 取得暱稱
      *         echo '本名: '.$user->getRealName(); // 取得本名
      *     }
-     *     catch (User\Exception\LoginTokenNoFoundException $e) {
+     *     catch (Exception\LoginTokenNoFoundException $e) {
      *         echo 'No Found Token: '. $e->getToken();
      *     }
      * 
      * @param string $token 登入階段token
      * @return User 使用者物件
-     * @throw \UElearning\User\Exception\LoginTokenNoFoundException
+     * @throw \UElearning\Exception\LoginTokenNoFoundException
      * @since 2.0.0
      */ 
     public function getUser($token) {
@@ -200,7 +202,7 @@ class UserSession {
      * 取得使用者ID
      * @param string $token 登入階段token
      * @return string 使用者ID
-     * @throw \UElearning\User\Exception\LoginTokenNoFoundException
+     * @throw \UElearning\Exception\LoginTokenNoFoundException
      * @since 2.0.0
      */ 
     public function getUserId($token) {

@@ -9,6 +9,7 @@ require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
 require_once UELEARNING_LIB_ROOT.'/User/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Exception.php';
 use UElearning\Database;
+use UElearning\Exception;
 
 /**
  * 班級群組類別
@@ -27,7 +28,7 @@ use UElearning\Database;
  *         $group->setName('測試用');
  *         echo $group->getName();
  *     }
- *     catch (User\Exception\ClassNoFoundException $e) {
+ *     catch (Exception\ClassNoFoundException $e) {
  *         echo 'No Found class: '. $e->getGroupId();
  *     }
  * 
@@ -57,7 +58,7 @@ class ClassGroup {
     /**
 	 * 從資料庫取得此群組查詢
 	 *
-     * @throw UElearning\User\Exception\ClassNoFoundException 
+     * @throw UElearning\Exception\ClassNoFoundException 
 	 * @since 2.0.0
 	 */
 	protected function getQuery(){

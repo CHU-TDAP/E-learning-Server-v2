@@ -20,6 +20,7 @@ require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
  *     require_once __DIR__.'/config.php';
  *     require_once UELEARNING_LIB_ROOT.'Database/DBAdmin.php';
  *     use UElearning\Database;
+ *     use UElearning\Exception;
  *     $db = new Database\DBAdmin();
  *     
  * 若要自行指定連結參數，請使用:
@@ -43,7 +44,7 @@ require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
  *     
  *     try {
  *         $db = new Database\DBAdmin();
- *     } catch (Database\Exception\DatabaseNoSupportException $e) {
+ *     } catch (Database\DatabaseNoSupportException $e) {
  *         echo 'No Support in ',  $e->getType();
  *     } catch (Exception $e) {
  *         echo 'Caught other exception: ',  $e->getMessage();

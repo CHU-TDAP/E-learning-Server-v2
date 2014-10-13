@@ -3,7 +3,7 @@
  * 使用者帳號群組相關例外類別檔案
  */
 
-namespace UElearning\User\Exception;
+namespace UElearning\Exception;
 
 /**
  * 使用者帳號例外

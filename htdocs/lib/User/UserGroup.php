@@ -9,6 +9,7 @@ require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
 require_once UELEARNING_LIB_ROOT.'/User/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Exception.php';
 use UElearning\Database;
+use UElearning\Exception;
 
 /**
  * 使用者群組類別
@@ -20,6 +21,7 @@ use UElearning\Database;
  *     require_once __DIR__.'/../config.php';
  *     require_once UELEARNING_LIB_ROOT.'/User/UserGroup.php'
  *     use UElearning\User;
+ *     use UElearning\Exception;
  * 
  *     try {
  *         $group = new User\UserGroup('testG');
@@ -27,7 +29,7 @@ use UElearning\Database;
  *         $group->setName('測試用');
  *         echo $group->getName();
  *     }
- *     catch (User\Exception\GroupNoFoundException $e) {
+ *     catch (Exception\GroupNoFoundException $e) {
  *         echo 'No Found group: '. $e->getGroupId();
  *     }
  * 
@@ -57,7 +59,7 @@ class UserGroup {
     /**
 	 * 從資料庫取得此群組查詢
 	 *
-     * @throw UElearning\User\Exception\GroupNoFoundException 
+     * @throw UElearning\Exception\GroupNoFoundException 
 	 * @since 2.0.0
 	 */
 	protected function getQuery(){
@@ -181,7 +183,7 @@ class UserGroup {
 	 *
 	 * @param  string $permissionName 權限名稱
 	 * @return bool   是否擁有
-     * @throw UElearning\User\Exception\PermissionNoFoundException
+     * @throw UElearning\Exception\PermissionNoFoundException
      * @since 2.0.0
 	 */
 	public function havePermission($permissionName) {
@@ -199,7 +201,7 @@ class UserGroup {
                 break;
             
             default:
-                throw new PermissionNoFoundException('$permissionName');
+                throw new Exception\PermissionNoFoundException('$permissionName');
                 return false;
         }
 	}
@@ -210,7 +212,7 @@ class UserGroup {
 	 * @param  string $permissionName 權限名稱
      * @param  string $setBool        是否給予
 	 * @return bool   是否擁有
-     * @throw UElearning\User\Exception\PermissionNoFoundException
+     * @throw UElearning\Exception\PermissionNoFoundException
      * @since 2.0.0
 	 */
 	public function setPermission($permissionName, $setBool) {
@@ -227,7 +229,7 @@ class UserGroup {
                 $this->setUpdate('auth_clientAdmin', $setBool);
                 break;
             default:
-                throw new PermissionNoFoundException('$permissionName');
+                throw new Exception\PermissionNoFoundException('$permissionName');
         }
 	}
 	 

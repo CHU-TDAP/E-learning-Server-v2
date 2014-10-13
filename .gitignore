@@ -29,3 +29,4 @@ composer.lock
 
 # Gem
 Gemfile.lock
+/nbproject/
