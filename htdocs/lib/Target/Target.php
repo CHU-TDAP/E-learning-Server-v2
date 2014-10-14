@@ -5,8 +5,8 @@
 
 namespace UElearning\Target;
 
-require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
-require_once UELEARNING_LIB_ROOT.'/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/Database/DBTarget.php';
+require_once UELEARNING_LIB_ROOT.'/Target/Exception.php';
 use UElearning\Database;
 use UElearning\Exception;
 
@@ -14,6 +14,34 @@ use UElearning\Exception;
  * 標的專用類別
  * 
  * 一個物件即代表一個標的
+ * 
+ * 使用範例: 
+ * 
+ *     require_once __DIR__.'/../config.php';
+ *     require_once UELEARNING_LIB_ROOT.'/Target/Target.php';
+ *     use UElearning\Target;
+ *     use UElearning\Exception;
+ *     
+ *     try{
+ *         $target = new Target\Target(3);
+ *         echo $target->getId();
+ *         echo $target->getAreaId();
+ *         echo $target->getHallId();
+ *         echo $target->getNumber();
+ *         echo $target->getName();
+ *         echo $target->getMapUrl();
+ *         echo $target->getLearnTime();
+ *         echo $target->getPLj();
+ *         echo $target->getMj();
+ *         echo $target->isFullPeople();
+ *         echo $target->getVacancyPeople();
+ *         echo $target->getS();
+ *         echo $target->getFi();
+ *         
+ *     }
+ *     catch (Exception\TargetNoFoundException $e) {
+ *         echo 'No Found target: '. $e->getId();
+ *     }
  * 
  * @version         2.0.0
  * @package         UElearning
@@ -40,20 +68,19 @@ class Target {
 	/**
 	 * 從資料庫取得此標的查詢
 	 *
-     * @throw UElearning\Exception\UserNoFoundException 
+     * @throw UElearning\Exception\TargetNoFoundException 
 	 * @since 2.0.0
 	 */
 	protected function getQuery(){
-        // TODO: getQuery
-//        // 從資料庫查詢使用者
-//        $db       = new Database\DBUser();
-//        $userInfo = $db->queryUser($this->uId);
-//
-//        // 判斷有沒有這位使用者
-//        if( $userInfo != null ) {
-//            $this->queryResultArray = $userInfo;
-//        }
-//        else throw new Exception\UserNoFoundException($this->uId);
+        // 從資料庫查詢使用者
+        $db         = new Database\DBTarget();
+        $targetInfo = $db->queryTarget($this->tId);
+
+        // 判斷有沒有這位使用者
+        if( $targetInfo != null ) {
+            $this->queryResultArray = $targetInfo;
+        }
+        else throw new Exception\TargetNoFoundException($this->tId);
 	}
     
     /**
@@ -62,11 +89,10 @@ class Target {
 	 * @since 2.0.0
 	 */
 	protected function setUpdate($field, $value){
-        // TODO: setUpdate
-//        /// 將新設定寫進資料庫裡
-//		$db = new Database\DBUser();
-//        $db->changeUserData($this->uId, $field, $value);
-//        $this->getQuery();
+        // 將新設定寫進資料庫裡
+		$db = new Database\DBTarget();
+        $db->changeTargetData($this->tId, $field, $value);
+        $this->getQuery();
 	}
     
     // ========================================================================
@@ -122,7 +148,7 @@ class Target {
      * @since 2.0.0
 	 */
 	public function getNumber(){
-		return $this->queryResultArray['number'];
+		return $this->queryResultArray['target_number'];
 	}
     // ========================================================================
 	
@@ -201,6 +227,31 @@ class Target {
 	}
     
     /**
+	 * 設定學習標的目前人數
+	 * 
+	 * @param int $number 學習標的目前人數
+     * @since 2.0.0
+	 */
+	function setMj($number){
+        $this->setUpdate('Mj', $number);
+	}
+    
+    /**
+	 * 增加學習標的目前人數
+     *
+     * 若要減少可直接在參數內帶入負值
+	 * 
+	 * @param int $number 學習標的目前人數調整值
+     * @return int 學習標的目前人數
+     * @since 2.0.0
+	 */
+	function addMj($number){
+        $setedNum = $this->queryResultArray['Mj']+$number;
+        if($setedNum < 0) $setedNum = 0;
+		$this->setUpdate('Mj', $setedNum);
+	}
+    
+    /**
 	 * 取得學習標的目前人數
 	 *
 	 * @return int 學習標的目前人數
@@ -212,25 +263,23 @@ class Target {
     
     /**
 	 * 設定學習標的目前人數
-	 * 
-	 * @param int $number 學習標的目前人數
-     * @since 2.0.0
-	 */
-	function setMj($number){
-		//return $this->queryResultArray['Mj'];
-	}
-    
-    /**
-	 * 設定學習標的目前人數
 	 *
 	 * @param int $number 學習標的目前人數
      * @since 2.0.0
 	 */
 	public function setCurrentPeople($number){
-		//return $this->getMj();
+		$this->setMj($number);
 	}
     
-    // TODO: 加人數、減人數
+    /**
+     * 取得此標的還剩下人可容納
+     * 
+     * @return int 此標的還剩下人可容納
+     * @since 2.0.0
+     */ 
+    public function getVacancyPeople() {
+        return $this->getPLj() - $this->getMj();
+    }
     
     /**
 	 * 目前此標的人數是否已滿
@@ -239,7 +288,8 @@ class Target {
      * @since 2.0.0
 	 */
 	public function isFullPeople(){
-		// TODO: isFull
+		if($this->getPLj()-$this->getMj() <= 0) return true;
+        else return false;
 	}
     
     // ------------------------------------------------------------------------
