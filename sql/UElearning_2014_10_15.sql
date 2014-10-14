@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- 主機: localhost
--- 產生時間： 2014 年 10 月 12 日 18:28
+-- 產生時間： 2014 年 10 月 14 日 18:01
 -- 伺服器版本: 5.6.16
 -- PHP 版本： 5.5.9
 
@@ -48,19 +48,53 @@ INSERT INTO `chu__AGroup` (`GID`, `GName`, `GMemo`, `GBuild_Time`, `GAuth_Admin`
 -- --------------------------------------------------------
 
 --
+-- 替換檢視表以便查看 `chu__AGroup_with_people`
+--
+CREATE TABLE IF NOT EXISTS `chu__AGroup_with_people` (
+`GID` varchar(30)
+,`GName` varchar(100)
+,`in_user` bigint(21)
+,`GMemo` tinytext
+,`GBuild_Time` timestamp
+,`GAuth_Admin` tinyint(1)
+,`GAuth_ClientAdmin` tinyint(1)
+);
+-- --------------------------------------------------------
+
+--
 -- 資料表結構 `chu__Area`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__Area` (
   `AID` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '區域編號',
-  `HID` int(10) NOT NULL COMMENT '屬於哪個廳',
+  `HID` int(10) DEFAULT NULL COMMENT '屬於哪個廳',
   `AFloor` int(3) DEFAULT NULL COMMENT '區域所在樓層',
   `ANum` int(11) DEFAULT NULL COMMENT '區域地圖上的編號',
   `AName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '區域名稱',
   `AMapID` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '區域地圖編號',
   `AIntroduction` tinytext COLLATE utf8_unicode_ci,
   PRIMARY KEY (`AID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='標的所在的區域分類' AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='標的所在的區域分類' AUTO_INCREMENT=15 ;
+
+--
+-- 資料表的匯出資料 `chu__Area`
+--
+
+INSERT INTO `chu__Area` (`AID`, `HID`, `AFloor`, `ANum`, `AName`, `AMapID`, `AIntroduction`) VALUES
+(1, 1, 1, 1, '眾妙之門', NULL, NULL),
+(2, 1, 1, 2, '生命的起源', NULL, NULL),
+(3, 1, 1, 3, '生命上的陸地', NULL, NULL),
+(4, 1, 1, 4, '植物的演化', NULL, NULL),
+(5, 1, 1, 5, '恐龍時代', NULL, NULL),
+(6, 1, 2, 1, '生命征服天空', NULL, NULL),
+(7, 1, 2, 2, '滅絕', NULL, NULL),
+(8, 1, 2, 3, '哺乳類的演化與適應', NULL, NULL),
+(9, 1, 2, 4, '人類的故事', NULL, NULL),
+(10, 1, 2, 5, '我們的身體一生老病', NULL, NULL),
+(11, 1, -1, 1, '數與形', NULL, NULL),
+(12, 1, -1, 2, '生彩色世界', NULL, NULL),
+(13, 1, -1, 3, '大自然的聲音', NULL, NULL),
+(14, 1, -1, 4, '多用途劇場', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -76,6 +110,18 @@ CREATE TABLE IF NOT EXISTS `chu__CGroup` (
   PRIMARY KEY (`CID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者班級分類' AUTO_INCREMENT=1 ;
 
+-- --------------------------------------------------------
+
+--
+-- 替換檢視表以便查看 `chu__CGroup_with_people`
+--
+CREATE TABLE IF NOT EXISTS `chu__CGroup_with_people` (
+`CID` int(11)
+,`CName` varchar(100)
+,`in_user` bigint(21)
+,`CMemo` tinytext
+,`CBuild_Time` timestamp
+);
 -- --------------------------------------------------------
 
 --
@@ -1004,9 +1050,9 @@ INSERT INTO `chu__Edge` (`Ti`, `Tj`, `MoveTime`, `Destance`) VALUES
 
 CREATE TABLE IF NOT EXISTS `chu__Hall` (
   `HID` int(10) NOT NULL AUTO_INCREMENT,
-  `HName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `HMapID` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `HIntroduction` tinytext COLLATE utf8_unicode_ci,
+  `HName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '廳的名稱',
+  `HMapID` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '廳的地圖編號',
+  `HIntroduction` tinytext COLLATE utf8_unicode_ci COMMENT '廳的簡介',
   PRIMARY KEY (`HID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='區域所在的廳分類' AUTO_INCREMENT=2 ;
 
@@ -1016,21 +1062,6 @@ CREATE TABLE IF NOT EXISTS `chu__Hall` (
 
 INSERT INTO `chu__Hall` (`HID`, `HName`, `HMapID`, `HIntroduction`) VALUES
 (1, '生命科學廳', NULL, '人類從何而來？與自然的關係為何？而自然又是如何發展它的生命？諸多疑惑，自古以來，未曾停歇。\r\n\r\n本廳以大自然的奧祕為總主題，利用13個展示區分別呈現大自然的現象及演化的動態。從');
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `chu__LearnActivity`
---
-
-CREATE TABLE IF NOT EXISTS `chu__LearnActivity` (
-  `LsID` int(10) NOT NULL AUTO_INCREMENT,
-  `ThID` int(10) NOT NULL COMMENT '主題編號',
-  `CID` int(11) NOT NULL COMMENT '班級名稱',
-  `StartTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '開始時間',
-  `Delay` int(11) NOT NULL COMMENT '實際狀態延誤(分)',
-  PRIMARY KEY (`LsID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='學習活動' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1115,6 +1146,21 @@ CREATE TABLE IF NOT EXISTS `chu__Study` (
 -- --------------------------------------------------------
 
 --
+-- 資料表結構 `chu__StudyActivity`
+--
+
+CREATE TABLE IF NOT EXISTS `chu__StudyActivity` (
+  `SaID` int(10) NOT NULL AUTO_INCREMENT,
+  `ThID` int(10) NOT NULL COMMENT '主題編號',
+  `CID` int(11) NOT NULL COMMENT '班級名稱',
+  `StartTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '開始時間',
+  `Delay` int(11) NOT NULL DEFAULT '0' COMMENT '實際狀態延誤(分)',
+  PRIMARY KEY (`SaID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='學習活動' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- 資料表結構 `chu__StudyQuestion`
 --
 
@@ -1134,13 +1180,13 @@ CREATE TABLE IF NOT EXISTS `chu__StudyQuestion` (
 
 CREATE TABLE IF NOT EXISTS `chu__Target` (
   `TID` int(10) unsigned NOT NULL COMMENT '標的內部編號',
-  `AID` int(10) DEFAULT NULL,
+  `AID` int(10) DEFAULT NULL COMMENT '標的所在的區域編號',
   `TNum` int(10) DEFAULT NULL COMMENT '標的地圖上的編號',
   `TName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '標的名稱',
   `TMapID` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '地圖圖檔名稱',
   `TLearnTime` int(4) unsigned NOT NULL COMMENT '預估此標的應該學習的時間',
   `PLj` int(11) unsigned NOT NULL COMMENT '學習標的的人數限制',
-  `Mj` int(11) unsigned DEFAULT NULL COMMENT '目前人數',
+  `Mj` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '目前人數',
   `S` int(11) unsigned DEFAULT NULL COMMENT '學習標的飽和率上限',
   `Fi` int(11) DEFAULT NULL COMMENT '學習標的滿額指標',
   PRIMARY KEY (`TID`)
@@ -1151,22 +1197,64 @@ CREATE TABLE IF NOT EXISTS `chu__Target` (
 --
 
 INSERT INTO `chu__Target` (`TID`, `AID`, `TNum`, `TName`, `TMapID`, `TLearnTime`, `PLj`, `Mj`, `S`, `Fi`) VALUES
-(1, NULL, NULL, '含有生物遺跡的岩石', 'map_01_02_03.png', 7, 2, NULL, 1, 0),
-(2, NULL, NULL, '岩石中的紀錄', 'map_01_02_03.png', 8, 2, NULL, 1, 0),
-(3, NULL, NULL, '生命在水中的演化', 'map_01_02_03.png', 3, 2, NULL, 1, 0),
-(4, NULL, NULL, '最早的森林', 'map_04.jpg', 3, 2, NULL, 1, 0),
-(5, NULL, NULL, '古代的兩棲類', 'map_05.jpg', 5, 2, NULL, 1, 0),
-(6, NULL, NULL, '恐龍時代', 'map_06.jpg', 6, 2, NULL, 1, 0),
-(7, NULL, NULL, '蒙古的恐龍', 'map_07.jpg', 4, 2, NULL, 1, 0),
-(8, NULL, NULL, '恐龍再現', 'map_08.jpg', 4, 2, NULL, 1, 0),
-(9, NULL, NULL, '竊蛋龍', 'map_09.jpg', 4, 2, NULL, 1, 0),
-(10, NULL, NULL, '巨龍的腳印', 'map_10.jpg', 4, 2, NULL, 1, 0),
-(11, NULL, NULL, '始祖鳥與帶有羽毛的恐龍', 'map_11.jpg', 8, 2, NULL, 1, 0),
-(12, NULL, NULL, '阿法南猿', 'map_12.jpg', 4, 2, NULL, 1, 0),
-(13, NULL, NULL, '探索人類的過去', 'map_13.jpg', 5, 1, NULL, 1, 0),
-(14, NULL, NULL, '周口店北京人', 'map_14.jpg', 3, 2, NULL, 1, 0),
-(15, NULL, NULL, '木乃伊', 'map_15.jpg', 8, 2, NULL, 1, 0);
+(1, 1, NULL, '含有生物遺跡的岩石', 'map_01_02_03.png', 7, 2, 1, 1, 0),
+(2, 1, NULL, '岩石中的紀錄', 'map_01_02_03.png', 8, 2, 0, 1, 0),
+(3, 4, NULL, '生命在水中的演化', 'map_01_02_03.png', 3, 2, 0, 1, 0),
+(4, 4, NULL, '最早的森林', 'map_04.jpg', 3, 2, 0, 1, 0),
+(5, 3, NULL, '古代的兩棲類', 'map_05.jpg', 5, 2, 0, 1, 0),
+(6, 5, NULL, '恐龍時代', 'map_06.jpg', 6, 2, 0, 1, 0),
+(7, 5, NULL, '蒙古的恐龍', 'map_07.jpg', 4, 2, 0, 1, 0),
+(8, 5, NULL, '恐龍再現', 'map_08.jpg', 4, 2, 0, 1, 0),
+(9, 5, NULL, '竊蛋龍', 'map_09.jpg', 4, 2, 0, 1, 0),
+(10, 5, NULL, '巨龍的腳印', 'map_10.jpg', 4, 2, 0, 1, 0),
+(11, 6, NULL, '始祖鳥與帶有羽毛的恐龍', 'map_11.jpg', 8, 2, 0, 1, 0),
+(12, 8, NULL, '阿法南猿', 'map_12.jpg', 4, 2, 0, 1, 0),
+(13, 9, NULL, '探索人類的過去', 'map_13.jpg', 5, 1, 0, 1, 0),
+(14, 9, NULL, '周口店北京人', 'map_14.jpg', 3, 2, 0, 1, 0),
+(15, 10, NULL, '木乃伊', 'map_15.jpg', 8, 2, 0, 1, 0);
 
+-- --------------------------------------------------------
+
+--
+-- 替換檢視表以便查看 `chu__target_full_data`
+--
+CREATE TABLE IF NOT EXISTS `chu__target_full_data` (
+`TID` int(10) unsigned
+,`TName` varchar(100)
+,`HID` int(10)
+,`HName` varchar(100)
+,`AID` int(10)
+,`AName` varchar(100)
+,`AFloor` int(3)
+,`ANum` int(11)
+,`TNum` int(10)
+,`HMapID` varchar(1000)
+,`AMapID` varchar(1000)
+,`TMapID` varchar(1000)
+,`TLearnTime` int(4) unsigned
+,`PLj` int(11) unsigned
+,`Mj` int(11) unsigned
+,`S` int(11) unsigned
+,`Fi` int(11)
+);
+-- --------------------------------------------------------
+
+--
+-- 替換檢視表以便查看 `chu__Target_with_Area`
+--
+CREATE TABLE IF NOT EXISTS `chu__Target_with_Area` (
+`TID` int(10) unsigned
+,`AID` int(10)
+,`HID` int(10)
+,`TNum` int(10)
+,`TName` varchar(100)
+,`TMapID` varchar(1000)
+,`TLearnTime` int(4) unsigned
+,`PLj` int(11) unsigned
+,`Mj` int(11) unsigned
+,`S` int(11) unsigned
+,`Fi` int(11)
+);
 -- --------------------------------------------------------
 
 --
@@ -1174,8 +1262,8 @@ INSERT INTO `chu__Target` (`TID`, `AID`, `TNum`, `TName`, `TMapID`, `TLearnTime`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__TBelong` (
-  `TID` int(10) NOT NULL,
-  `ThID` int(10) NOT NULL,
+  `ThID` int(10) NOT NULL COMMENT '主題編號',
+  `TID` int(10) NOT NULL COMMENT '標的編號',
   `Weights` int(3) NOT NULL COMMENT '當次學習主題的某一個學習標的之權重',
   PRIMARY KEY (`TID`,`ThID`),
   KEY `TID` (`TID`)
@@ -1185,37 +1273,22 @@ CREATE TABLE IF NOT EXISTS `chu__TBelong` (
 -- 資料表的匯出資料 `chu__TBelong`
 --
 
-INSERT INTO `chu__TBelong` (`TID`, `ThID`, `Weights`) VALUES
+INSERT INTO `chu__TBelong` (`ThID`, `TID`, `Weights`) VALUES
 (1, 1, 1),
-(2, 1, 2),
-(3, 1, 4),
-(4, 1, 7),
-(5, 1, 4),
-(6, 1, 5),
-(7, 1, 2),
-(8, 1, 6),
-(9, 1, 7),
-(10, 1, 9),
-(11, 1, 6),
-(12, 1, 4),
-(13, 1, 5),
-(14, 1, 5),
-(15, 1, 9),
-(16, 1, 1),
-(17, 1, 2),
-(18, 1, 4),
-(19, 1, 7),
-(20, 1, 4),
-(21, 1, 5),
-(22, 1, 2),
-(23, 1, 6),
-(24, 1, 7),
-(25, 1, 9),
-(26, 1, 6),
-(27, 1, 4),
-(28, 1, 5),
-(29, 1, 5),
-(30, 1, 9);
+(1, 2, 2),
+(1, 3, 4),
+(1, 4, 7),
+(1, 5, 4),
+(1, 6, 5),
+(1, 7, 2),
+(1, 8, 6),
+(1, 9, 7),
+(1, 10, 9),
+(1, 11, 6),
+(1, 12, 4),
+(1, 13, 5),
+(1, 14, 5),
+(1, 15, 9);
 
 -- --------------------------------------------------------
 
@@ -1276,6 +1349,42 @@ CREATE TABLE IF NOT EXISTS `chu__UserSession` (
   PRIMARY KEY (`UsID`),
   UNIQUE KEY `UToken` (`UToken`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者登入紀錄' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 檢視表結構 `chu__AGroup_with_people`
+--
+DROP TABLE IF EXISTS `chu__AGroup_with_people`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`yuan`@`localhost` SQL SECURITY DEFINER VIEW `chu__AGroup_with_people` AS select `group`.`GID` AS `GID`,`group`.`GName` AS `GName`,(select count(`user`.`GID`) from `chu__User` `user` where (`user`.`GID` = `group`.`GID`)) AS `in_user`,`group`.`GMemo` AS `GMemo`,`group`.`GBuild_Time` AS `GBuild_Time`,`group`.`GAuth_Admin` AS `GAuth_Admin`,`group`.`GAuth_ClientAdmin` AS `GAuth_ClientAdmin` from `chu__AGroup` `group` where 1;
+
+-- --------------------------------------------------------
+
+--
+-- 檢視表結構 `chu__CGroup_with_people`
+--
+DROP TABLE IF EXISTS `chu__CGroup_with_people`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`yuan`@`localhost` SQL SECURITY DEFINER VIEW `chu__CGroup_with_people` AS select `group`.`CID` AS `CID`,`group`.`CName` AS `CName`,(select count(`user`.`CID`) from `chu__User` `user` where (`user`.`CID` = `group`.`CID`)) AS `in_user`,`group`.`CMemo` AS `CMemo`,`group`.`CBuild_Time` AS `CBuild_Time` from `chu__CGroup` `group` where 1;
+
+-- --------------------------------------------------------
+
+--
+-- 檢視表結構 `chu__target_full_data`
+--
+DROP TABLE IF EXISTS `chu__target_full_data`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`yuan`@`localhost` SQL SECURITY DEFINER VIEW `chu__target_full_data` AS select `Target`.`TID` AS `TID`,`Target`.`TName` AS `TName`,`Area`.`HID` AS `HID`,`Hall`.`HName` AS `HName`,`Target`.`AID` AS `AID`,`Area`.`AName` AS `AName`,`Area`.`AFloor` AS `AFloor`,`Area`.`ANum` AS `ANum`,`Target`.`TNum` AS `TNum`,`Hall`.`HMapID` AS `HMapID`,`Area`.`AMapID` AS `AMapID`,`Target`.`TMapID` AS `TMapID`,`Target`.`TLearnTime` AS `TLearnTime`,`Target`.`PLj` AS `PLj`,`Target`.`Mj` AS `Mj`,`Target`.`S` AS `S`,`Target`.`Fi` AS `Fi` from ((`chu__Target` `Target` left join `chu__Area` `Area` on((`Area`.`AID` = `Target`.`AID`))) left join `chu__Hall` `Hall` on((`Area`.`HID` = `Hall`.`HID`)));
+
+-- --------------------------------------------------------
+
+--
+-- 檢視表結構 `chu__Target_with_Area`
+--
+DROP TABLE IF EXISTS `chu__Target_with_Area`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`yuan`@`localhost` SQL SECURITY DEFINER VIEW `chu__Target_with_Area` AS select `Target`.`TID` AS `TID`,`Target`.`AID` AS `AID`,`Area`.`HID` AS `HID`,`Target`.`TNum` AS `TNum`,`Target`.`TName` AS `TName`,`Target`.`TMapID` AS `TMapID`,`Target`.`TLearnTime` AS `TLearnTime`,`Target`.`PLj` AS `PLj`,`Target`.`Mj` AS `Mj`,`Target`.`S` AS `S`,`Target`.`Fi` AS `Fi` from (`chu__Target` `Target` left join `chu__Area` `Area` on((`Area`.`AID` = `Target`.`AID`)));
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
