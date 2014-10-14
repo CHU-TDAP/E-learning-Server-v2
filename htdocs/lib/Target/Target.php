@@ -72,11 +72,11 @@ class Target {
 	 * @since 2.0.0
 	 */
 	protected function getQuery(){
-        // 從資料庫查詢使用者
+        // 從資料庫查詢此標的
         $db         = new Database\DBTarget();
         $targetInfo = $db->queryTarget($this->tId);
 
-        // 判斷有沒有這位使用者
+        // 判斷有沒有這個標的
         if( $targetInfo != null ) {
             $this->queryResultArray = $targetInfo;
         }
