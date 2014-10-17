@@ -9,24 +9,31 @@
 notification :growl
 # Linux用的通知中心
 notification :libnotify
+scope groups: [:build, :livereload, :test]
 
-#PHPDoc
-guard :shell do
-  watch(%r{htdocs/.+\.(php)}) do
-    system 'phpdoc', '-d', './htdocs/lib', '-t', './docs/'
+group :build do
+  #PHPDoc
+  guard :shell do
+    watch(%r{htdocs/.+\.(php)}) do
+      system 'phpdoc', '-d', './htdocs/lib', '-t', './docs/'
+    end
   end
 end
 
-# LiveReload
-guard 'livereload' do
-  watch(%r{htdocs/.+\.(php|css|js|html)})
+group :livereload do
+  # LiveReload
+  guard 'livereload' do
+    watch(%r{htdocs/.+\.(php|css|js|html)})
+  end
 end
 
-# PHPUnit
-guard :phpunit2, :all_on_start => false, :tests_path => 'tests/', :cli => '--colors -c phpunit.xml' do
-  # Run any test in app/tests upon save.
-  watch(%r{^tests/.+Test\.php$})
-
-  # When a file is edited, try to run its associated test.
-  watch(%r{^htdocs/lib/(.+)\.php}) { |m| "tests/#{m[1]}Test.php" }
+group :test do
+  # PHPUnit
+  guard :phpunit2, :all_on_start => false, :tests_path => 'tests/', :cli => '--colors -c phpunit.xml' do
+    # Run any test in app/tests upon save.
+    watch(%r{^tests/.+Test\.php$})
+  
+    # When a file is edited, try to run its associated test.
+    watch(%r{^htdocs/lib/(.+)\.php}) { |m| "tests/#{m[1]}Test.php" }
+  end
 end
