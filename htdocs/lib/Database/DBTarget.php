@@ -25,7 +25,12 @@ require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
  */
 class DBTarget extends Database {
     
-    private function queryTargetByWhere($where) {
+    /**
+     * 內部使用的查詢動作
+     * @param string $where 查詢語法
+     * @return array 查詢結果陣列
+     */ 
+    public function queryTargetByWhere($where) {
         
         $sqlString = "SELECT `TID`, Target.`AID`, Area.`HID`, ".
                      "`TNum`, `TName`, `TMapID`, `TLearnTime`, `PLj`, `Mj`, `S`, `Fi` ".
@@ -177,6 +182,11 @@ class DBTarget extends Database {
     
     // ========================================================================
     
+    /**
+     * 內部使用的查詢動作
+     * @param string $where 查詢語法
+     * @return array 查詢結果陣列
+     */ 
     private function queryAreaByWhere($where) {
         
         $sqlString = "SELECT * FROM `".$this->table('Area')."`".
@@ -313,6 +323,11 @@ class DBTarget extends Database {
     
     // ========================================================================
     
+    /**
+     * 內部使用的查詢動作
+     * @param string $where 查詢語法
+     * @return array 查詢結果陣列
+     */ 
     private function queryHallByWhere($where) {
         
         $sqlString = "SELECT * FROM `".$this->table('Hall')."`".
