@@ -19,7 +19,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
      * @dataProvider userDataProvider
      */
     public function testCreateUser($uId, $uPassword, $gId, $cId, $enable,
-                                   $l_mode, $m_mode, 
+                                   $l_mode, $m_mode, $enable_noAppoint,
                                    $nickName, $realName, $email, $memo)
     {
         
@@ -27,7 +27,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
             // 建立資料庫管理物件
             $userAdmin = new User\UserAdmin();
             
-            // TODO: 建立使用者
+            // 建立使用者
             $userAdmin->create(
                 array( 'user_id'            => $uId,
                       'password'           => $uPassword,
@@ -35,7 +35,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
                       'class_id'           => $cId,   
                       'enable'             => $enable,
                       'learnStyle_mode'    => $l_mode,
-                      'material_mode'      => $m_mode,      
+                      'material_mode'      => $m_mode,   
+                      'enable_noAppoint'   => $enable_noAppoint,
                       'nickname'           => $nickName, 
                       'realname'           => $realName,      
                       'email'              => $email,
@@ -54,7 +55,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
      * @dataProvider userDataProvider
      */
     public function testGetInfo($uId, $uPassword, $gId, $cId, $enable,
-                                   $l_mode, $m_mode, 
+                                   $l_mode, $m_mode, $enable_noAppoint,
                                    $nickName, $realName, $email, $memo)
     {
         try {
@@ -82,7 +83,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
      * @dataProvider userDataProvider
      */
     public function testSetInfo($uId, $uPassword, $gId, $cId, $enable,
-                                   $l_mode, $m_mode, 
+                                   $l_mode, $m_mode, $enable_noAppoint,
                                    $nickName, $realName, $email, $memo)
     {
         try {
@@ -140,13 +141,13 @@ class UserTest extends \PHPUnit_Framework_TestCase
     public function userDataProvider(){
         return array(
             array('yuan_unittest', 'pass123', 'admin', null, true,
-                  'harf-line-learn', 1, 
+                  3, 'normal', true,
                   '元兒～', 'Yuan Chiu', 'chyuaner@gmail.com', null),
             
             array('eee_unittest', 'qqqssss', 'admin', null, 1, 
-                  'harf-line-learn', '1', 
+                  0, 'normal', false,
                   'sss', 'Yuan Chiu', 'chyuanesr@gmail.com', null)
-        );
+        ); 
     }
     
 }

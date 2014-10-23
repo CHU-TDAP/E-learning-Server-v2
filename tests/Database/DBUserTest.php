@@ -35,12 +35,25 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
      * @dataProvider userDataProvider
      */
     public function testCreateUser($uId, $uPassword, $gId, $cId, $enable,
-                                   $l_mode, $m_mode, 
+                                   $l_mode, $m_mode, $enPublic,
                                    $nickName, $realName, $email, $memo){
         
-        $this->db->insertUser($uId, $uPassword, $gId, $cId, $enable,
-                              $l_mode, $m_mode, 
-                              $nickName, $realName, $email, $memo);
+        $this->db->insertUser(
+            array(
+                'user_id'            => $uId,
+                'password'           => $uPassword,
+                'group_id'           => $gId,
+                'class_id'           => $cId,
+                'enable'             => $enable,
+                'learnStyle_mode'    => $l_mode,
+                'material_mode'      => $m_mode,
+                'enable_noAppoint'   => $enPublic,
+                'nickname'           => $nickName,
+                'realname'           => $realName,
+                'email'              => $email,
+                'memo'               => $memo
+            )
+        );
     }
     
     /**
@@ -49,7 +62,7 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
      * @dataProvider userDataProvider
      */
     public function testQueryUser($uId, $uPassword, $gId, $cId, $enable,
-                                   $l_mode, $m_mode, 
+                                   $l_mode, $m_mode, $enPublic,
                                    $nickName, $realName, $email, $memo){
         
         // 查詢使用者
@@ -63,6 +76,7 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($info['enable'],          $enable);
         $this->assertEquals($info['learnStyle_mode'], $l_mode);
         $this->assertEquals($info['material_mode'],   $m_mode);
+        $this->assertEquals($info['enable_noAppoint'],$enPublic);
         $this->assertEquals($info['nickname'],        $nickName);
         $this->assertEquals($info['realname'],        $realName);
         $this->assertEquals($info['email'],           $email);
@@ -86,7 +100,7 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
      * @dataProvider userDataProvider
      */
     public function testChangeUser($uId, $uPassword, $gId, $cId, $enable,
-                                   $l_mode, $m_mode, 
+                                   $l_mode, $m_mode, $enPublic,
                                    $nickName, $realName, $email, $memo){
         
         $afterData = 'sfisjojjoij';
@@ -124,13 +138,18 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
      * 測試時要填的資料
      */ 
     public function userDataProvider(){
+        
+        //$uId, $uPassword, $gId, $cId, $enable, 
+        //$l_mode, $m_mode, $enPublic, 
+        //$nickName, $realName, $email, $memo 
+        
         return array(
             array('yuan_unittest', 'pass123', 'admin', null, true,
-                  'harf-line-learn', 1, 
+                  null, null, true,
                   '元兒～', 'Yuan Chiu', 'chyuaner@gmail.com', null),
             
             array('eee_unittest', 'qqqssss', 'admin', null, 0, 
-                  'harf-line-learn', '1', 
+                  0, 'normal', false, 
                   'sss', 'Yuan Chiu', 'chyuanesr@gmail.com', null)
         );
     }
@@ -144,7 +163,14 @@ class DBUserTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateGroup($gId, $name, $memo, $auth_admin, $auth_clientAdmin){
         
-        $this->db->insertGroup($gId, $name, $memo, $auth_admin, $auth_clientAdmin);
+        $this->db->insertGroup(
+            array( 'group_id'         => $gId,
+                   'name'             => $name,
+                   'memo'             => $memo,
+                   'auth_admin'       => $auth_admin,
+                   'auth_clientAdmin' => $auth_clientAdmin
+            )
+        );
     }
     
     /**

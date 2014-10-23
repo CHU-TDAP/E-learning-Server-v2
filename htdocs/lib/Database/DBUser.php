@@ -39,7 +39,15 @@ class DBUser extends Database {
      *     try {
      *         $db = new Database\DBUser();
      *         
-     *         $db->insertUser('eric', 'passwd', 'user', null, 1, 'harf-line-learn', '1', '偉人', 'Eric Chiou', 'eric@example.com', null);
+     *         $db->insertUser(
+     *             array( 
+     *                 'user_id'            => 'eric',
+     *                 'password'           => 'passwd',
+     *                 'group_id'           => 'user',
+     *                 'enable'             => true,
+     *                 'enable_noAppoint'   => true
+     *             )
+     *         );
      *         
      *         echo 'Finish';
      *     }
@@ -53,55 +61,93 @@ class DBUser extends Database {
      *         echo '<h2>'. $e->getCode() .'</h2>';
      *     }
      * 
-     * @param string $uId      使用者名稱
-     * @param string $password 密碼
-     * @param string $gId      群組
-     * @param string $cId      班級
-     * @param string $enable   啟用此帳號
-     * @param string $l_mode   學習模式
-     * @param string $m_mode   教材模式
-     * @param string $nickName 暱稱
-     * @param string $realName 姓名
-     * @param string $email    電子郵件地址
-     * @param string $memo     備註
+     * @param array $array 使用者資料陣列，格式為: 
+     *     array( 
+     *         'user_id'            => <帳號名稱>,
+     *         'password'           => <密碼>,
+     *         'group_id'           => <群組>,
+     *         'class_id'           => <班級>,
+     *         'enable'             => <啟用>,
+     *         'learnStyle_mode'    => <偏好學習導引模式>,
+     *         'material_mode'      => <偏好教材模式>,
+     *         'enable_noAppoint'   => <是否允許非預約學習>,
+     *         'nickname'           => <暱稱>,
+     *         'realname'           => <真實姓名>,
+     *         'email'              => <電子郵件地址>,
+     *         'memo'               => <備註>
+     *     );
+     * 
+     * @since 2.0.0
      */ 
-    public function insertUser($uId, $password, $gId, $cId, $enable,
-                     $l_mode, $m_mode, 
-                     $nickName, $realName, $email, $memo){
+    public function insertUser($array){
+            
         
-        // 檢查是否有支援所設定的DBMS
-        //if($this->db_type == 'mysql') {
-            
-            //紀錄使用者帳號進資料庫
-            $sqlString = "INSERT INTO ".$this->table('User').
-                " (`UID`, `UPassword`, `GID`, `CID`, `UEnabled`, `UBuild_Time`,
-                `LMode`, `MMode`, `UNickname`, `UReal_Name`, `UEmail`, `UMemo`)
-                VALUES ( :id , :passwd, :gid , :cid , :enable , NOW() , 
-                :lmode , :mmode , :nickname , :realname , :email , :memo )";
-            
-            $query = $this->connDB->prepare($sqlString);
-            $query->bindParam(":id", $uId);
-            $query->bindParam(":passwd", $password);
-            $query->bindParam(":gid", $gId);
-            $query->bindParam(":cid", $cId);
-            $query->bindParam(":enable", $enable);
-            $query->bindParam(":lmode", $l_mode);
-            $query->bindParam(":mmode", $m_mode);
-            $query->bindParam(":nickname", $nickName);
-            $query->bindParam(":realname", $realName);
-            $query->bindParam(":email", $email);
-            $query->bindParam(":memo", $memo);
-            $query->execute();
-        //}
-        //else {
-        //    throw new Exception\DatabaseNoSupportException($this->db_type);
-        //}
+        if( !isset($array['class_id']) ){
+            $array['class_id'] = null;
+        }
+        if( !isset($array['learnStyle_mode']) ){
+            $array['learnStyle_mode'] = null;
+        }
+        if( !isset($array['material_mode']) ){
+            $array['material_mode'] = null;
+        }
+        if( !isset($array['nickname']) ){
+            $array['nickname'] = null;
+        }
+        if( !isset($array['realname']) ){
+            $array['realname'] = null;
+        }
+        if( !isset($array['email']) ){
+            $array['email'] = null;
+        }
+        if( !isset($array['memo']) ){
+            $array['memo'] = null;
+        }
+        // TODO: 不填enable, enable_noAppoint也要能操作
+        
+        $uId      = $array['user_id'];
+        $password = $array['password'];
+        $gId      = $array['group_id'];
+        $cId      = $array['class_id'];
+        $enable   = $array['enable'];
+        $l_mode   = $array['learnStyle_mode'];
+        $m_mode   = $array['material_mode'];
+        $enPublic = $array['enable_noAppoint'];
+        $nickName = $array['nickname'];
+        $realName = $array['realname'];
+        $email    = $array['email'];
+        $memo     = $array['memo'];
+        
+        //紀錄使用者帳號進資料庫
+        $sqlString = "INSERT INTO ".$this->table('User').
+            " (`UID`, `UPassword`, `GID`, `CID`, `UEnabled`, 
+            `LMode`, `MMode`, `UEnable_NoAppoint`, 
+            `UNickname`, `URealName`, `UEmail`, `UMemo`)
+            VALUES ( :id , :passwd, :gid , :cid , :enable , 
+            :lmode , :mmode , :enpublic ,
+            :nickname , :realname , :email , :memo )";
+
+        $query = $this->connDB->prepare($sqlString);
+        $query->bindParam(":id", $uId);
+        $query->bindParam(":passwd", $password);
+        $query->bindParam(":gid", $gId);
+        $query->bindParam(":cid", $cId);
+        $query->bindParam(":enable", $enable);
+        $query->bindParam(":lmode", $l_mode);
+        $query->bindParam(":mmode", $m_mode);
+        $query->bindParam(":enpublic", $enPublic);
+        $query->bindParam(":nickname", $nickName);
+        $query->bindParam(":realname", $realName);
+        $query->bindParam(":email", $email);
+        $query->bindParam(":memo", $memo);
+        $query->execute();
                 
     }
     
     /**
      * 移除一位使用者
      * @param string $uId 使用者名稱
+     * @since 2.0.0
      */ 
     public function deleteUser($uId) {
         
@@ -116,6 +162,59 @@ class DBUser extends Database {
         //else {
         //    throw new Exception\DatabaseNoSupportException($this->db_type);
         //}
+    }
+    
+    /**
+     * 內部使用的查詢動作
+     * @param string $where 查詢語法
+     * @return array 查詢結果陣列
+     */ 
+    protected function queryUserByWhere($where) {
+        $sqlString = "SELECT * FROM ".$this->table('User').
+                     " WHERE ".$where;
+		
+		$query = $this->connDB->prepare($sqlString);
+		$query->execute();
+		
+		$queryResultAll = $query->fetchAll();
+        // 如果有查到一筆以上
+        if( count($queryResultAll) >= 1 ) {
+            // 製作回傳結果陣列
+            $result = array();
+            foreach($queryResultAll as $key => $thisResult) { 
+                
+                if($thisResult['UEnabled'] != '0') {
+                    $output_enable = true;
+                }
+                else { $output_enable = false; }
+                
+                if($thisResult['UEnable_NoAppoint'] != '0') {
+                    $output_enable_noAppoint = true;
+                }
+                else { $output_enable_noAppoint = false; }
+                
+                array_push($result,
+                    array( 'user_id'            => $thisResult['UID'],
+                           'password'           => $thisResult['UPassword'],
+                           'group_id'           => $thisResult['GID'],
+                           'class_id'           => $thisResult['CID'],
+                           'enable'             => $output_enable,
+                           'build_time'         => $thisResult['UBuildTime'],
+                           'modify_time'        => $thisResult['UModifyTime'],
+                           'learnStyle_mode'    => $thisResult['LMode'],
+                           'material_mode'      => $thisResult['MMode'],
+                           'enable_noAppoint'   => $output_enable_noAppoint,
+                           'nickname'           => $thisResult['UNickname'],
+                           'realname'           => $thisResult['URealName'],
+                           'email'              => $thisResult['UEmail'],
+                           'memo'               => $thisResult['UMemo'])
+                );
+            }
+            return $result;
+        }
+        else {
+            return null;
+        }
     }
     
     /**
@@ -154,50 +253,25 @@ class DBUser extends Database {
      *         'class_id'           => <班級>,
      *         'enable'             => <啟用>,
      *         'build_time'         => <建立日期>,
+     *         'modify_time'        => <修改日期>,
      *         'learnStyle_mode'    => <偏好學習導引模式>,
      *         'material_mode'      => <偏好教材模式>,
+     *         'enable_noAppoint'   => <是否允許非預約學習>,
      *         'nickname'           => <暱稱>,
      *         'realname'           => <真實姓名>,
      *         'email'              => <電子郵件地址>,
      *         'memo'               => <備註>
      *     );
      * 
+     * @since 2.0.0
      */ 
     public function queryUser($uId) {
         
-        $sqlString = "SELECT * FROM ".$this->table('User').
-                     " WHERE `UID` = :uid";
-		
-		$query = $this->connDB->prepare($sqlString);
-		$query->bindParam(':uid', $uId);
-		$query->execute();
-		
-		$queryResultAll = $query->fetchAll();
+		$queryResultAll = $this->queryUserByWhere("`UID`=".$this->connDB->quote($uId));
+        
         // 如果有查到一筆以上
         if( count($queryResultAll) >= 1 ) {
-            $queryResult = $queryResultAll[0];
-
-            if($queryResult['UEnabled'] != '0') {
-                $output_enable = true;
-            }
-            else { $output_enable = false; }
-            
-            $result = array( 
-                'user_id'            => $queryResult['UID'],
-                'password'           => $queryResult['UPassword'],
-                'group_id'           => $queryResult['GID'],
-                'class_id'           => $queryResult['CID'],
-                'enable'             => $output_enable,
-                'build_time'         => $queryResult['UBuild_Time'],
-                'learnStyle_mode'    => $queryResult['LMode'],
-                'material_mode'      => $queryResult['MMode'],
-                'nickname'           => $queryResult['UNickname'],
-                'realname'           => $queryResult['UReal_Name'],
-                'email'              => $queryResult['UEmail'],
-                'memo'               => $queryResult['UMemo']
-            );
-
-            return $result;
+            return $queryResultAll[0];
         }
         // 若都沒查到的話
         else {
@@ -218,8 +292,10 @@ class DBUser extends Database {
      *             'class_id'           => <班級>,
      *             'enable'             => <啟用>,
      *             'build_time'         => <建立日期>,
+     *             'modify_time'        => <修改日期>,
      *             'learnStyle_mode'    => <偏好學習導引模式>,
      *             'material_mode'      => <偏好教材模式>,
+     *             'enable_noAppoint'   => <是否允許非預約學習>,
      *             'nickname'           => <暱稱>,
      *             'realname'           => <真實姓名>,
      *             'email'              => <電子郵件地址>,
@@ -229,45 +305,7 @@ class DBUser extends Database {
      * 
      */ 
     public function queryAllUser() {
-        
-        $sqlString = "SELECT * FROM ".$this->table('User');
-		
-		$query = $this->connDB->prepare($sqlString);
-		$query->execute();
-		
-		$queryResultAll = $query->fetchAll();
-        // 如果有查到一筆以上
-        if( count($queryResultAll) >= 1 ) {
-            // 製作回傳結果陣列
-            $result = array();
-            foreach($queryResultAll as $key => $thisResult) { 
-                
-                if($thisResult['UEnabled'] != '0') {
-                    $output_enable = true;
-                }
-                else { $output_enable = false; }
-                
-                array_push($result,
-                    array( 'user_id'            => $thisResult['UID'],
-                           'password'           => $thisResult['UPassword'],
-                           'group_id'           => $thisResult['GID'],
-                           'class_id'           => $thisResult['CID'],
-                           'enable'             => $output_enable,
-                           'build_time'         => $thisResult['UBuild_Time'],
-                           'learnStyle_mode'    => $thisResult['LMode'],
-                           'material_mode'      => $thisResult['MMode'],
-                           'nickname'           => $thisResult['UNickname'],
-                           'realname'           => $thisResult['UReal_Name'],
-                           'email'              => $thisResult['UEmail'],
-                           'memo'               => $thisResult['UMemo'])
-                );
-            }
-            return $result;
-        }
-        // 若都沒查到的話
-        else {
-            return null;
-        }
+        return $this->queryUserByWhere("1");
     }
     
     /**
@@ -283,33 +321,36 @@ class DBUser extends Database {
      * @param string $value 內容
      */ 
     public function changeUserData($uId, $field, $value) {
-        // UPDATE `UElearning`.`chu__User` SET `UMemo` = '測試者' WHERE `chu__User`.`UID` = 'yuan';
         
         $sqlField = null;
         switch($field) {
-            case 'user_id':         $sqlField = 'UID';         break;
-            case 'password':        $sqlField = 'UPassword';   break;
-            case 'group_id':        $sqlField = 'GID';         break;
-            case 'class_id':        $sqlField = 'CID';         break;
-            case 'enable':          $sqlField = 'UEnabled';    break;
-            case 'build_time':      $sqlField = 'UBuild_Time'; break;
-            case 'learnStyle_mode': $sqlField = 'LMode';       break;
-            case 'material_mode':   $sqlField = 'MMode';       break;
-            case 'nickname':        $sqlField = 'UNickname';   break;
-            case 'realname':        $sqlField = 'UReal_Name';  break;
-            case 'email':           $sqlField = 'UEmail';      break;
-            case 'memo':            $sqlField = 'UMemo';       break;
-            default:                $sqlField = $field;        break;
+            case 'user_id':          $sqlField = 'UID';               break;
+            case 'password':         $sqlField = 'UPassword';         break;
+            case 'group_id':         $sqlField = 'GID';               break;
+            case 'class_id':         $sqlField = 'CID';               break;
+            case 'enable':           $sqlField = 'UEnabled';          break;
+            case 'build_time':       $sqlField = 'UBuildTime';        break;
+            case 'modify_time':      $sqlField = 'UModifyTime';       break;
+            case 'learnStyle_mode':  $sqlField = 'LMode';             break;
+            case 'material_mode':    $sqlField = 'MMode';             break;
+            case 'enable_noAppoint': $sqlField = 'UEnable_NoAppoint'; break;
+            case 'nickname':         $sqlField = 'UNickname';         break;
+            case 'realname':         $sqlField = 'URealName';         break;
+            case 'email':            $sqlField = 'UEmail';            break;
+            case 'memo':             $sqlField = 'UMemo';             break;
+            default:                 $sqlField = $field;              break;
         }
         
         
         $sqlString = "UPDATE ".$this->table('User').
                      " SET `".$sqlField."` = :value".
+                     " , `UModifyTime` = NOW()".
                      " WHERE `UID` = :uid";
         
         $query = $this->connDB->prepare($sqlString);
 		$query->bindParam(':uid', $uId);
         $query->bindParam(':value', $value);
+        
 		$query->execute();
     }
     
@@ -318,18 +359,43 @@ class DBUser extends Database {
     /**
      * 插入群組資料
      * 
-     * @param string $gId              群組ID
-     * @param string $name             群組顯示名稱
-     * @param string $memo             備註
-     * @param string $auth_admin       Server端管理權
-     * @param string $auth_clientAdmin Client端管理權
+     * @param array $array 使用者群組資料陣列，格式為: 
+     *     
+     *     array( 'group_id'         => <群組ID>,
+     *            'name'             => <群組顯示名稱>,
+     *            'memo'             => <備註>,
+     *            'auth_admin'       => <Server端管理權>,
+     *            'auth_clientAdmin' => <Client端管理權>
+     *     );
+     * 
      */ 
-    public function insertGroup($gId, $name, $memo, $auth_admin, $auth_clientAdmin) {
+    public function insertGroup($array) {
+        
+        // TODO: 不填以下欄位也能進行操作
+        if( !isset($array['name']) ){
+            $array['name'] = null;
+        }
+        if( !isset($array['memo']) ){
+            $array['memo'] = null;
+        }
+        if( !isset($array['auth_admin']) ){
+            $array['auth_admin'] = null;
+        }
+        if( !isset($array['auth_clientAdmin']) ){
+            $array['auth_clientAdmin'] = null;
+        }
+
+        
+        $gId              = $array['group_id'];
+        $name             = $array['name'];
+        $memo             = $array['memo'];
+        $auth_admin       = $array['auth_admin'];
+        $auth_clientAdmin = $array['auth_clientAdmin'];
         
         // 紀錄使用者帳號進資料庫
         $sqlString = "INSERT INTO ".$this->table('AGroup').
-            " (`GID`, `GName`, `GMemo`, `GBuild_Time`, `GAuth_Admin`, `GAuth_ClientAdmin`)
-            VALUES ( :id , :name, :memo , NOW(), :auth_admin , :auth_clientAdmin )";
+            " (`GID`, `GName`, `GMemo`, `GAuth_Admin`, `GAuth_ClientAdmin`)
+            VALUES ( :id , :name, :memo , :auth_admin , :auth_clientAdmin )";
 
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":id", $gId);
@@ -355,13 +421,65 @@ class DBUser extends Database {
     }
     
     /**
+     * 內部使用的查詢動作
+     * @param string $where 查詢語法
+     * @return array 查詢結果陣列
+     */ 
+    protected function queryGroupByWhere($where) {
+        $sqlString = "SELECT * FROM ".$this->table('AGroup').
+                     " WHERE ".$where;
+		
+		$query = $this->connDB->prepare($sqlString);
+		$query->execute();
+		
+        $queryResultAll = $query->fetchAll();
+        // 如果有查到一筆以上
+        if( count($queryResultAll) >= 1 ) {
+            // 製作回傳結果陣列
+            $result = array();
+            foreach($queryResultAll as $key => $thisResult) { 
+                
+                // 轉換成boolean
+                if($thisResult['GAuth_Admin'] != '0') {
+                    $output_auth_admin = true;
+                } else { $output_auth_admin = false; }
+
+                if($thisResult['GAuth_ClientAdmin'] != '0') {
+                    $output_auth_clientAdmin = true;
+                } else { $output_auth_clientAdmin = false; }
+
+                // 製作回傳結果陣列
+                array_push($result, 
+                          array('group_id'         => $thisResult['GID'],
+                              'name'             => $thisResult['GName'],
+                              'memo'             => $thisResult['GMemo'],
+                              'build_time'       => $thisResult['GBuildTime'],
+                              'modify_time'      => $thisResult['GModifyTime'],
+                              'auth_admin'       => $output_auth_admin,
+                              'auth_clientAdmin' => $output_auth_clientAdmin)
+                );
+            }
+            
+            return $result;
+        }
+        // 若都沒查到的話
+        else {
+            return null;
+        }
+
+    }
+    
+    /**
      * 查詢一個使用者群組資料
      * 
+     * @param string $gId 群組ID
      * @return array 使用者群組資料陣列，格式為: 
      *     
      *     array( 'group_id'         => <群組ID>,
      *            'name'             => <群組顯示名稱>,
      *            'memo'             => <備註>,
+     *            'build_time'       => <建立時間>,
+     *            'modify_time'      => <修改時間>,
      *            'auth_admin'       => <Server端管理權>,
      *            'auth_clientAdmin' => <Client端管理權>
      *     );
@@ -369,36 +487,11 @@ class DBUser extends Database {
      */ 
     public function queryGroup($gId) {
     
-        $sqlString = "SELECT * FROM ".$this->table('AGroup').
-                     " WHERE `GID` = :gid";
-		
-		$query = $this->connDB->prepare($sqlString);
-		$query->bindParam(':gid', $gId);
-		$query->execute();
-		
-        $queryResultAll = $query->fetchAll();
+        $queryResultAll = $this->queryGroupByWhere("`GID`=".$this->connDB->quote($gId));
+        
         // 如果有查到一筆以上
         if( count($queryResultAll) >= 1 ) {
-            $thisResult = $queryResultAll[0];
-            
-            // 轉換成boolean
-            if($thisResult['GAuth_Admin'] != '0') {
-                $output_auth_admin = true;
-            } else { $output_auth_admin = false; }
-
-            if($thisResult['GAuth_ClientAdmin'] != '0') {
-                $output_auth_clientAdmin = true;
-            } else { $output_auth_clientAdmin = false; }
-            
-            // 製作回傳結果陣列
-            $result = array('group_id'          => $thisResult['GID'],
-                            'name'              => $thisResult['GName'],
-                            'memo'              => $thisResult['GMemo'],
-                            'build_time'        => $thisResult['GBuild_Time'],
-                            'auth_admin'        => $output_auth_admin,
-                            'auth_clientAdmin'  => $output_auth_clientAdmin
-            );
-            return $result;
+            return $queryResultAll[0];
         }
         // 若都沒查到的話
         else {
@@ -416,6 +509,8 @@ class DBUser extends Database {
      *             'group_id'         => <群組ID>,
      *             'name'             => <群組顯示名稱>,
      *             'memo'             => <備註>,
+     *             'build_time'       => <建立時間>,
+     *             'modify_time'      => <修改時間>,
      *             'auth_admin'       => <Server端管理權>,
      *             'auth_clientAdmin' => <Client端管理權>
      *         )
@@ -424,43 +519,7 @@ class DBUser extends Database {
      */ 
     public function queryAllGroup() {
     
-        $sqlString = "SELECT * FROM ".$this->table('AGroup');
-        
-		$query = $this->connDB->prepare($sqlString);
-		$query->execute();
-		
-        $queryResultAll = $query->fetchAll();
-        // 如果有查到一筆以上
-        if( count($queryResultAll) >= 1 ) {
-            // 製作回傳結果陣列
-            $result = array();
-            foreach($queryResultAll as $key => $thisResult) { 
-                
-                // 轉換成boolean
-                if($thisResult['GAuth_Admin'] != '0') {
-                    $output_auth_admin = true;
-                } else { $output_auth_admin = false; }
-                
-                if($thisResult['GAuth_ClientAdmin'] != '0') {
-                    $output_auth_clientAdmin = true;
-                } else { $output_auth_clientAdmin = false; }
-                
-                // 插入一筆資料
-                array_push($result,
-                    array( 'group_id'          => $thisResult['GID'],
-                           'name'              => $thisResult['GName'],
-                           'memo'              => $thisResult['GMemo'],
-                           'build_time'        => $thisResult['GBuild_Time'],
-                           'auth_admin'        => $output_auth_admin,
-                           'auth_clientAdmin'  => $output_auth_clientAdmin)
-                );
-            }
-            return $result;
-        }
-        // 若都沒查到的話
-        else {
-            return null;
-        }
+        return $this->queryGroupByWhere('1');
     }
     
     /**
@@ -476,11 +535,10 @@ class DBUser extends Database {
      * @param string $value 內容
      */ 
     public function changeGroupData($gId, $field, $value) {
-        // UPDATE `UElearning`.`chu__User` SET `UMemo` = '測試者' WHERE `chu__User`.`UID` = 'yuan';
         
         $sqlField = null;
         switch($field) {
-            case 'group_id':         $sqlField = 'UID';                 break;
+            case 'group_id':         $sqlField = 'GID';                 break;
             case 'name':             $sqlField = 'GName';               break;
             case 'memo':             $sqlField = 'GMemo';               break;
             case 'auth_admin':       $sqlField = 'GAuth_Admin';         break;
@@ -491,6 +549,7 @@ class DBUser extends Database {
         
         $sqlString = "UPDATE ".$this->table('AGroup').
                      " SET `".$sqlField."` = :value".
+                     " , `GModifyTime` = NOW()".
                      " WHERE `GID` = :gid";
         
         $query = $this->connDB->prepare($sqlString);
@@ -504,17 +563,26 @@ class DBUser extends Database {
     /**
      * 插入班級資料
      * 
-     * @param  string $cId  班級ID
-     * @param  string $name 班級顯示名稱
-     * @param  string $memo 備註
+     * @param  array $array 班級資料陣列，格式為: 
+     *     
+     *     array( 'class_id'         => <班級ID>,
+     *            'name'             => <班級顯示名稱>,
+     *            'memo'             => <備註>
+     *     );
+     * 
      * @return int    剛剛新增的ID
      */ 
-    public function insertClassGroup($cId, $name, $memo) {
+    public function insertClassGroup($array) {
+        
+        $cId  = $array['class_id'];
+        // TODO: 不填以下欄位也能進行操作
+        $name = $array['name'];
+        $memo = $array['memo'];
         
         // 紀錄使用者帳號進資料庫
         $sqlString = "INSERT INTO ".$this->table('CGroup').
-            " (`CID`, `CName`, `CMemo`, `CBuild_Time`)
-            VALUES ( :id , :name, :memo , NOW() )";
+            " (`CID`, `CName`, `CMemo`)
+            VALUES ( :id , :name , :memo )";
 
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":id", $cId);
@@ -526,6 +594,8 @@ class DBUser extends Database {
         $sqlString = "SELECT LAST_INSERT_ID()";
         $query = $this->connDB->query($sqlString);
         $queryResult = $query->fetch();
+        
+        if(isset($cId)) return $cId;
         return $queryResult[0];
     }
     
@@ -544,37 +614,62 @@ class DBUser extends Database {
     }
     
     /**
-     * 查詢一個班級資料
-     * 
-     * @return array 班級資料陣列，格式為: 
-     *     
-     *     array( 'class_id'         => <班級ID>,
-     *            'name'             => <班級顯示名稱>,
-     *            'memo'             => <備註>,
-     *            'build_time'       => <建立時間>
-     *     );
-     * 
+     * 內部使用的查詢動作
+     * @param string $where 查詢語法
+     * @return array 查詢結果陣列
      */ 
-    public function queryClassGroup($cId) {
-    
+    protected function queryClassByWhere($where) {
         $sqlString = "SELECT * FROM ".$this->table('CGroup').
-                     " WHERE `CID` = :cid";
+                     " WHERE ".$where;
 		
 		$query = $this->connDB->prepare($sqlString);
-		$query->bindParam(':cid', $cId);
 		$query->execute();
 		
         $queryResultAll = $query->fetchAll();
         // 如果有查到一筆以上
         if( count($queryResultAll) >= 1 ) {
-            $thisResult = $queryResultAll[0];
             // 製作回傳結果陣列
-            $result = array('class_id'          => $thisResult['CID'],
-                            'name'              => $thisResult['CName'],
-                            'memo'              => $thisResult['CMemo'],
-                            'build_time'        => $thisResult['CBuild_Time']
-            );
+            $result = array();
+            foreach($queryResultAll as $key => $thisResult) { 
+                array_push($result,
+                    array( 'class_id'          => $thisResult['CID'],
+                           'name'              => $thisResult['CName'],
+                           'memo'              => $thisResult['CMemo'],
+                           'build_time'        => $thisResult['CBuildTime'],
+                           'modify_time'       => $thisResult['CModifyTime'])
+                );
+            }
+            
             return $result;
+        }
+        // 若都沒查到的話
+        else {
+            return null;
+        }
+
+    }
+    
+    /**
+     * 查詢一個班級資料
+     * 
+     * @param int $cId 班級ID
+     * @return array 班級資料陣列，格式為: 
+     *     
+     *     array( 'class_id'         => <班級ID>,
+     *            'name'             => <班級顯示名稱>,
+     *            'memo'             => <備註>,
+     *            'build_time'       => <建立時間>,
+     *            'modify_time'      => <修改時間>
+     *     );
+     * 
+     */ 
+    public function queryClassGroup($cId) {
+    
+        $queryResultAll = $this->queryClassByWhere("`CID`=".$this->connDB->quote($cId));
+        
+        // 如果有查到一筆以上
+        if( count($queryResultAll) >= 1 ) {
+            return $queryResultAll[0];
         }
         // 若都沒查到的話
         else {
@@ -592,37 +687,15 @@ class DBUser extends Database {
      *             'class_id'         => <班級ID>,
      *             'name'             => <班級顯示名稱>,
      *             'memo'             => <備註>,
-     *             'build_time'       => <建立時間>
+     *             'build_time'       => <建立時間>,
+     *             'modify_time'      => <修改時間>
      *         )
      *     );
      * 
      */ 
     public function queryAllClassGroup() {
     
-        $sqlString = "SELECT * FROM ".$this->table('CGroup');
-        
-		$query = $this->connDB->prepare($sqlString);
-		$query->execute();
-		
-        $queryResultAll = $query->fetchAll();
-        // 如果有查到一筆以上
-        if( count($queryResultAll) >= 1 ) {
-            // 製作回傳結果陣列
-            $result = array();
-            foreach($queryResultAll as $key => $thisResult) { 
-                array_push($result,
-                    array( 'class_id'          => $thisResult['CID'],
-                           'name'              => $thisResult['CName'],
-                           'memo'              => $thisResult['CMemo'],
-                           'build_time'        => $thisResult['CBuild_Time'])
-                );
-            }
-            return $result;
-        }
-        // 若都沒查到的話
-        else {
-            return null;
-        }
+        return $this->queryClassByWhere('1');
     }
     
     /**
@@ -650,6 +723,7 @@ class DBUser extends Database {
         
         $sqlString = "UPDATE ".$this->table('CGroup').
                      " SET `".$sqlField."` = :value".
+                     " , `CModifyTime` = NOW()".
                      " WHERE `CID` = :cid";
         
         $query = $this->connDB->prepare($sqlString);

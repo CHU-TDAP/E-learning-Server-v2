@@ -58,9 +58,10 @@ class UserAdmin {
      *            'group_id'           => 'user',
      *            'class_id'           => '5-2',             // (optional)
      *            'enable'             => true,              // (optional) 預設為true
-     *            'learnStyle_mode'    => 'harf-line-learn', // (optional)
-     *            'material_mode'      => 1,                 // (optional)
-     *            'nickname'           => 'eric',            // (optional)
+     *            'learnStyle_mode'    => 3,                 // (optional)
+     *            'material_mode'      => 'normal',          // (optional)
+     *            'material_mode'      => 'normal',          // (optional)
+     *            'enable_noAppoint'   => true,            // (optional)
      *            'realname'           => 'Eric Chiu',       // (optional)
      *            'email'              => 'eric@example.tw', // (optional)
      *            'memo'               => '' )               // (optional)
@@ -99,6 +100,9 @@ class UserAdmin {
                 if( !isset($userInfoArray['material_mode']) ){
                     $userInfoArray['material_mode'] = null;
                 }
+                if( !isset($userInfoArray['enable_noAppoint']) ){
+                    $userInfoArray['enable_noAppoint'] = null;
+                }
                 if( !isset($userInfoArray['nickname']) ){
                     $userInfoArray['nickname'] = null;
                 }
@@ -119,18 +123,22 @@ class UserAdmin {
                 // 新增一筆使用者資料進資料庫
                 $db = new Database\DBUser();
                 $db->insertUser(
-                    $userInfoArray['user_id'], 
-                    $passwdEncrypted, 
-                    $userInfoArray['group_id'], 
-                    $userInfoArray['class_id'], 
-                    $userInfoArray['enable'], 
-                    $userInfoArray['learnStyle_mode'], 
-                    $userInfoArray['material_mode'], 
-                    $userInfoArray['nickname'], 
-                    $userInfoArray['realname'], 
-                    $userInfoArray['email'], 
-                    $userInfoArray['memo']
+                    array(
+                        'user_id'            => $userInfoArray['user_id'],
+                        'password'           => $passwdEncrypted,
+                        'group_id'           => $userInfoArray['group_id'],
+                        'class_id'           => $userInfoArray['class_id'],
+                        'enable'             => $userInfoArray['enable'],
+                        'learnStyle_mode'    => $userInfoArray['learnStyle_mode'], 
+                        'material_mode'      => $userInfoArray['material_mode'],
+                        'enable_noAppoint'   => $userInfoArray['enable_noAppoint'],
+                        'nickname'           => $userInfoArray['nickname'],
+                        'realname'           => $userInfoArray['realname'],
+                        'email'              => $userInfoArray['email'],
+                        'memo'               => $userInfoArray['memo']
+                    )
                 );
+                
             }
         }
         else throw Exception\NoDataException();

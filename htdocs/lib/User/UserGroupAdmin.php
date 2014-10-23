@@ -86,11 +86,12 @@ class UserGroupAdmin {
                 // 新增一筆使用者資料進資料庫
                 $db = new Database\DBUser();
                 $db->insertGroup(
-                    $groupArray['group_id'], 
-                    $groupArray['name'], 
-                    $groupArray['memo'], 
-                    $groupArray['auth_server_admin'], 
-                    $groupArray['auth_client_admin']
+                    array( 'group_id'         => $groupArray['group_id'],
+                           'name'             => $groupArray['name'],
+                           'memo'             => $groupArray['memo'],
+                           'auth_admin'       => $groupArray['auth_server_admin'],
+                           'auth_clientAdmin' => $groupArray['auth_client_admin']
+                    )
                 );
             }
         }
