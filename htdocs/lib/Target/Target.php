@@ -1,6 +1,6 @@
 <?php
 /**
- * 此位使用者的相關操作
+ * Target.php
  */
 
 namespace UElearning\Target;

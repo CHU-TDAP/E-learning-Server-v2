@@ -1,6 +1,6 @@
 <?php
 /**
- * 資料庫相關的例外檔案
+ * Exception.php
  */
 
 namespace UElearning\Exception;

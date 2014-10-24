@@ -1,6 +1,6 @@
 <?php
 /**
- * 密碼以及加密相關的函式庫
+ * Password.php
  */
 
 namespace UElearning\Util;

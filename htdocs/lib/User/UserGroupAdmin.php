@@ -1,6 +1,6 @@
 <?php 
 /**
- * 使用者群組管理類別檔案
+ * UserGroupAdmin.php
  */
 
 namespace UElearning\User;

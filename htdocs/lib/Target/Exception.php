@@ -1,6 +1,6 @@
 <?php
 /**
- * 使用者帳號群組相關例外類別檔案
+ * Exception.php
  */
 
 namespace UElearning\Exception;

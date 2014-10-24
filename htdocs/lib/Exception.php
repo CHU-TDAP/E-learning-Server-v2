@@ -1,5 +1,7 @@
 <?php
 /**
+ * Exception.php
+ * 
  * 通用例外類別檔案
  */
 

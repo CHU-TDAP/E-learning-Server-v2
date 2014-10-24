@@ -1,6 +1,6 @@
 <?php
 /**
- * 資料庫連接專用
+ * MySQLDB.php
  *
  * 有用到的Define:
  * DB_NAME, DB_HOST, DB_USER, DB_PASS

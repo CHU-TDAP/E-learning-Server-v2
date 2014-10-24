@@ -1,6 +1,6 @@
 <?php
 /**
- * 廳專用類別
+ * Hall.php
  */
 
 namespace UElearning\Target;
