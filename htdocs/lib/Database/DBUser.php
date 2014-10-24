@@ -170,8 +170,18 @@ class DBUser extends Database {
      * @return array 查詢結果陣列
      */ 
     protected function queryUserByWhere($where) {
-        $sqlString = "SELECT * FROM ".$this->table('User').
-                     " WHERE ".$where;
+        
+        $sqlString = "SELECT `UID`, `UPassword`, ".
+                     "`group`.`GID`, `group`.`GName`, `class`.`CID`, `class`.`CName`, ".
+                     "`UEnabled`, `UBuildTime`, `UModifyTime`, ".
+                     "`LMode`, `MMode`, `UEnable_NoAppoint`, ".
+                     "`UNickname`, `URealName`, `UEmail`, `UMemo` ".
+                     "FROM `".$this->table('User')."` AS `user` ".
+                     "LEFT JOIN `".$this->table('AGroup')."` as `group` ".
+                     "ON `group`.`GID` = `user`.`GID`".
+                     "LEFT JOIN `".$this->table('CGroup')."` as `class` ".
+                     "ON `class`.`CID` = `user`.`CID`".
+                     "WHERE ".$where;
 		
 		$query = $this->connDB->prepare($sqlString);
 		$query->execute();
@@ -197,7 +207,9 @@ class DBUser extends Database {
                     array( 'user_id'            => $thisResult['UID'],
                            'password'           => $thisResult['UPassword'],
                            'group_id'           => $thisResult['GID'],
+                           'group_name'         => $thisResult['GName'],
                            'class_id'           => $thisResult['CID'],
+                           'class_name'         => $thisResult['CName'],
                            'enable'             => $output_enable,
                            'build_time'         => $thisResult['UBuildTime'],
                            'modify_time'        => $thisResult['UModifyTime'],

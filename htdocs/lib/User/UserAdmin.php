@@ -60,8 +60,8 @@ class UserAdmin {
      *            'enable'             => true,              // (optional) 預設為true
      *            'learnStyle_mode'    => 3,                 // (optional)
      *            'material_mode'      => 'normal',          // (optional)
-     *            'material_mode'      => 'normal',          // (optional)
-     *            'enable_noAppoint'   => true,            // (optional)
+     *            'nickname'           => '元兒～',           // (optional)
+     *            'enable_noAppoint'   => true,              // (optional)
      *            'realname'           => 'Eric Chiu',       // (optional)
      *            'email'              => 'eric@example.tw', // (optional)
      *            'memo'               => '' )               // (optional)

@@ -170,6 +170,16 @@ class User {
 	public function getCreateTime(){
 		return $this->queryResultArray['build_time'];
 	}
+    
+    /**
+	 * 取得帳號資訊修改時間
+	 *
+	 * @return string 修改時間
+     * @since 2.0.0
+	 */
+	public function getModifyTime(){
+		return $this->queryResultArray['modify_time'];
+	}
 	// ========================================================================
 	
 	/**
@@ -178,7 +188,7 @@ class User {
 	 * @return string 群組ID
      * @since 2.0.0
 	 */
-	public function getGroup(){
+	public function getGroupID(){
 		return $this->queryResultArray['group_id'];
 	}
 	
@@ -191,17 +201,7 @@ class User {
 	 */
 	public function getGroupName(){
         
-        // 群組ID
-        $groupID = $this->queryResultArray['group_id'];
-        
-        // 取得群組名稱
-		try {
-            $group = new User\UserGroup($groupID);
-            return $group->getName();
-        }
-        catch (Exception\GroupNoFoundException $e) {
-            throw $e;
-        }
+        return $this->queryResultArray['group_name'];
 	}
 	
 	/**
@@ -259,22 +259,7 @@ class User {
      * @since 2.0.0
 	 */
 	public function getClassName(){
-		// TODO: 取得所在群組顯示名稱
-        // 群組ID
-        $classID = $this->queryResultArray['class_id'];
-        
-        // 檢查有此群組
-        if(isset($classID)) {
-            // 取得群組名稱
-            try {
-                $group = new ClassGroup($classID);
-                return $group->getName();
-            }
-            catch (Exception\ClassNoFoundException $e) {
-                throw $e;
-            }
-        }
-        else return null;
+		return $this->queryResultArray['class_name'];
 	}
 	
 	/**
@@ -349,22 +334,27 @@ class User {
     /**
 	 * 取得這個人的學習導引風格
 	 *
-	 * @return string 學習導引風格
+	 * @return int 將推薦幾個學習點
      * @since 2.0.0
 	 */
 	public function getLearnStyle(){
-		// TODO: 取得這個人的學習導引風格
+		return $this->queryResultArray['learnStyle_mode'];
 	}
 	
 	/**
 	 * 設定這個人的學習導引風格
 	 *
-	 * @param string $style 學習導引風格
+	 * @param int $style 將推薦幾個學習點
      * @since 2.0.0
 	 */
 	public function setLearnStyle($style){
-		// TODO: 設定這個人的學習導引風格
 		
+        if( $style >= 0 ) {
+            $this->setUpdate('learnStyle_mode', $style);
+        }
+		else {
+            throw new \UnexpectedValueException();
+        }
 	
 	}
     
@@ -375,7 +365,7 @@ class User {
      * @since 2.0.0
 	 */
 	public function getMaterialStyle(){
-		// TODO: 取得這個人的教材風格
+		return $this->queryResultArray['material_mode'];
 	}
 	
 	/**
@@ -385,9 +375,9 @@ class User {
      * @since 2.0.0
 	 */
 	public function setMaterialStyle($style){
-		// TODO: 設定這個人的教材風格
-		
-	
+        
+		// TODO: 防呆- 無此教材
+		$this->setUpdate('material_mode', $style);
 	}
     
     // ========================================================================
