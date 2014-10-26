@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- 主機: localhost
--- 產生時間： 2014 年 10 月 23 日 22:19
+-- 產生時間： 2014 年 10 月 26 日 18:14
 -- 伺服器版本: 5.6.16
 -- PHP 版本： 5.5.9
 
@@ -104,7 +104,15 @@ CREATE TABLE IF NOT EXISTS `chu__CGroup` (
   `CBuildTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `CModifyTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`CID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者班級分類' AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者班級分類' AUTO_INCREMENT=3 ;
+
+--
+-- 資料表的匯出資料 `chu__CGroup`
+--
+
+INSERT INTO `chu__CGroup` (`CID`, `CName`, `CMemo`, `CBuildTime`, `CModifyTime`) VALUES
+(1, NULL, NULL, '2014-10-26 11:00:39', '2014-10-26 11:00:39'),
+(2, NULL, NULL, '2014-10-26 11:00:55', '2014-10-26 11:00:55');
 
 -- --------------------------------------------------------
 
@@ -1163,10 +1171,12 @@ CREATE TABLE IF NOT EXISTS `chu__StudyActivity` (
   `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `ThID` int(10) NOT NULL COMMENT '主題編號',
   `StartTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
-  `MMode` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
+  `EndTime` timestamp NULL DEFAULT NULL,
   `LearnTime` int(4) NOT NULL,
-  `Delay` int(11) NOT NULL DEFAULT '0' COMMENT '實際狀態延誤(分)',
+  `Delay` int(11) NOT NULL DEFAULT '0',
+  `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
+  `LModeForce` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否拒絕前往非推薦點進行學習',
+  `MMode` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
   PRIMARY KEY (`SaID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='學習活動' AUTO_INCREMENT=1 ;
 
@@ -1196,10 +1206,10 @@ CREATE TABLE IF NOT EXISTS `chu__StudyWill` (
   `ThID` int(10) NOT NULL COMMENT '主題編號',
   `StartTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '預約生效時間',
   `ExpiredTime` int(11) NOT NULL COMMENT '過期時間',
+  `LearnTime` int(4) NOT NULL,
   `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
+  `LModeForce` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否拒絕前往非推薦點進行學習',
   `MMode` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
-  `LearnTime` int(4) NOT NULL COMMENT '學習總時間',
-  `Delay` int(11) NOT NULL DEFAULT '0' COMMENT '實際狀態延誤(分)',
   `Lock` tinyint(1) NOT NULL DEFAULT '1' COMMENT '鎖定不讓學生更改',
   `BuildTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ModifyTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
