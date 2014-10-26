@@ -153,7 +153,7 @@ class DBTarget extends Database {
      * @param string $field 欄位名稱
      * @param string $value 內容
      */ 
-    function changeTargetData($tId, $field, $value) {
+    public function changeTargetData($tId, $field, $value) {
         $sqlField = null;
         switch($field) {
             case 'area_id':       $sqlField = 'AID';         break;
