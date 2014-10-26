@@ -240,7 +240,7 @@ class UserSession {
      * @return int 所有以登入的數量
      * @since 2.0.0
      */ 
-    public function getLoginTotalByUserId($userId) {
+    public function getCurrentLoginTotalByUserId($userId) {
         
         // 確保若無此使用者則丟例外
         $user = new User($userId);

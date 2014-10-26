@@ -6,6 +6,7 @@
 namespace UElearning\User;
 
 require_once UELEARNING_LIB_ROOT.'/Database/DBUser.php';
+require_once UELEARNING_LIB_ROOT.'/User/ClassGroup.php';
 require_once UELEARNING_LIB_ROOT.'/Exception.php';
 use UElearning\Database;
 use UElearning\Exception;
@@ -140,6 +141,83 @@ class ClassGroupAdmin {
             throw new Exception\ClassNoFoundException($class_id);
         }
         
+    }
+    
+    /**
+     * 取得所有的班級ID清單
+     * 
+     * @return array 班級ID清單
+     * @since 2.0.0
+     */ 
+    public function getIDList() {
+        
+        $db = new Database\DBUser();
+        $queryResult = $db->queryAllClassGroup();
+        
+        if(isset($queryResult)) {
+            
+            $output = array();
+            foreach($queryResult as $key => $value) {
+                array_push($output, $value['class_id']);
+            }
+            
+            return $output;
+        }
+        else {
+            
+            return null;
+        }
+    }
+    
+    /**
+     * 取得所有的班級資訊清單
+     * 
+     * @return array 班級資訊清單陣列，格式為:
+     * 
+     *     array(
+     *         array(
+     *             'class_id'         => <班級ID>,
+     *             'name'             => <班級顯示名稱>,
+     *             'memo'             => <備註>,
+     *             'build_time'       => <建立時間>,
+     *             'modify_time'      => <修改時間>
+     *         )
+     *     );
+     * 
+     * @since 2.0.0
+     */ 
+    public function getInfoList() {
+        
+        $db = new Database\DBUser();
+        $queryResult = $db->queryAllClassGroup();
+        return $queryResult;
+    }
+    
+    /**
+     * 取得所有的班級清單
+     * 
+     * @return array 班級物件
+     * @since 2.0.0
+     */ 
+    public function getObjectList() {
+        
+        $db = new Database\DBUser();
+        $queryResult = $db->queryAllClassGroup();
+        
+        if(isset($queryResult)) {
+            
+            $output = array();
+            foreach($queryResult as $key => $value) {
+                $group = new ClassGroup($value['class_id']);
+                array_push($output, $group);
+            }
+            
+            return $output;
+        }
+        else {
+            
+            return null;
+        }
     }
 
 }
