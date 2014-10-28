@@ -30,7 +30,7 @@ class DBTarget extends Database {
      * @param string $where 查詢語法
      * @return array 查詢結果陣列
      */ 
-    public function queryTargetByWhere($where) {
+    protected function queryTargetByWhere($where) {
         
         $sqlString = "SELECT `TID`, Target.`AID`, Area.`HID`, ".
                      "`TNum`, `TName`, `TMapID`, `TLearnTime`, ".
@@ -188,7 +188,7 @@ class DBTarget extends Database {
      * @param string $where 查詢語法
      * @return array 查詢結果陣列
      */ 
-    private function queryAreaByWhere($where) {
+    protected function queryAreaByWhere($where) {
         
         $sqlString = "SELECT * FROM `".$this->table('Area')."`".
                      "WHERE ".$where;
@@ -329,7 +329,7 @@ class DBTarget extends Database {
      * @param string $where 查詢語法
      * @return array 查詢結果陣列
      */ 
-    private function queryHallByWhere($where) {
+    protected function queryHallByWhere($where) {
         
         $sqlString = "SELECT * FROM `".$this->table('Hall')."`".
                      "WHERE ".$where;

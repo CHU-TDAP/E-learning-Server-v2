@@ -48,7 +48,7 @@ use UElearning\User;
  * 
  * @version         2.0.0
  * @package         UElearning
- * @subpackage      Target
+ * @subpackage      Study
  */
 class StudyActivity {
     /**

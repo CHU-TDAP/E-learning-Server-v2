@@ -150,7 +150,7 @@ class DBStudyActivity extends Database {
      * @param string $where 查詢語法
      * @return array 查詢結果陣列
      */ 
-    public function queryActivityByWhere($where) {
+    protected function queryActivityByWhere($where) {
         
         $sqlString = "SELECT `SaID`, `UID`, `ThID`, ".
                      "`StartTime`, `EndTime`, ".

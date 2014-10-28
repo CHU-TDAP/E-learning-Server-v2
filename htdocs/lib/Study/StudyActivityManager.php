@@ -16,7 +16,7 @@ use UElearning\Exception;
  * 
  * @version         2.0.0
  * @package         UElearning
- * @subpackage      Target
+ * @subpackage      Study
  */
 class StudyActivityManager {
     

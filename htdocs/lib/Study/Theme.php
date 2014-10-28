@@ -5,8 +5,8 @@
 
 namespace UElearning\Study;
 
-//require_once UELEARNING_LIB_ROOT.'/Database/DBTarget.php';
-//require_once UELEARNING_LIB_ROOT.'/Target/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/Database/DBTheme.php';
+require_once UELEARNING_LIB_ROOT.'/Study/Exception.php';
 use UElearning\Database;
 use UElearning\Exception;
 
@@ -15,9 +15,31 @@ use UElearning\Exception;
  * 
  * 一個物件即代表這一個主題
  * 
+ * 使用範例:
+ * 
+ *     require_once __DIR__.'/../config.php';
+ *     require_once UELEARNING_LIB_ROOT.'/Study/Theme.php';
+ *     use UElearning\Study;
+ *     use UElearning\Exception;
+ * 
+ *     try{
+ *         $theme = new Study\Theme(1);
+ *         
+ *         echo $theme->getId();
+ *         echo $theme->getName();
+ *         echo $theme->getIntroduction();
+ *         echo $theme->getLearnTime();
+ *         echo $theme->getCreateTime();
+ *         echo $theme->getModifyTime();
+ *         
+ *     }
+ *     catch (Exception\ThemeNoFoundException $e) {
+ *         echo 'No Found theme: '. $e->getId();
+ *     }
+ * 
  * @version         2.0.0
  * @package         UElearning
- * @subpackage      Target
+ * @subpackage      Study
  */
 class Theme {
     
@@ -25,7 +47,7 @@ class Theme {
      * 主題ID
      * @type int 
      */
-	protected $tId;
+	protected $id;
     
     // ------------------------------------------------------------------------
     
@@ -40,20 +62,20 @@ class Theme {
 	/**
 	 * 從資料庫取得查詢
 	 *
-     * @throw UElearning\Exception\AreaNoFoundException 
+     * @throw \UElearning\Exception\ThemeNoFoundException 
 	 * @since 2.0.0
 	 */
 	protected function getQuery(){
         // TODO: 從資料庫取得查詢
         //// 從資料庫查詢
-        //$db = new Database\DBTarget();
-        //$areaInfo = $db->queryArea($this->aId);
-//
-        //// 判斷有沒有這個
-        //if( $areaInfo != null ) {
-        //    $this->queryResultArray = $areaInfo;
-        //}
-        //else throw new Exception\AreaNoFoundException($this->aId);
+        $db = new Database\DBTheme();
+        $info = $db->queryTheme($this->id);
+        
+        // 判斷有沒有這個
+        if( $info != null ) {
+            $this->queryResultArray = $info;
+        }
+        else throw new Exception\ThemeNoFoundException($this->id);
 	}
     
     /**
@@ -77,8 +99,8 @@ class Theme {
 	 * @param int $inputTID 主題ID
      * @since 2.0.0
 	 */
-	public function __construct($inputTID){
-		$this->tId = $inputAID;
+	public function __construct($inputID){
+		$this->id = $inputID;
 		$this->getQuery();
 	}
 	
@@ -91,7 +113,7 @@ class Theme {
      * @since 2.0.0
 	 */
 	public function getId(){
-		return $this->tId;
+		return $this->id;
 	}
     
 	/**
@@ -111,7 +133,7 @@ class Theme {
      * @since 2.0.0
 	 */
 	public function getIntroduction(){
-		//return $this->queryResultArray['name'];
+		return $this->queryResultArray['introduction'];
 	}
     
     /**
@@ -121,7 +143,7 @@ class Theme {
      * @since 2.0.0
 	 */
 	public function getLearnTime(){
-		//return $this->queryResultArray['name'];
+		return $this->queryResultArray['learn_time'];
 	}
     
     /**

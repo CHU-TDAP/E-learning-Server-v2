@@ -27,20 +27,18 @@ class UserGroupAdmin {
      * 
      * 建立使用者群組範例:
      * 
+     *     // 建立班級
      *     try {
-     *         $groupAdmin = new User\UserGroupAdmin();
-     *         $groupAdmin->create(
-     *             array( 'group_id' => 'student',
-     *                    'name' => '學生',
-     *                    'memo' => null,
-     *                    'auth_server_admin' => false,
-     *                    'auth_client_admin' => false
+     *         $classAdmin = new User\ClassGroupAdmin();
+     *         $newClassId = $classAdmin->create(
+     *             array( 'name' => '五年十班',
+     *                    'memo' => null
      *         ));
-     *     
+     *         echo '你剛建立:'.$newClassId;
      *     }
-     *     // 若已有重複群組ID
-     *     catch (Exception\GroupIdExistException $e) {
-     *         echo 'Is exist group: ',  $e->getGroupId();
+     *     // 若已有重複班級ID
+     *     catch (Exception\ClassIdExistException $e) {
+     *         echo 'Is exist class: ',  $e->getGroupId();
      *     }
      * 
      * @param array $groupArray 使用者群組資訊陣列，格式為:
