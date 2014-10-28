@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- 主機: localhost
--- 產生時間： 2014 年 10 月 26 日 18:14
+-- 產生時間： 2014 年 10 月 28 日 07:28
 -- 伺服器版本: 5.6.16
 -- PHP 版本： 5.5.9
 
@@ -1065,6 +1065,20 @@ INSERT INTO `chu__Hall` (`HID`, `HName`, `HMapID`, `HIntroduction`) VALUES
 -- --------------------------------------------------------
 
 --
+-- 資料表結構 `chu__Log`
+--
+
+CREATE TABLE IF NOT EXISTS `chu__Log` (
+  `LID` int(11) NOT NULL AUTO_INCREMENT,
+  `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `Date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `Encode` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`LID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- 資料表結構 `chu__Material`
 --
 
@@ -1168,31 +1182,18 @@ CREATE TABLE IF NOT EXISTS `chu__Study` (
 
 CREATE TABLE IF NOT EXISTS `chu__StudyActivity` (
   `SaID` int(10) NOT NULL AUTO_INCREMENT COMMENT '學習活動流水編號',
-  `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT '使用者ID',
   `ThID` int(10) NOT NULL COMMENT '主題編號',
-  `StartTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `EndTime` timestamp NULL DEFAULT NULL,
-  `LearnTime` int(4) NOT NULL,
-  `Delay` int(11) NOT NULL DEFAULT '0',
+  `StartTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '開始學習時間',
+  `EndTime` timestamp NULL DEFAULT NULL COMMENT '結束學習時間（學習中為NULL）',
+  `LearnTime` int(4) NOT NULL COMMENT '預定學習所需時間',
+  `Delay` int(11) NOT NULL DEFAULT '0' COMMENT '時間延長',
+  `TimeForce` tinyint(1) NOT NULL DEFAULT '0' COMMENT '學習時間已過是否強制中止學習',
   `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
   `LModeForce` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否拒絕前往非推薦點進行學習',
   `MMode` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
   PRIMARY KEY (`SaID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='學習活動' AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `chu__StudyQuestion`
---
-
-CREATE TABLE IF NOT EXISTS `chu__StudyQuestion` (
-  `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `TID` int(10) NOT NULL,
-  `QID` int(11) NOT NULL,
-  `UAns` int(11) NOT NULL,
-  `CAns` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='學習時的回答統計';
 
 -- --------------------------------------------------------
 
@@ -1205,8 +1206,9 @@ CREATE TABLE IF NOT EXISTS `chu__StudyWill` (
   `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `ThID` int(10) NOT NULL COMMENT '主題編號',
   `StartTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '預約生效時間',
-  `ExpiredTime` int(11) NOT NULL COMMENT '過期時間',
+  `ExpiredTime` timestamp NULL DEFAULT NULL COMMENT '過期時間',
   `LearnTime` int(4) NOT NULL,
+  `TimeForce` tinyint(1) NOT NULL DEFAULT '1' COMMENT '學習時間已過是否強制中止學習',
   `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
   `LModeForce` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否拒絕前往非推薦點進行學習',
   `MMode` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
@@ -1232,7 +1234,6 @@ CREATE TABLE IF NOT EXISTS `chu__Target` (
   `PLj` int(11) unsigned NOT NULL COMMENT '學習標的的人數限制',
   `Mj` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '目前人數',
   `S` int(11) unsigned DEFAULT NULL COMMENT '學習標的飽和率上限',
-  `Fi` int(11) DEFAULT NULL COMMENT '學習標的滿額指標',
   PRIMARY KEY (`TID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='標的資訊';
 
@@ -1240,22 +1241,22 @@ CREATE TABLE IF NOT EXISTS `chu__Target` (
 -- 資料表的匯出資料 `chu__Target`
 --
 
-INSERT INTO `chu__Target` (`TID`, `AID`, `TNum`, `TName`, `TMapID`, `TLearnTime`, `PLj`, `Mj`, `S`, `Fi`) VALUES
-(1, 1, NULL, '含有生物遺跡的岩石', 'map_01_02_03.png', 7, 2, 1, 1, 0),
-(2, 1, NULL, '岩石中的紀錄', 'map_01_02_03.png', 8, 2, 0, 1, 0),
-(3, 4, NULL, '生命在水中的演化', 'map_01_02_03.png', 3, 2, 0, 1, 0),
-(4, 4, NULL, '最早的森林', 'map_04.jpg', 3, 2, 0, 1, 0),
-(5, 3, NULL, '古代的兩棲類', 'map_05.jpg', 5, 2, 0, 1, 0),
-(6, 5, NULL, '恐龍時代', 'map_06.jpg', 6, 2, 0, 1, 0),
-(7, 5, NULL, '蒙古的恐龍', 'map_07.jpg', 4, 2, 0, 1, 0),
-(8, 5, NULL, '恐龍再現', 'map_08.jpg', 4, 2, 0, 1, 0),
-(9, 5, NULL, '竊蛋龍', 'map_09.jpg', 4, 2, 0, 1, 0),
-(10, 5, NULL, '巨龍的腳印', 'map_10.jpg', 4, 2, 0, 1, 0),
-(11, 6, NULL, '始祖鳥與帶有羽毛的恐龍', 'map_11.jpg', 8, 2, 0, 1, 0),
-(12, 8, NULL, '阿法南猿', 'map_12.jpg', 4, 2, 0, 1, 0),
-(13, 9, NULL, '探索人類的過去', 'map_13.jpg', 5, 1, 0, 1, 0),
-(14, 9, NULL, '周口店北京人', 'map_14.jpg', 3, 2, 0, 1, 0),
-(15, 10, NULL, '木乃伊', 'map_15.jpg', 8, 2, 0, 1, 0);
+INSERT INTO `chu__Target` (`TID`, `AID`, `TNum`, `TName`, `TMapID`, `TLearnTime`, `PLj`, `Mj`, `S`) VALUES
+(1, 1, NULL, '含有生物遺跡的岩石', 'map_01_02_03.png', 7, 2, 0, 1),
+(2, 1, NULL, '岩石中的紀錄', 'map_01_02_03.png', 8, 2, 0, 1),
+(3, 4, NULL, '生命在水中的演化', 'map_01_02_03.png', 3, 2, 0, 1),
+(4, 4, NULL, '最早的森林', 'map_04.jpg', 3, 2, 0, 1),
+(5, 3, NULL, '古代的兩棲類', 'map_05.jpg', 5, 2, 0, 1),
+(6, 5, NULL, '恐龍時代', 'map_06.jpg', 6, 2, 0, 1),
+(7, 5, NULL, '蒙古的恐龍', 'map_07.jpg', 4, 2, 0, 1),
+(8, 5, NULL, '恐龍再現', 'map_08.jpg', 4, 2, 0, 1),
+(9, 5, NULL, '竊蛋龍', 'map_09.jpg', 4, 2, 0, 1),
+(10, 5, NULL, '巨龍的腳印', 'map_10.jpg', 4, 2, 0, 1),
+(11, 6, NULL, '始祖鳥與帶有羽毛的恐龍', 'map_11.jpg', 8, 2, 0, 1),
+(12, 8, NULL, '阿法南猿', 'map_12.jpg', 4, 2, 0, 1),
+(13, 9, NULL, '探索人類的過去', 'map_13.jpg', 5, 1, 0, 1),
+(14, 9, NULL, '周口店北京人', 'map_14.jpg', 3, 2, 0, 1),
+(15, 10, NULL, '木乃伊', 'map_15.jpg', 8, 2, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -1263,23 +1264,6 @@ INSERT INTO `chu__Target` (`TID`, `AID`, `TNum`, `TName`, `TMapID`, `TLearnTime`
 -- 替換檢視表以便查看 `chu__target_full_data`
 --
 CREATE TABLE IF NOT EXISTS `chu__target_full_data` (
-`TID` int(10) unsigned
-,`TName` varchar(100)
-,`HID` int(10)
-,`HName` varchar(100)
-,`AID` int(10)
-,`AName` varchar(100)
-,`AFloor` int(3)
-,`ANum` int(11)
-,`TNum` int(10)
-,`HMapID` varchar(1000)
-,`AMapID` varchar(1000)
-,`TMapID` varchar(1000)
-,`TLearnTime` int(4) unsigned
-,`PLj` int(11) unsigned
-,`Mj` int(11) unsigned
-,`S` int(11) unsigned
-,`Fi` int(11)
 );
 -- --------------------------------------------------------
 
@@ -1287,17 +1271,6 @@ CREATE TABLE IF NOT EXISTS `chu__target_full_data` (
 -- 替換檢視表以便查看 `chu__Target_with_Area`
 --
 CREATE TABLE IF NOT EXISTS `chu__Target_with_Area` (
-`TID` int(10) unsigned
-,`AID` int(10)
-,`HID` int(10)
-,`TNum` int(10)
-,`TName` varchar(100)
-,`TMapID` varchar(1000)
-,`TLearnTime` int(4) unsigned
-,`PLj` int(11) unsigned
-,`Mj` int(11) unsigned
-,`S` int(11) unsigned
-,`Fi` int(11)
 );
 -- --------------------------------------------------------
 
@@ -1420,8 +1393,7 @@ DROP TABLE IF EXISTS `chu__CGroup_with_people`;
 -- 檢視表結構 `chu__target_full_data`
 --
 DROP TABLE IF EXISTS `chu__target_full_data`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`yuan`@`localhost` SQL SECURITY DEFINER VIEW `chu__target_full_data` AS select `Target`.`TID` AS `TID`,`Target`.`TName` AS `TName`,`Area`.`HID` AS `HID`,`Hall`.`HName` AS `HName`,`Target`.`AID` AS `AID`,`Area`.`AName` AS `AName`,`Area`.`AFloor` AS `AFloor`,`Area`.`ANum` AS `ANum`,`Target`.`TNum` AS `TNum`,`Hall`.`HMapID` AS `HMapID`,`Area`.`AMapID` AS `AMapID`,`Target`.`TMapID` AS `TMapID`,`Target`.`TLearnTime` AS `TLearnTime`,`Target`.`PLj` AS `PLj`,`Target`.`Mj` AS `Mj`,`Target`.`S` AS `S`,`Target`.`Fi` AS `Fi` from ((`chu__Target` `Target` left join `chu__Area` `Area` on((`Area`.`AID` = `Target`.`AID`))) left join `chu__Hall` `Hall` on((`Area`.`HID` = `Hall`.`HID`)));
+-- 使用中(#1356 - View 'UElearning.chu__target_full_data' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them)
 
 -- --------------------------------------------------------
 
@@ -1429,8 +1401,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`yuan`@`localhost` SQL SECURITY DEFINER VIEW 
 -- 檢視表結構 `chu__Target_with_Area`
 --
 DROP TABLE IF EXISTS `chu__Target_with_Area`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`yuan`@`localhost` SQL SECURITY DEFINER VIEW `chu__Target_with_Area` AS select `Target`.`TID` AS `TID`,`Target`.`AID` AS `AID`,`Area`.`HID` AS `HID`,`Target`.`TNum` AS `TNum`,`Target`.`TName` AS `TName`,`Target`.`TMapID` AS `TMapID`,`Target`.`TLearnTime` AS `TLearnTime`,`Target`.`PLj` AS `PLj`,`Target`.`Mj` AS `Mj`,`Target`.`S` AS `S`,`Target`.`Fi` AS `Fi` from (`chu__Target` `Target` left join `chu__Area` `Area` on((`Area`.`AID` = `Target`.`AID`)));
+-- 使用中(#1356 - View 'UElearning.chu__Target_with_Area' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them)
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
