@@ -102,6 +102,7 @@ class DBStudyActivity extends Database {
         else
             $to_materialMode = "'".MMODE."'";
         
+        
         // 寫入學習活動資料
         $sqlString = "INSERT INTO `".$this->table('StudyActivity').
             "` (`UID`, `ThID`, 
@@ -111,8 +112,6 @@ class DBStudyActivity extends Database {
             ".$to_startTime.", ".$to_endTime.", ".$to_learnTime." , :delay , :timeforce , 
             ".$to_learnStyle.", :lstyle_force , ".$to_materialMode.")";
 
-        
-            
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":uid", $userId);
         $query->bindParam(":thid", $themeId);
@@ -155,10 +154,18 @@ class DBStudyActivity extends Database {
         $sqlString = "SELECT `SaID`, `UID`, `ThID`, ".
                      "`StartTime`, `EndTime`, ".
                      "`LearnTime`, `Delay`, `TimeForce`, ".
-                     "`LMode`, `LModeForce`, `MMode` ".
-                     "FROM `".$this->table('StudyActivity')."` AS Act ".
-                     //"LEFT JOIN `".$this->table('Area')."` AS Area ".
-                     //"ON Area.`AID` = Target.`AID` ".
+                     "`LMode`, `LModeForce`, `MMode`, ".
+                     
+                     "(SELECT count(`TID`) 
+                     FROM `chu__TBelong` AS `belong` 
+                     WHERE `belong`.`ThID` = `sa`.`ThID`) AS `TargetTotal`, ".
+                     
+                     "(SELECT count(DISTINCT `TID`) 
+                     FROM `chu__Study` AS `study` 
+                     WHERE `Out_TargetTime` IS NOT NULL 
+                     AND `study`.`SaID` = `sa`.`SaID`) AS `LearnedTotal`".
+            
+                     "FROM `".$this->table('StudyActivity')."` AS sa ".
                      "WHERE ".$where;
 		
 		$query = $this->connDB->prepare($sqlString);
@@ -192,7 +199,10 @@ class DBStudyActivity extends Database {
                            'time_force'       => $output_time_force,
                            'learnStyle_mode'  => $thisResult['LMode'],
                            'learnStyle_force' => $output_learnStyleForce,
-                           'material_mode'    => $thisResult['MMode'])
+                           'material_mode'    => $thisResult['MMode'],
+                           'target_total'     => $thisResult['TargetTotal'],
+                           'learned_total'    => $thisResult['LearnedTotal']
+                         )  
                 );
             }
             return $result;
@@ -234,7 +244,7 @@ class DBStudyActivity extends Database {
      *            'learnStyle_force' => <拒絕前往非推薦的學習點>,
      *            'material_mode'    => <教材模式>
      *     );
-     * 
+     * @param int $id 活動編號
      */ 
     public function queryActivity($id) {
 		

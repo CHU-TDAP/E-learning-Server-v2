@@ -87,6 +87,7 @@ class DBTheme extends Database {
      *         'name'          => <主題名稱>,
      *         'learn_time'    => <預估的學習時間>,
      *         'introduction'  => <主題介紹>,
+     *         'target_total'  => <此主題內有多少標的>,
      *         'build_time'    => <主題建立時間>,
      *         'modify_time'   => <主題資料修改時間>
      *     );
@@ -118,6 +119,7 @@ class DBTheme extends Database {
      *             'name'          => <主題名稱>,
      *             'learn_time'    => <預估的學習時間>,
      *             'introduction'  => <主題介紹>,
+     *             'target_total'  => <此主題內有多少標的>,
      *             'build_time'    => <主題建立時間>,
      *             'modify_time'   => <主題資料修改時間>
      *         )

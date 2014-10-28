@@ -140,23 +140,36 @@ class StudyActivity {
     // ========================================================================
     
     /**
+     * 總共要學幾個學習點
+     * 
+     * @return int 有幾個學習點
+     * @since 2.0.0
+     */ 
+    public function getPointTotal() {
+        return $this->queryResultArray['target_total'];
+    }
+    
+    /**
      * 取得已經學過幾個學習點
      * 
-     * @return ing 已學過幾個學習點
+     * @return int 已學過幾個學習點
      * @since 2.0.0
      */ 
     public function getLearnedPointTotal() {
-        
+        return $this->queryResultArray['learned_total'];
     }
     
     /**
      * 取得還剩下幾個學習點還沒學
      * 
-     * @return ing 還剩下幾個學習點
+     * @return int 還剩下幾個學習點
      * @since 2.0.0
      */ 
     public function getRemainingPointTotal() {
+        $total = $this->getPointTotal();
+        $learned = $this->getLearnedPointTotal();
         
+        return $total - $learned;
     }
     
     // ========================================================================

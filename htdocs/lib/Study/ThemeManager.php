@@ -3,7 +3,7 @@
  * ThemeManager.php
  */
 
-namespace UElearning\User;
+namespace UElearning\Study;
 
 require_once UELEARNING_LIB_ROOT.'/Database/DBTheme.php';
 require_once UELEARNING_LIB_ROOT.'/Study/Exception.php';
