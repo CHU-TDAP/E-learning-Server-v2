@@ -36,7 +36,7 @@ use UElearning\Exception;
  *         echo $target->isFullPeople();
  *         echo $target->getVacancyPeople();
  *         echo $target->getS();
- *         echo $target->getFi();
+ *         echo $target->getFj();
  *         
  *     }
  *     catch (Exception\TargetNoFoundException $e) {
@@ -288,7 +288,7 @@ class Target {
      * @since 2.0.0
 	 */
 	public function isFullPeople(){
-		if($this->getPLj()-$this->getMj() <= 0) return true;
+		if($this->getFj() >= 1) return true;
         else return false;
 	}
     
@@ -310,8 +310,8 @@ class Target {
 	 * @return int 學習標的滿額指標
      * @since 2.0.0
 	 */
-	public function getFi(){
-		return $this->queryResultArray['Fi'];
+	public function getFj(){
+		return $this->queryResultArray['Fj'];
 	}
     
 }

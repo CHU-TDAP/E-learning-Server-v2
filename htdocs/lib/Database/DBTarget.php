@@ -33,7 +33,8 @@ class DBTarget extends Database {
     public function queryTargetByWhere($where) {
         
         $sqlString = "SELECT `TID`, Target.`AID`, Area.`HID`, ".
-                     "`TNum`, `TName`, `TMapID`, `TLearnTime`, `PLj`, `Mj`, `S`, `Fi` ".
+                     "`TNum`, `TName`, `TMapID`, `TLearnTime`, ".
+                     "`PLj`, `Mj`, `S`, IF(`Mj` >= `PLj`, 1, 0) AS Fj ".
                      "FROM `".$this->table('Target')."` as Target ".
                      "LEFT JOIN `".$this->table('Area')."` as Area ".
                      "ON Area.`AID` = Target.`AID` ".
@@ -60,7 +61,7 @@ class DBTarget extends Database {
                            'PLj'           => $thisResult['PLj'],
                            'Mj'            => $thisResult['Mj'],
                            'S'             => $thisResult['S'],
-                           'Fi'            => $thisResult['Fi']
+                           'Fj'            => $thisResult['Fj']
                 ));
             }
             return $result;
@@ -101,7 +102,7 @@ class DBTarget extends Database {
      *         'PLj'           => <學習標的的人數限制>,
      *         'Mj'            => <目前人數>,
      *         'S'             => <學習標的飽和率上限>,
-     *         'Fi'            => <學習標的滿額指標>
+     *         'Fj'            => <學習標的滿額指標>
      *     );
      * 
      */ 
@@ -136,7 +137,7 @@ class DBTarget extends Database {
      *             'PLj'           => <學習標的的人數限制>,
      *             'Mj'            => <目前人數>,
      *             'S'             => <學習標的飽和率上限>,
-     *             'Fi'            => <學習標的滿額指標>
+     *             'Fj'            => <學習標的滿額指標>
      *         )
      *     );
      * 
@@ -165,7 +166,7 @@ class DBTarget extends Database {
             case 'PLj':           $sqlField = 'PLj';         break;
             case 'Mj':            $sqlField = 'Mj';          break;
             case 'S':             $sqlField = 'S';           break;
-            case 'Fi':            $sqlField = 'Fi';          break;
+            case 'Fj':            $sqlField = 'Fj';          break;
             default:              $sqlField = $field;        break;
         }
         
@@ -306,7 +307,7 @@ class DBTarget extends Database {
     //        case 'PLj':           $sqlField = 'PLj';         break;
     //        case 'Mj':            $sqlField = 'Mj';          break;
     //        case 'S':             $sqlField = 'S';           break;
-    //        case 'Fi':            $sqlField = 'Fi';          break;
+    //        case 'Fj':            $sqlField = 'Fj';          break;
     //        default:              $sqlField = $field;        break;
     //    }
     //    
@@ -437,7 +438,7 @@ class DBTarget extends Database {
     //        case 'PLj':           $sqlField = 'PLj';         break;
     //        case 'Mj':            $sqlField = 'Mj';          break;
     //        case 'S':             $sqlField = 'S';           break;
-    //        case 'Fi':            $sqlField = 'Fi';          break;
+    //        case 'Fj':            $sqlField = 'Fj';          break;
     //        default:              $sqlField = $field;        break;
     //    }
     //    
