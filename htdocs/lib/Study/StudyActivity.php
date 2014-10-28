@@ -15,7 +15,36 @@ use UElearning\User;
 /**
  * 學習階段類別
  * 
- * 一個物件即代表這一個主題
+ * 一個物件即代表這一個學習活動
+ * 
+ * 使用範例: 
+ * 
+ *     require_once __DIR__.'/../config.php';
+ *     require_once UELEARNING_LIB_ROOT.'/Study/StudyActivity.php';
+ *     use UElearning\Study;
+ *     use UElearning\Exception;
+ *     
+ *     try{
+ *         $sact = new Study\StudyActivity(8);
+ *         
+ *         echo $sact->getId();
+ *         echo $sact->getUserId();
+ *         echo $sact->getThemeId();
+ *         echo $sact->getLearnStyle();
+ *         echo $sact->isForceLearnStyle();
+ *         echo $sact->getMaterialStyle();
+ *         $sact->setDelay(23);
+ *         echo $sact->getDelay();
+ *         echo $sact->isLearning();
+ *         
+ *         $sact->finishActivity();
+ *     }
+ *     catch (Exception\StudyActivityNoFoundException $e) {
+ *         echo 'No Found learnActivity: '. $e->getId();
+ *     }
+ *     catch (Exception\StudyActivityFinishedException $e) {
+ *         echo 'The learnActivity is over: '. $e->getId();
+ *     }
  * 
  * @version         2.0.0
  * @package         UElearning
@@ -41,7 +70,7 @@ class StudyActivity {
 	/**
 	 * 從資料庫取得查詢
 	 *
-     * @throw UElearning\Exception\AreaNoFoundException 
+     * @throw \UElearning\Exception\StudyActivityNoFoundException 
 	 * @since 2.0.0
 	 */
 	protected function getQuery() {
@@ -75,13 +104,19 @@ class StudyActivity {
     
     /**
 	 * 結束這次學習
-	 *
+*    * 
+	 * @throw \UElearning\Exception\StudyActivityNoFoundException 
      * @since 2.0.0
 	 */
 	public function finishActivity() {
         
-        $db = new Database\DBStudyActivity();
-        $db->setEndTimeNow($this->id);
+        // 此活動還在進行中
+        if($this->isLearning()) {
+            $db = new Database\DBStudyActivity();
+            $db->setEndTimeNow($this->id);
+        }
+        // 此活動已結束
+        else throw new Exception\StudyActivityFinishedException($this->id);
 	}
     
     /**
@@ -259,31 +294,46 @@ class StudyActivity {
 	 * 設定這次學習時間要延長多久
 	 *
 	 * @param int $minute 延長時間(分)
+     * @throw \UElearning\Exception\StudyActivityNoFoundException 
      * @since 2.0.0
 	 */
 	public function setDelay($minute) {
-		$db = new Database\DBStudyActivity();
-        $db->setDelay($this->id, $minute);
         
-        $this->getQuery();
+        // 此活動還在進行中
+        if($this->isLearning()) {
+            
+            $db = new Database\DBStudyActivity();
+            $db->setDelay($this->id, $minute);
+
+            $this->getQuery();
+        }
+        // 此活動已結束
+        else throw new Exception\StudyActivityFinishedException($this->id);
 	}
     
     /**
 	 * 設定累加這次學習時間要延長多久
 	 *
 	 * @param int $minute 延長時間(分)
+     * @throw \UElearning\Exception\StudyActivityNoFoundException 
      * @since 2.0.0
 	 */
 	public function addDelay($minute) {
         
-        $setMinute = $this->queryResultArray['delay'] + $minute;
-        
-		$db = new Database\DBStudyActivity();
-        $db->setDelay($this->id, $setMinute);
-        
-        // TODO: 防呆-不能設的比開始時間還早
-        
-        $this->getQuery();
+        // 此活動還在進行中
+        if($this->isLearning()) {
+            
+            $setMinute = $this->queryResultArray['delay'] + $minute;
+
+            $db = new Database\DBStudyActivity();
+            $db->setDelay($this->id, $setMinute);
+
+            // TODO: 防呆-不能設的比開始時間還早
+
+            $this->getQuery();
+        }
+        // 此活動已結束
+        else throw new Exception\StudyActivityFinishedException($this->id);
 	}
     
     /**
