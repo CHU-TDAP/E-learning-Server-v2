@@ -203,6 +203,19 @@ class StudyActivity {
 	}
     
     /**
+	 * 取得這次可實際學習時間（包含延時）
+	 *
+	 * @return int 可實際學習時間(分)
+     * @since 2.0.0
+	 */
+	public function getRealLearnTimeWith() {
+        
+        $learnTime = $this->queryResultArray['learn_time'];
+        $delay = $this->queryResultArray['delay'];
+		return $learnTime + $delay;
+	}
+    
+    /**
 	 * 取得這次學習還剩下多少學習時間
 	 *
 	 * @return int 剩下的學習時間(分)
@@ -260,6 +273,16 @@ class StudyActivity {
         // TODO: 防呆-不能設的比開始時間還早
         
         $this->getQuery();
+	}
+    
+    /**
+	 * 在這次學習時間已過，是否強制結束學習
+	 *
+	 * @return bool 是否在這次學習時間已過而強制結束學習
+     * @since 2.0.0
+	 */
+	public function isForceLearnTime() {
+		return $this->queryResultArray['time_force'];
 	}
     
     // ------------------------------------------------------------------------

@@ -4,7 +4,7 @@
  */ 
 namespace UElearning\Study;
 
-//require_once UELEARNING_LIB_ROOT.'/Database/DBTarget.php';
+require_once UELEARNING_LIB_ROOT.'/Database/DBTarget.php';
 //require_once UELEARNING_LIB_ROOT.'/Target/Exception.php';
 use UElearning\Database;
 use UElearning\Exception;
@@ -25,18 +25,30 @@ class StudyActivityManager {
      * 
      * @param string $userId           使用者ID
      * @param string $themeId          主題ID
-     * @param string $startTime        開始學習時間
      * @param int    $learnTime        所需學習時間(分)
+     * @param bool   $timeForce        時間到時是否強制中止學習
      * @param int    $learnStyle       將推薦幾個學習點
      * @param bool   $learnStyle_force 是否拒絕前往非推薦的學習點
      * @param string $materialMode     教材風格
      * @return int 本次學習活動的流水編號
      * @since 2.0.0
      */ 
-    public function startActivity( $userId, $themeId, $startTime, 
-            $learnTime, $learnStyle, $learnStyle_force, $materialMode )
+    public function startActivity( $userId, $themeId, $learnTime, $timeForce, 
+                            $learnStyle, $learnStyle_force, $materialMode )
     {
-		//return $this->queryResultArray['name'];
+		
+        // TODO: 使用者存不存在
+        
+        // TODO: 標的存不存在
+        
+        // TODO: 教材是否存在
+        
+        // 存入資料庫
+        $db = new Database\DBStudyActivity();
+        $resultId = $db->insertActivity($userId, $themeId, null, null, 
+            $learnTime, 0, $timeForce, $learnStyle, $learnStyle_force, $materialMode);
+        
+        return $resultId;
 	}
     
     /**
@@ -47,6 +59,7 @@ class StudyActivityManager {
      * @param string $startTime        預約開始時間
      * @param string $expiredTime      預約過期時間
      * @param int    $learnTime        所需學習時間(分)
+     * @param bool   $timeForce        學習時間已過是否強制中止學習
      * @param int    $learnStyle       將推薦幾個學習點
      * @param bool   $learnStyle_force 是否拒絕前往非推薦的學習點
      * @param string $materialMode     教材風格
@@ -55,7 +68,7 @@ class StudyActivityManager {
      * @since 2.0.0
      */ 
     public function createWiilActivity($userId, $themeId, $startTime, $expiredTime,
-            $learnTime, $learnStyle, $learnStyle_force, $materialMode, $lock)
+            $learnTime, $timeForce, $learnStyle, $learnStyle_force, $materialMode, $lock)
     {
         
     }

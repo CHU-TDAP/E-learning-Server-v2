@@ -25,7 +25,7 @@ require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
  *     
  *     $db = new Database\DBStudyActivity();
  *     // 現在開始一個活動
- *     $db->insertActivity('yuan', '1', null, null, null, 0, null, true, null);
+ *     $db->insertActivity('yuan', '1', null, null, null, 0, null, null, true, null);
  *     // 設定延後
  *     $db->setDelay(40, -12);
  *     
@@ -49,13 +49,15 @@ class DBStudyActivity extends Database {
      * @param string $endTime          結束學習時間
      * @param int    $learnTime        學習所需時間(分)
      * @param int    $delay            延誤結束時間(分)
+     * @param bool   $timeForce        時間到時是否強制中止學習
      * @param int    $learnStyle       學習導引模式
      * @param bool   $learnStyle_force 拒絕前往非推薦的學習點
      * @param string $materialMode     教材模式
      * @since 2.0.0
      */
     public function insertActivity($userId, $themeId, $startTime, $endTime, 
-            $learnTime, $delay, $learnStyle, $learnStyle_force, $materialMode)
+                             $learnTime, $delay, $timeForce,
+                             $learnStyle, $learnStyle_force, $materialMode)
     {
         
         // 自動填入未填的時間
@@ -103,10 +105,10 @@ class DBStudyActivity extends Database {
         // 寫入學習活動資料
         $sqlString = "INSERT INTO `".$this->table('StudyActivity').
             "` (`UID`, `ThID`, 
-            `StartTime`, `EndTime`, `LearnTime`, `Delay`, 
+            `StartTime`, `EndTime`, `LearnTime`, `Delay`, `TimeForce`, 
             `LMode`, `LModeForce`, `MMode`) 
             VALUES ( :uid , :thid , 
-            ".$to_startTime.", ".$to_endTime.", ".$to_learnTime." , :delay , 
+            ".$to_startTime.", ".$to_endTime.", ".$to_learnTime." , :delay , :timeforce , 
             ".$to_learnStyle.", :lstyle_force , ".$to_materialMode.")";
 
         
@@ -115,6 +117,7 @@ class DBStudyActivity extends Database {
         $query->bindParam(":uid", $userId);
         $query->bindParam(":thid", $themeId);
         $query->bindParam(":delay", $delay);
+        $query->bindParam(":timeforce", $timeForce);
         $query->bindParam(":lstyle_force", $learnStyle_force);
         $query->execute();
         
@@ -122,9 +125,9 @@ class DBStudyActivity extends Database {
         $sqlString = "SELECT LAST_INSERT_ID()";
         $query = $this->connDB->query($sqlString);
         $queryResult = $query->fetch();
+        $resultId = $queryResult[0];
         
-        if(isset($cId)) return $cId;
-        return $queryResult[0];           
+        return $resultId;           
     }
     
     /**
@@ -150,7 +153,8 @@ class DBStudyActivity extends Database {
     public function queryActivityByWhere($where) {
         
         $sqlString = "SELECT `SaID`, `UID`, `ThID`, ".
-                     "`StartTime`, `EndTime`, `LearnTime`, `Delay`, ".
+                     "`StartTime`, `EndTime`, ".
+                     "`LearnTime`, `Delay`, `TimeForce`, ".
                      "`LMode`, `LModeForce`, `MMode` ".
                      "FROM `".$this->table('StudyActivity')."` AS Act ".
                      //"LEFT JOIN `".$this->table('Area')."` AS Area ".
@@ -167,6 +171,16 @@ class DBStudyActivity extends Database {
             $result = array();
             foreach($queryResultAll as $key => $thisResult) { 
                 
+                if($thisResult['TimeForce'] != '0') {
+                    $output_time_force = true;
+                }
+                else { $output_time_force = false; }
+                
+                if($thisResult['LModeForce'] != '0') {
+                    $output_learnStyleForce = true;
+                }
+                else { $output_learnStyleForce = false; }
+                
                 array_push($result,
                     array( 'activity_id'      => $thisResult['SaID'],
                            'user_id'          => $thisResult['UID'],
@@ -175,8 +189,9 @@ class DBStudyActivity extends Database {
                            'end_time'         => $thisResult['EndTime'],
                            'learn_time'       => $thisResult['LearnTime'],
                            'delay'            => $thisResult['Delay'],
+                           'time_force'       => $output_time_force,
                            'learnStyle_mode'  => $thisResult['LMode'],
-                           'learnStyle_force' => $thisResult['LModeForce'],
+                           'learnStyle_force' => $output_learnStyleForce,
                            'material_mode'    => $thisResult['MMode'])
                 );
             }
@@ -214,6 +229,7 @@ class DBStudyActivity extends Database {
      *            'end_time'         => <結束學習時間>,
      *            'learn_time'       => <學習所需時間(分)>,
      *            'delay'            => <延誤結束時間(分)>,
+     *            'time_force'       => <時間到時是否強制中止學習>,
      *            'learnStyle_mode'  => <學習導引模式>,
      *            'learnStyle_force' => <拒絕前往非推薦的學習點>,
      *            'material_mode'    => <教材模式>
@@ -247,7 +263,9 @@ class DBStudyActivity extends Database {
      *             'theme_id'         => <主題ID>,
      *             'start_time'       => <開始學習時間>,
      *             'end_time'         => <結束學習時間>,
+     *             'learn_time'       => <學習所需時間(分)>,
      *             'delay'            => <延誤結束時間(分)>,
+     *             'time_force'       => <時間到時是否強制中止學習>,
      *             'learnStyle_mode'  => <學習導引模式>,
      *             'learnStyle_force' => <拒絕前往非推薦的學習點>,
      *             'material_mode'    => <教材模式>
