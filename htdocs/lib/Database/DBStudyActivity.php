@@ -571,7 +571,7 @@ class DBStudyActivity extends Database {
      *            'user_id'          => <使用者ID>,
      *            'theme_id'         => <主題ID>,
      *            'start_time'       => <開始生效時間>,
-     *            'end_time'         => <過期時間>,
+     *            'expired_time'     => <過期時間>,
      *            'learn_time'       => <學習所需時間(分)>,
      *            'time_force'       => <時間到時是否強制中止學習>,
      *            'learnStyle_mode'  => <學習導引模式>,
@@ -606,17 +606,20 @@ class DBStudyActivity extends Database {
      *     
      *     array(
      *         array( 
-     *             'activity_id'      => <活動流水編號>,
+     *             'activity_id'      => <預約活動流水編號>,
      *             'user_id'          => <使用者ID>,
      *             'theme_id'         => <主題ID>,
-     *             'start_time'       => <開始學習時間>,
-     *             'end_time'         => <結束學習時間>,
-     *             'learn_time'       => <學習所需時間(分)>,
-     *             'delay'            => <延誤結束時間(分)>,
-     *             'time_force'       => <時間到時是否強制中止學習>,
+     *             'start_time'       => <開始生效時間>,
+     *             'expired_time'     => <過期時間>,
+     *             'learn_time'       => <學習所需時間(分)>
+     *             'time_force'       => <時間到時是否強制中止
      *             'learnStyle_mode'  => <學習導引模式>,
-     *             'learnStyle_force' => <拒絕前往非推薦的學習點>,
-     *             'material_mode'    => <教材模式>
+     *             'learnStyle_force' => <拒絕前往非推薦的學習
+     *             'material_mode'    => <教材模式>,
+     *             'is_lock'          => <是否鎖定不讓學生更改
+     *             'target_total'     => <有多少標的學習>,
+     *             'build_time'       => <建立時間>,
+     *             'modify_time'      => <修改時間>
      *         )
      *     );
      * 
@@ -634,15 +637,20 @@ class DBStudyActivity extends Database {
      *     
      *     array(
      *         array( 
-     *             'activity_id'      => <活動流水編號>,
+     *             'activity_id'      => <預約活動流水編號>,
      *             'user_id'          => <使用者ID>,
      *             'theme_id'         => <主題ID>,
-     *             'start_time'       => <開始學習時間>,
-     *             'end_time'         => <結束學習時間>,
-     *             'delay'            => <延誤結束時間(分)>,
+     *             'start_time'       => <開始生效時間>,
+     *             'expired_time'     => <過期時間>,
+     *             'learn_time'       => <學習所需時間(分)>
+     *             'time_force'       => <時間到時是否強制中止
      *             'learnStyle_mode'  => <學習導引模式>,
-     *             'learnStyle_force' => <拒絕前往非推薦的學習點>,
-     *             'material_mode'    => <教材模式>
+     *             'learnStyle_force' => <拒絕前往非推薦的學習
+     *             'material_mode'    => <教材模式>,
+     *             'is_lock'          => <是否鎖定不讓學生更改
+     *             'target_total'     => <有多少標的學習>,
+     *             'build_time'       => <建立時間>,
+     *             'modify_time'      => <修改時間>
      *         )
      *     );
      * 
@@ -652,4 +660,40 @@ class DBStudyActivity extends Database {
         return $this->queryWillActivityByWhere(
             "`UID`=".$this->connDB->quote($user_id));
     }
+    
+    /**
+     * 修改預約資訊
+     * 
+     * @param int    $tId   標的編號
+     * @param string $field 欄位名稱
+     * @param string $value 內容
+     */ 
+    public function changeWillActivityData($id, $field, $value) {
+        $sqlField = null;
+        switch($field) {
+            case 'user_id':          $sqlField = 'UID';         break;
+            case 'theme_id':         $sqlField = 'ThID';        break;
+            case 'start_time':       $sqlField = 'StartTime';   break;
+            case 'expired_time':     $sqlField = 'ExpiredTime'; break;
+            case 'learn_time':       $sqlField = 'LearnTime';   break;
+            case 'learn_time':       $sqlField = 'TLearnTime';  break;
+            case 'time_force':       $sqlField = 'TimeForce';   break;
+            case 'learnStyle_mode':  $sqlField = 'LMode';       break;
+            case 'learnStyle_force': $sqlField = 'LModeForce';  break;
+            case 'material_mode':    $sqlField = 'MMode';       break;
+            case 'is_lock':          $sqlField = 'Lock';        break;
+            default:                 $sqlField = $field;        break;
+        }
+        
+        $sqlString = "UPDATE ".$this->table('StudyWill').
+                     " SET `".$sqlField."` = :value".
+                     " , `ModifyTime` = NOW()".
+                     " WHERE `SwID` = :id";
+        
+        $query = $this->connDB->prepare($sqlString);
+		$query->bindParam(':id', $id);
+        $query->bindParam(':value', $value);
+		$query->execute();
+    }
+    
 }

@@ -78,7 +78,8 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function cancel(){
-		//return $this->queryResultArray['name'];
+		$db = new Database\DBStudyActivity();
+        $db->deleteWillActivity($this->id);
 	}
     
     // ========================================================================
@@ -123,7 +124,11 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function setUserById($user_id){
-		
+		$db = new Database\DBStudyActivity();
+        // TODO: 檢查使用者有無存在
+        $db->changeWillActivityData($this->id, 'user_id', $user_id);
+        
+        $this->getQuery();
 	}
 
     ///**
@@ -154,7 +159,11 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function setThemeById($theme_id){
-		//return $this->queryResultArray['theme_id'];
+		$db = new Database\DBStudyActivity();
+        // TODO: 檢查主體有無存在
+        $db->changeWillActivityData($this->id, 'thime_id', $theme_id);
+        
+        $this->getQuery();
 	}
     
     /**
@@ -174,7 +183,10 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function setStartTime($time){
-		//return $this->queryResultArray['build_time'];
+		$db = new Database\DBStudyActivity();
+        $db->changeWillActivityData($this->id, 'start_time', $time);
+        
+        $this->getQuery();
 	}
     
     /**
@@ -194,7 +206,10 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function setExpiredTime($time){
-		//return $this->queryResultArray['build_time'];
+		$db = new Database\DBStudyActivity();
+        $db->changeWillActivityData($this->id, 'expired_time', $time);
+        
+        $this->getQuery();
 	}
     
     /**
@@ -214,7 +229,10 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function setLearnTime($min){
-		//return $this->queryResultArray['name'];
+		$db = new Database\DBStudyActivity();
+        $db->changeWillActivityData($this->id, 'learn_time', $min);
+        
+        $this->getQuery();
 	}
     
     /**
@@ -234,7 +252,10 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function setForceLearnTime($value) {
-		//return $this->queryResultArray['time_force'];
+		$db = new Database\DBStudyActivity();
+        $db->changeWillActivityData($this->id, 'time_force', $value);
+        
+        $this->getQuery();
 	}
     
     /**
@@ -254,7 +275,10 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function setLearnStyle($num){
-		
+		$db = new Database\DBStudyActivity();
+        $db->changeWillActivityData($this->id, 'learnStyle_mode', $num);
+        
+        $this->getQuery();
 	}
     
     /**
@@ -274,7 +298,10 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function setForceLearnStyle($value){
-		
+		$db = new Database\DBStudyActivity();
+        $db->changeWillActivityData($this->id, 'learnStyle_force', $value);
+        
+        $this->getQuery();
 	}
     
     /**
@@ -294,7 +321,10 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function setMaterialStyle($value){
-		
+		$db = new Database\DBStudyActivity();
+        $db->changeWillActivityData($this->id, 'material_mode', $value);
+        
+        $this->getQuery();
 	}
     
     /**
@@ -314,7 +344,10 @@ class StudyWill {
      * @since 2.0.0
      */ 
     function setLock($value) {
+        $db = new Database\DBStudyActivity();
+        $db->changeWillActivityData($this->id, 'is_lock', $value);
         
+        $this->getQuery();
     }
     
     /**
