@@ -4,8 +4,8 @@
  */ 
 namespace UElearning\Study;
 
-require_once UELEARNING_LIB_ROOT.'/Database/DBTarget.php';
-//require_once UELEARNING_LIB_ROOT.'/Target/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/Database/DBStudyActivity.php';
+require_once UELEARNING_LIB_ROOT.'/Study/Exception.php';
 use UElearning\Database;
 use UElearning\Exception;
 

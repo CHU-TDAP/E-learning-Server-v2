@@ -79,7 +79,9 @@ class StudyActivity {
      * @since 2.0.0
 	 */
 	public function finishActivity() {
-		//return $this->queryResultArray['name'];
+        
+        $db = new Database\DBStudyActivity();
+        $db->setEndTimeNow($this->id);
 	}
     
     /**
@@ -89,7 +91,16 @@ class StudyActivity {
 	 */
 	public function cancelActivity() {
 		//return $this->queryResultArray['name'];
+        // TODO: cancelActivity
 	}
+    
+    /**
+     * 此學習階段是否正在學習中
+     */ 
+    public function isLearning() {
+        if(!isset($this->queryResultArray['end_time'])) return true;
+        else return false;
+    }
     
     // ========================================================================
     

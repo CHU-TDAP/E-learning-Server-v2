@@ -26,6 +26,10 @@ class ClassGroupAdmin {
      * 
      * 建立班級群組範例:
      * 
+     *     require_once __DIR__.'/../config.php';
+     *     require_once UELEARNING_LIB_ROOT.'/User/ClassGroupAdmin.php';
+     *     use UElearning\User;
+     * 
      *     try {
      *         $groupAdmin = new User\ClassGroupAdmin();
      *         $newId = null;
@@ -79,9 +83,10 @@ class ClassGroupAdmin {
                 // 新增一筆使用者資料進資料庫
                 $db = new Database\DBUser();
                 $id = $db->insertClassGroup(
-                    $classGroupArray['class_id'], 
-                    $classGroupArray['name'], 
-                    $classGroupArray['memo']
+                    array( 'class_id' => $classGroupArray['class_id'],
+                           'name'     => $classGroupArray['name'],
+                           'memo'     => $classGroupArray['memo']
+                    )
                 );
                 
                 // 回傳剛剛新增的ID

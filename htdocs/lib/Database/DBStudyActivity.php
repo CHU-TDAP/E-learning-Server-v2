@@ -25,7 +25,7 @@ require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
  *     
  *     $db = new Database\DBStudyActivity();
  *     // 現在開始一個活動
- *     $db->insertActivity('yuan', '1', null, null, null, 0, null, null, true, null);
+ *     $db->insertActivity('yuan', '1', null, null, null, 0, false, null, true, null);
  *     // 設定延後
  *     $db->setDelay(40, -12);
  *     
@@ -132,7 +132,7 @@ class DBStudyActivity extends Database {
     
     /**
      * 移除一場活動
-     * @param string $uId 使用者名稱
+     * @param int $id 活動編號
      * @since 2.0.0
      */ 
     public function deleteActivity($id) {
@@ -356,4 +356,110 @@ class DBStudyActivity extends Database {
         $query->bindParam(':value', $delay);
 		$query->execute();
     }
+    
+    // ========================================================================
+    
+    /**
+     * 預約一個活動
+     * 
+     * @param string $userId           使用者ID
+     * @param string $themeId          主題ID
+     * @param string $startTime        開始生效時間
+     * @param string $expiredTime      過期時間
+     * @param int    $learnTime        學習所需時間(分)
+     * @param bool   $timeForce        時間到時是否強制中止學習
+     * @param int    $learnStyle       學習導引模式
+     * @param bool   $learnStyle_force 拒絕前往非推薦的學習點
+     * @param string $materialMode     教材模式
+     * @param string $isLock           是否鎖定不讓學生更改
+     * @since 2.0.0
+     */
+    public function insertWillActivity($userId, $themeId, $startTime, $expiredTime, 
+                             $learnTime, $timeForce,
+                             $learnStyle, $learnStyle_force, $materialMode, $isLock)
+    {
+        
+        // 自動填入未填的時間
+        if(isset($startTime)) 
+            $to_startTime = $this->connDB->quote($startTime);
+        else $to_startTime = "NOW()";
+        
+        if(isset($expiredTime)) 
+            $to_expiredTime = $this->connDB->quote($expiredTime);
+        else $to_expiredTime = "NULL";
+        
+        // 未填入學習時間，將會自動取得主題學習時間
+        if(isset($learnTime)) 
+            $to_learnTime = $this->connDB->quote($learnTime);
+        else $to_learnTime = 
+            "(SELECT `ThLearnTime` FROM `".$this->table('Theme').
+            "` WHERE `ThID` = ".$this->connDB->quote($themeId).")";
+        
+        // 未填入學習風格，將會取用使用者偏好的風格，若帳號未設定，將取用系統預設的學習風格
+        $queryResult = array();
+        if(!isset($learnStyle) || !isset($materialMode)) {
+            $sqlSUser = "SELECT `LMode`, `MMode` ".
+                        "FROM `".$this->table('User')."` ".
+                        "WHERE `UID`=".$this->connDB->quote($userId);
+            
+            $query = $this->connDB->prepare($sqlSUser);
+		    $query->execute();
+            
+            $queryResult = $query->fetch();
+        }
+        if(isset($learnStyle)) 
+            $to_learnStyle = $this->connDB->quote($learnStyle);
+        else if(isset($queryResult['LMode'])) 
+            $to_learnStyle = $queryResult['LMode'];
+        else
+            $to_learnStyle = LMODE;
+        
+        if(isset($materialMode)) 
+            $to_materialMode = $this->connDB->quote($materialMode);
+        else if(isset($queryResult['MMode'])) 
+            $to_materialMode = "'".$queryResult['MMode']."'";
+        else
+            $to_materialMode = "'".MMODE."'";
+        
+        // 寫入學習活動資料
+        $sqlString = "INSERT INTO `".$this->table('StudyWill').
+            "` (`UID`, `ThID`, 
+            `StartTime`, `ExpiredTime`, `LearnTime`, `TimeForce`, 
+            `LMode`, `LModeForce`, `MMode`, `Lock`) 
+            VALUES ( :uid , :thid , 
+            ".$to_startTime.", ".$to_expiredTime.", ".$to_learnTime." , :timeforce , 
+            ".$to_learnStyle.", :lstyle_force , ".$to_materialMode.", :lock )";
+            
+        $query = $this->connDB->prepare($sqlString);
+        $query->bindParam(":uid", $userId);
+        $query->bindParam(":thid", $themeId);
+        $query->bindParam(":timeforce", $timeForce);
+        $query->bindParam(":lstyle_force", $learnStyle_force);
+        $query->bindParam(":lock", $isLock);
+        $query->execute();
+        
+        // 取得剛剛加入的ID
+        $sqlString = "SELECT LAST_INSERT_ID()";
+        $query = $this->connDB->query($sqlString);
+        $queryResult = $query->fetch();
+        $resultId = $queryResult[0];
+        
+        return $resultId;           
+    }
+    
+    /**
+     * 移除一場預約
+     * @param int $id 預約編號
+     * @since 2.0.0
+     */ 
+    public function deleteWillActivity($id) {
+        
+        $sqlString = "DELETE FROM ".$this->table('StudyWill'). 
+                     " WHERE `SwID` = :id ";
+            
+        $query = $this->connDB->prepare($sqlString);
+        $query->bindParam(":id", $id);
+        $query->execute();
+    }
+    
 }
