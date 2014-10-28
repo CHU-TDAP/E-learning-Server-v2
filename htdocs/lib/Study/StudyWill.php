@@ -4,8 +4,9 @@
  */
 namespace UElearning\Study;
 
-//require_once UELEARNING_LIB_ROOT.'/Database/DBTarget.php';
-//require_once UELEARNING_LIB_ROOT.'/Target/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/Database/DBStudyActivity.php';
+require_once UELEARNING_LIB_ROOT.'/Study/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/User/User.php';
 use UElearning\Database;
 use UElearning\Exception;
 use UElearning\User;
@@ -43,16 +44,16 @@ class StudyWill {
 	 * @since 2.0.0
 	 */
 	protected function getQuery(){
-        // TODO: 從資料庫取得查詢
-        //// 從資料庫查詢
-        //$db = new Database\DBTarget();
-        //$areaInfo = $db->queryArea($this->aId);
-        //
-        //// 判斷有沒有這個
-        //if( $areaInfo != null ) {
-        //    $this->queryResultArray = $areaInfo;
-        //}
-        //else throw new Exception\AreaNoFoundException($this->aId);
+        
+        // 從資料庫查詢
+        $db = new Database\DBStudyActivity();
+        $info = $db->queryWillActivity($this->id);
+        
+        // 判斷有沒有這個
+        if( $info != null ) {
+            $this->queryResultArray = $info;
+        }
+        else throw new Exception\StudyActivityWillNoFoundException($this->id);
 	}
     
     // ========================================================================
@@ -60,11 +61,11 @@ class StudyWill {
 	/**
 	 * 建構子
 	 *
-	 * @param int $inputID 學習階段流水號ID
+	 * @param int $inputID 預約學習流水號ID
      * @since 2.0.0
 	 */
 	public function __construct($inputID){
-		$this->id = $inputAID;
+		$this->id = $inputID;
 		$this->getQuery();
 	}
 	
@@ -153,7 +154,7 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function setThemeById($theme_id){
-		return $this->queryResultArray['theme_id'];
+		//return $this->queryResultArray['theme_id'];
 	}
     
     /**
@@ -163,7 +164,7 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function getStartTime(){
-		//return $this->queryResultArray['build_time'];
+		return $this->queryResultArray['start_time'];
 	}
     
     /**
@@ -183,7 +184,7 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function getExpiredTime(){
-		//return $this->queryResultArray['build_time'];
+		return $this->queryResultArray['expired_time'];
 	}
     
     /**
@@ -203,7 +204,7 @@ class StudyWill {
      * @since 2.0.0
 	 */
 	public function getLearnTime(){
-		//return $this->queryResultArray['name'];
+		return $this->queryResultArray['learn_time'];
 	}
     
     /**
@@ -214,6 +215,26 @@ class StudyWill {
 	 */
 	public function setLearnTime($min){
 		//return $this->queryResultArray['name'];
+	}
+    
+    /**
+	 * 在這次學習時間已過，是否強制結束學習
+	 *
+	 * @return bool 是否在這次學習時間已過而強制結束學習
+     * @since 2.0.0
+	 */
+	public function isForceLearnTime() {
+		return $this->queryResultArray['time_force'];
+	}
+    
+    /**
+	 * 設定在這次學習時間已過，是否強制結束學習
+	 *
+	 * @param bool $value 是否在這次學習時間已過而強制結束學習
+     * @since 2.0.0
+	 */
+	public function setForceLearnTime($value) {
+		//return $this->queryResultArray['time_force'];
 	}
     
     /**
@@ -283,7 +304,7 @@ class StudyWill {
      * @since 2.0.0
      */ 
     public function isLock() {
-        
+        return $this->queryResultArray['is_lock'];
     }
     
     /**
@@ -294,6 +315,16 @@ class StudyWill {
      */ 
     function setLock($value) {
         
+    }
+    
+    /**
+     * 總共要學幾個學習點
+     * 
+     * @return int 有幾個學習點
+     * @since 2.0.0
+     */ 
+    public function getPointTotal() {
+        return $this->queryResultArray['target_total'];
     }
     
     // ------------------------------------------------------------------------

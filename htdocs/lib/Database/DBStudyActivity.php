@@ -157,11 +157,11 @@ class DBStudyActivity extends Database {
                      "`LMode`, `LModeForce`, `MMode`, ".
                      
                      "(SELECT count(`TID`) 
-                     FROM `chu__TBelong` AS `belong` 
+                     FROM `".$this->table('TBelong')."` AS `belong` 
                      WHERE `belong`.`ThID` = `sa`.`ThID`) AS `TargetTotal`, ".
                      
                      "(SELECT count(DISTINCT `TID`) 
-                     FROM `chu__Study` AS `study` 
+                     FROM `".$this->table('Study')."` AS `study` 
                      WHERE `Out_TargetTime` IS NOT NULL 
                      AND `study`.`SaID` = `sa`.`SaID`) AS `LearnedTotal`".
             
@@ -242,7 +242,9 @@ class DBStudyActivity extends Database {
      *            'time_force'       => <時間到時是否強制中止學習>,
      *            'learnStyle_mode'  => <學習導引模式>,
      *            'learnStyle_force' => <拒絕前往非推薦的學習點>,
-     *            'material_mode'    => <教材模式>
+     *            'material_mode'    => <教材模式>,
+     *            'target_total'     => <有多少標的學習>,
+     *            'learned_total'    => <已經完成多少標的學習>
      *     );
      * @param int $id 活動編號
      */ 
@@ -278,7 +280,9 @@ class DBStudyActivity extends Database {
      *             'time_force'       => <時間到時是否強制中止學習>,
      *             'learnStyle_mode'  => <學習導引模式>,
      *             'learnStyle_force' => <拒絕前往非推薦的學習點>,
-     *             'material_mode'    => <教材模式>
+     *             'material_mode'    => <教材模式>,
+     *             'target_total'     => <有多少標的學習>,
+     *             'learned_total'    => <已經完成多少標的學習>
      *         )
      *     );
      * 
@@ -304,7 +308,9 @@ class DBStudyActivity extends Database {
      *             'delay'            => <延誤結束時間(分)>,
      *             'learnStyle_mode'  => <學習導引模式>,
      *             'learnStyle_force' => <拒絕前往非推薦的學習點>,
-     *             'material_mode'    => <教材模式>
+     *             'material_mode'    => <教材模式>,
+     *             'target_total'     => <有多少標的學習>,
+     *             'learned_total'    => <已經完成多少標的學習>
      *         )
      *     );
      * 
@@ -472,4 +478,178 @@ class DBStudyActivity extends Database {
         $query->execute();
     }
     
+    /**
+     * 內部使用的查詢動作
+     * @param string $where 查詢語法
+     * @return array 查詢結果陣列
+     */ 
+    protected function queryWillActivityByWhere($where) {
+        
+        $sqlString = "SELECT `SwID`, `UID`, `ThID`, ".
+                     "`StartTime`, `ExpiredTime`, `LearnTime`, `TimeForce`, ".
+                     "`LMode`, `LModeForce`, `MMode`, `Lock`, ".
+                     
+                     "(SELECT count(`TID`) 
+                     FROM `".$this->table('TBelong')."` AS `belong` 
+                     WHERE `belong`.`ThID` = `sw`.`ThID`) AS `TargetTotal`, ".
+            
+                     "`BuildTime`, `ModifyTime` ".
+            
+                     "FROM `".$this->table('StudyWill')."` AS `sw` ".
+                     "WHERE ".$where;
+		
+		$query = $this->connDB->prepare($sqlString);
+		$query->execute();
+		
+		$queryResultAll = $query->fetchAll();
+        // 如果有查到一筆以上
+        if( count($queryResultAll) >= 1 ) {
+            // 製作回傳結果陣列
+            $result = array();
+            foreach($queryResultAll as $key => $thisResult) { 
+                
+                if($thisResult['TimeForce'] != '0') {
+                    $output_time_force = true;
+                }
+                else { $output_time_force = false; }
+                
+                if($thisResult['LModeForce'] != '0') {
+                    $output_learnStyleForce = true;
+                }
+                else { $output_learnStyleForce = false; }
+                
+                if($thisResult['Lock'] != '0') {
+                    $output_isLock = true;
+                }
+                else { $output_isLock = false; }
+                
+                array_push($result,
+                    array( 'activity_will_id' => $thisResult['SwID'],
+                           'user_id'          => $thisResult['UID'],
+                           'theme_id'         => $thisResult['ThID'],
+                           'start_time'       => $thisResult['StartTime'],
+                           'expired_time'     => $thisResult['ExpiredTime'],
+                           'learn_time'       => $thisResult['LearnTime'],
+                           'time_force'       => $output_time_force,
+                           'learnStyle_mode'  => $thisResult['LMode'],
+                           'learnStyle_force' => $output_learnStyleForce,
+                           'material_mode'    => $thisResult['MMode'],
+                           'is_lock'          => $output_isLock,
+                           'target_total'     => $thisResult['TargetTotal'],
+                           'build_time'       => $thisResult['BuildTime'],
+                           'modify_time'      => $thisResult['ModifyTime']
+                         )  
+                );
+            }
+            return $result;
+        }
+        // 若都沒查到的話
+        else {
+            return null;
+        }
+    }
+    
+    /**
+     * 查詢一個活動資料
+     * 
+     * 
+     * 範例: 
+     * 
+     *     require_once __DIR__.'/../config.php';
+     *     require_once UELEARNING_LIB_ROOT.'/Database/DBTarget.php';
+     *     use UElearning\Database;
+     * 
+     *     $db = new Database\DBTarget();
+     *     
+     *     $targetInfo = $db->queryActivity(4);
+     *     echo '<pre>'; print_r($targetInfo); echo '</pre>';
+     *     
+     * 
+     * @param int $td 學習活動ID
+     * @return array 活動資料陣列，格式為: 
+     *     array( 'activity_id'      => <預約活動流水編號>,
+     *            'user_id'          => <使用者ID>,
+     *            'theme_id'         => <主題ID>,
+     *            'start_time'       => <開始生效時間>,
+     *            'end_time'         => <過期時間>,
+     *            'learn_time'       => <學習所需時間(分)>,
+     *            'time_force'       => <時間到時是否強制中止學習>,
+     *            'learnStyle_mode'  => <學習導引模式>,
+     *            'learnStyle_force' => <拒絕前往非推薦的學習點>,
+     *            'material_mode'    => <教材模式>,
+     *            'is_lock'          => <是否鎖定不讓學生更改>,
+     *            'target_total'     => <有多少標的學習>,
+     *            'build_time'       => <建立時間>,
+     *            'modify_time'      => <修改時間>
+     *     );
+     * @param int $id 活動編號
+     */ 
+    public function queryWillActivity($id) {
+		
+		$queryResultAll = 
+            $this->queryWillActivityByWhere("`SwID`=".$this->connDB->quote($id));
+        
+        // 如果有查到一筆以上
+        if( count($queryResultAll) >= 1 ) {
+            return $queryResultAll[0];
+        }
+        // 若都沒查到的話
+        else {
+            return null;
+        }
+    }
+    
+    /**
+     * 查詢所有活動資料
+     * 
+     * @return array 學習活動資料陣列，格式為: 
+     *     
+     *     array(
+     *         array( 
+     *             'activity_id'      => <活動流水編號>,
+     *             'user_id'          => <使用者ID>,
+     *             'theme_id'         => <主題ID>,
+     *             'start_time'       => <開始學習時間>,
+     *             'end_time'         => <結束學習時間>,
+     *             'learn_time'       => <學習所需時間(分)>,
+     *             'delay'            => <延誤結束時間(分)>,
+     *             'time_force'       => <時間到時是否強制中止學習>,
+     *             'learnStyle_mode'  => <學習導引模式>,
+     *             'learnStyle_force' => <拒絕前往非推薦的學習點>,
+     *             'material_mode'    => <教材模式>
+     *         )
+     *     );
+     * 
+     */ 
+    public function queryAllWillActivity() {
+        
+        return $this->queryWillActivityByWhere("1");
+    }
+    
+    /**
+     * 查詢此使用者所有活動資料
+     * 
+     * @param int $user_id 使用者ID
+     * @return array 學習活動資料陣列，格式為: 
+     *     
+     *     array(
+     *         array( 
+     *             'activity_id'      => <活動流水編號>,
+     *             'user_id'          => <使用者ID>,
+     *             'theme_id'         => <主題ID>,
+     *             'start_time'       => <開始學習時間>,
+     *             'end_time'         => <結束學習時間>,
+     *             'delay'            => <延誤結束時間(分)>,
+     *             'learnStyle_mode'  => <學習導引模式>,
+     *             'learnStyle_force' => <拒絕前往非推薦的學習點>,
+     *             'material_mode'    => <教材模式>
+     *         )
+     *     );
+     * 
+     */ 
+    public function queryAllWillActivityByUserId($user_id) {
+        
+        return $this->queryWillActivityByWhere(
+            "`UID`=".$this->connDB->quote($user_id));
+    }
 }
