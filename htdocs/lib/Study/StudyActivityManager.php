@@ -6,6 +6,7 @@ namespace UElearning\Study;
 
 require_once UELEARNING_LIB_ROOT.'/Database/DBStudyActivity.php';
 require_once UELEARNING_LIB_ROOT.'/Study/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/Study/StudyWill.php';
 use UElearning\Database;
 use UElearning\Exception;
 
@@ -65,6 +66,30 @@ class StudyActivityManager {
             return $resultId;
         }
 	}
+    
+    
+    /**
+     * 從預約開始進行學習活動
+     * 
+     * @param int $swid 預約編號
+     * @return int 本次學習活動的流水編號
+     * @since 2.0.0
+     */ 
+    public function startWithWillActivity($swid) {
+        
+        // 取得預約資料
+        $sact = new StudyWill($swid);
+        $userId           = $sact->getUserId();
+        $themeId          = $sact->getThemeId();
+        $learnTime        = $sact->getLearnTime();
+        $timeForce        = $sact->isForceLearnTime();
+        $learnStyle       = $sact->getLearnStyle();
+        $learnStyle_force = $sact->isForceLearnStyle();
+        $materialMode     = $sact->getMaterialStyle();
+        
+        $this->startActivity( $userId, $themeId, $learnTime, $timeForce, 
+                            $learnStyle, $learnStyle_force, $materialMode );
+    }
     
     /**
      * 幫學生預約學習
