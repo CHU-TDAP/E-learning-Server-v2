@@ -67,7 +67,6 @@ class StudyActivityManager {
         }
 	}
     
-    
     /**
      * 從預約開始進行學習活動
      * 
@@ -130,10 +129,36 @@ class StudyActivityManager {
      * 取得這位學生可以使用的學習活動有哪些
      * 
      * @param string $user_id 使用者ID
-     * @return array 可用的學習活動資訊
+     * @return array 可用的學習活動資訊，格式如下:
+     * 
+     *     array(
+     *         array(
+     *             'type'             => <類型>,
+     *             'id'               => <編號>,
+     *             'activity_id'      => <學習活動ID>,
+     *             'activity_will_id' => <預約活動ID>,
+     *             'theme_id'         => <主題ID>,
+     *             'start_time'       => <開始生效時間>,
+     *             'expired_time'     => <過期時間>,
+     *             'have_time'        => <擁有的學習時間(分)>,
+     *             'learn_time'       => <預定學習時間(分)>,
+     *             'delay'            => <延期時間(分)>,
+     *             'remaining_time'   => <剩餘學習時間(分)>,
+     *             'time_force'       => <時間到時是否強制中止學習>,
+     *             'learnStyle_mode'  => <學習導引模式>,
+     *             'learnStyle_force' => <拒絕前往非推薦的學習點>,
+     *             'material_mode'    => <教材模式>,
+     *             'lock'             => <是否鎖定不讓學生更改>,
+     *             'target_total'     => <有多少標的學習>,
+     *             'learned_total'    => <還剩下幾個學習點還沒學>
+     *         )
+     *     );
+     * 
      * @since 2.0.0
      */ 
     public function getEnableActivityByUserId($user_id) {
         
+        $db = new Database\DBStudyActivity();
+        return $db->getEnableActivityByUserId($user_id);
     }
 }

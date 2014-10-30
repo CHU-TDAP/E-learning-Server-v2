@@ -567,7 +567,7 @@ class DBStudyActivity extends Database {
      * 
      * @param int $td 學習活動ID
      * @return array 活動資料陣列，格式為: 
-     *     array( 'activity_id'      => <預約活動流水編號>,
+     *     array( 'activity_will_id' => <預約活動流水編號>,
      *            'user_id'          => <使用者ID>,
      *            'theme_id'         => <主題ID>,
      *            'start_time'       => <開始生效時間>,
@@ -606,7 +606,7 @@ class DBStudyActivity extends Database {
      *     
      *     array(
      *         array( 
-     *             'activity_id'      => <預約活動流水編號>,
+     *             'activity_will_id' => <預約活動流水編號>,
      *             'user_id'          => <使用者ID>,
      *             'theme_id'         => <主題ID>,
      *             'start_time'       => <開始生效時間>,
@@ -696,4 +696,127 @@ class DBStudyActivity extends Database {
 		$query->execute();
     }
     
+    /**
+     * 取得可以學習的資訊
+     * 
+     * @param string $userId 使用者ID
+     * @return array 可進行學習的資訊
+     */ 
+    public function getEnableActivityByUserId($userId) {
+
+$sqlString_SA = "
+SELECT 'study' AS `Type`, 
+  `SaID` AS `ID`, `SaID`, NULL AS `SwID`, 
+  `th`.`ThID`, `th`.`ThName`, `th`.`ThIntroduction`, 
+  
+  `StartTime`, 
+  FROM_UNIXTIME(UNIX_TIMESTAMP(`StartTime`)+(`LearnTime`+`Delay`)*60) AS `ExpiredTime`, 
+  (`LearnTime`+`Delay`) AS `HaveTime`, `LearnTime`, `Delay`, 
+  ceiling((UNIX_TIMESTAMP(`StartTime`)+(`LearnTime`+`Delay`)*60-UNIX_TIMESTAMP(NOW()))/60) AS `RemainingTime`, `TimeForce`, 
+  
+  `LMode`, `LModeForce`, `MMode`, '1' AS `Lock`, 
+  
+(SELECT count(`TID`) FROM `".$this->table('TBelong')."` AS `belong` WHERE `belong`.`ThID` = `sa`.`ThID`) AS `  TargetTotal`, 
+(SELECT count(DISTINCT `TID`) FROM `".$this->table('Study')."` AS `study` WHERE `Out_TargetTime` IS NOT NULL   AND `study`.`SaID` = `sa`.`SaID`) AS `LearnedTotal`
+
+FROM `".$this->table('StudyActivity')."` AS `sa`
+LEFT JOIN `".$this->table('Theme')."` AS `th` 
+ON `th`.`ThID` = `sa`.`ThID` 
+WHERE `EndTime` IS NULL AND `UID` = :uid ";
+        
+        
+$sqlString_SW = "
+SELECT 'will' AS `Type`, 
+  `SwID` AS `ID`, NULL, `SwID`, 
+  `th`.`ThID`, `th`.`ThName`, `th`.`ThIntroduction`, 
+  
+  `StartTime`, `ExpiredTime`, `LearnTime` AS `HaveTime`, `LearnTime`, 0 AS `Delay`, 
+  `LearnTime` AS `RemainingTime`, `TimeForce`, 
+  
+  `LMode`, `LModeForce`, `MMode`, `Lock`, 
+  
+  (SELECT count(`TID`) FROM `".$this->table('TBelong')."` AS `belong` WHERE `belong`.`ThID` = `sw`.`ThID`) AS `TargetTotal`, 
+  0 AS `LearnedTotal`
+
+FROM `".$this->table('StudyWill')."` AS `sw` 
+LEFT JOIN `".$this->table('Theme')."` AS `th` 
+ON `th`.`ThID` = `sw`.`ThID`
+WHERE NOW()>=`StartTime` AND NOW()<`ExpiredTime` AND `UID` = :uid 
+"; 
+      
+        
+$sqlString_TG = "
+SELECT 'theme' AS `Type`, 
+  `ThID` AS `ID`, NULL, NULL, 
+  `ThID`, `ThName`, `ThIntroduction`, 
+  
+  NULL, NULL, `ThLearnTime` AS `HaveTime`, `ThLearnTime`, 0 AS `Delay`, 
+  `ThLearnTime` AS `RemainingTime`, NULL, 
+  
+  NULL, NULL, NULL, 0 AS `Lock`, 
+  
+  (SELECT count(`TID`) FROM `".$this->table('TBelong')."` AS `belong` WHERE `belong`.`ThID` = `th`.`ThID`) AS `TargetTotal`, 
+  0 AS `LearnedTotal` 
+
+FROM `".$this->table('Theme')."` AS `th` WHERE (SELECT `UEnable_NoAppoint` FROM `".$this->table('User')."` WHERE `UID`= :uid ) = '1'
+";
+        
+$sqlString = $sqlString_SA." UNION ".$sqlString_SW." UNION ".$sqlString_TG;
+        
+        $query = $this->connDB->prepare($sqlString);
+        $query->bindParam(":uid", $userId);
+        $query->execute();
+        
+        $queryResultAll = $query->fetchAll();
+        // 如果有查到一筆以上
+        if( count($queryResultAll) >= 1 ) {
+            // 製作回傳結果陣列
+            $result = array();
+            foreach($queryResultAll as $key => $thisResult) { 
+                
+                if($thisResult['TimeForce'] != '0') {
+                    $output_time_force = true;
+                }
+                else { $output_time_force = false; }
+                
+                if($thisResult['LModeForce'] != '0') {
+                    $output_learnStyleForce = true;
+                }
+                else { $output_learnStyleForce = false; }
+                
+                if($thisResult['Lock'] != '0') {
+                    $output_lock = true;
+                }
+                else { $output_lock = false; }
+                
+                array_push($result,
+                    array( 'type'             => $thisResult['Type'],
+                           'id'               => $thisResult['ID'],
+                           'activity_id'      => $thisResult['SaID'],
+                           'activity_will_id' => $thisResult['SwID'],
+                           'theme_id'         => $thisResult['ThID'],
+                           'start_time'       => $thisResult['StartTime'],
+                           'expired_time'     => $thisResult['ExpiredTime'],
+                           'have_time'        => $thisResult['HaveTime'],
+                           'learn_time'       => $thisResult['LearnTime'],
+                           'delay'            => $thisResult['Delay'],
+                           'remaining_time'   => $thisResult['RemainingTime'],
+                           'time_force'       => $output_time_force,
+                           'learnStyle_mode'  => $thisResult['LMode'],
+                           'learnStyle_force' => $output_learnStyleForce,
+                           'material_mode'    => $thisResult['MMode'],
+                           'lock'             => $thisResult['Lock'],
+                           'target_total'     => $thisResult['TargetTotal'],
+                           'learned_total'    => $thisResult['LearnedTotal']
+                         )  
+                );
+            }
+            return $result;
+        }
+        // 若都沒查到的話
+        else {
+            return null;
+        }
+        
+    }
 }
