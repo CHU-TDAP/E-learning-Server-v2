@@ -262,6 +262,19 @@ class Target {
 	}
     
     /**
+	 * 增加學習標的目前人數
+	 *
+     * 若要減少可直接在參數內帶入負值
+     *
+	 * @param int $number 學習標的目前人數調整值
+     * @return int 學習標的目前人數
+     * @since 2.0.0
+	 */
+	public function addCurrentPeople($number){
+		return $this->addMj($number);
+	}
+
+    /**
 	 * 設定學習標的目前人數
 	 *
 	 * @param int $number 學習標的目前人數
