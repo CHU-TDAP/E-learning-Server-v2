@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * ThemeManager.php
  */
@@ -12,19 +12,19 @@ use UElearning\Exception;
 
 /**
  * 主題管理類別
- * 
+ *
  * @author          Yuan Chiu <chyuaner@gmail.com>
  * @version         2.0.0
  * @package         UElearning
  * @subpackage      Study
- */ 
+ */
 class ThemeManager {
-    
+
     /**
      * 取得所有的主題資訊清單
-     * 
+     *
      * @return array 班級資訊清單陣列，格式為:
-     * 
+     *
      *     array(
      *         array(
      *             'theme_id'      => <主題ID>,
@@ -35,11 +35,11 @@ class ThemeManager {
      *             'modify_time'   => <主題資料修改時間>
      *         )
      *     );
-     * 
+     *
      * @since 2.0.0
-     */ 
+     */
     public function getInfoList() {
-        
+
         $db = new Database\DBTheme();
         $queryResult = $db->queryAllTheme();
         return $queryResult;

@@ -12,19 +12,19 @@ require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
 
 /**
  * 資料庫整體管理
- * 
+ *
  * 對資料庫的管理操作。
- * 
- * 建立資料庫連結，若直接使用`config.php`設定的參數，使用以下即可: 
- *     
+ *
+ * 建立資料庫連結，若直接使用`config.php`設定的參數，使用以下即可:
+ *
  *     require_once __DIR__.'/config.php';
  *     require_once UELEARNING_LIB_ROOT.'Database/DBAdmin.php';
  *     use UElearning\Database;
  *     use UElearning\Exception;
  *     $db = new Database\DBAdmin();
- *     
+ *
  * 若要自行指定連結參數，請使用:
- *     
+ *
  *     use UElearning\Database;
  *     $db = new Database\DBAdmin(array(
  *         'type' => 'mysql',
@@ -35,13 +35,13 @@ require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
  *         'dbname' => 'chu-elearning',
  *         'prefix' => 'chu_'
  *         ));
- * 
- * 可參考以下範例: 
- * 
+ *
+ * 可參考以下範例:
+ *
  *     require_once __DIR__.'/config.php';
  *     require_once UELEARNING_LIB_ROOT.'Database/DBAdmin.php';
  *     use UElearning\Database;
- *     
+ *
  *     try {
  *         $db = new Database\DBAdmin();
  *     } catch (Database\DatabaseNoSupportException $e) {
@@ -56,17 +56,17 @@ require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
  * @subpackage      Database
  */
 class DBAdmin extends Database {
-    
+
     /**
      * 建立所有所需的資料表
-     * 
-     * @since 2.0.0 
-     */ 
+     *
+     * @since 2.0.0
+     */
     public function createAllTable() {
-        
+
         // 使用的資料庫系統為MySQL
         if($this->db_type == 'mysql') {
-            
+
             // 所有要跑的SQL指令陣列
             $execSql = array(
 
@@ -74,14 +74,14 @@ class DBAdmin extends Database {
   `TID` int(10) unsigned NOT NULL,
   `AID` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
-                
+
 "CREATE TABLE IF NOT EXISTS `".$this->db_prefix."AGroup` (
   `GID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `GName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `GMemo` tinytext COLLATE utf8_unicode_ci,
   PRIMARY KEY (`GID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
-                
+
 "CREATE TABLE IF NOT EXISTS `".$this->db_prefix."Area` (
   `AID` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '區域編號',
   `AName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '區域名稱',
@@ -199,7 +199,7 @@ class DBAdmin extends Database {
   PRIMARY KEY (`UsID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;"
             );
-            
+
             // 執行此SQL指令
             foreach ($execSql as $value ){
                 $this->connDB->exec($value);

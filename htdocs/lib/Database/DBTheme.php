@@ -19,32 +19,32 @@ require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
  * @subpackage      Database
  */
 class DBTheme extends Database {
-    
+
     /**
      * 內部使用的查詢動作
      * @param string $where 查詢語法
      * @return array 查詢結果陣列
-     */ 
+     */
     protected function queryThemeByWhere($where) {
-        
+
         $sqlString = "SELECT `ThID`, `ThName`, ".
                      "`ThLearnTime`, `ThIntroduction`, ".
                      "`ThBuildTime`, `ThModifyTime`, ".
-                     "(SELECT count(`TID`) FROM `chu__TBelong` AS `belong` 
+                     "(SELECT count(`TID`) FROM `chu__TBelong` AS `belong`
                      WHERE `belong`.`ThID` = `theme`.`ThID`) AS `TargetTotal`".
                      "FROM `".$this->table('Theme')."` AS `theme` ".
                      "WHERE ".$where;
-		
-		$query = $this->connDB->prepare($sqlString);
-		$query->execute();
-		
-		$queryResultAll = $query->fetchAll();
+
+        $query = $this->connDB->prepare($sqlString);
+        $query->execute();
+
+        $queryResultAll = $query->fetchAll();
         // 如果有查到一筆以上
         if( count($queryResultAll) >= 1 ) {
             // 製作回傳結果陣列
             $result = array();
-            foreach($queryResultAll as $key => $thisResult) { 
-                
+            foreach($queryResultAll as $key => $thisResult) {
+
                 array_push($result,
                     array( 'theme_id'      => $thisResult['ThID'],
                            'name'          => $thisResult['ThName'],
@@ -62,27 +62,27 @@ class DBTheme extends Database {
             return null;
         }
     }
-    
-    
+
+
     /**
      * 查詢一個主題資料
-     * 
-     * 
-     * 範例: 
-     * 
+     *
+     *
+     * 範例:
+     *
      *     require_once __DIR__.'/../config.php';
      *     require_once UELEARNING_LIB_ROOT.'/Database/DBTheme.php';
      *     use UElearning\Database;
-     * 
+     *
      *     $db = new Database\DBTheme();
-     *     
+     *
      *     $info = $db->queryTheme(1);
      *     echo '<pre>'; print_r($info); echo '</pre>';
-     *     
-     * 
+     *
+     *
      * @param int $thId 主題ID
-     * @return array 主題資料陣列，格式為: 
-     *     array( 
+     * @return array 主題資料陣列，格式為:
+     *     array(
      *         'theme_id'      => <主題ID>,
      *         'name'          => <主題名稱>,
      *         'learn_time'    => <預估的學習時間>,
@@ -91,13 +91,13 @@ class DBTheme extends Database {
      *         'build_time'    => <主題建立時間>,
      *         'modify_time'   => <主題資料修改時間>
      *     );
-     * 
-     */ 
+     *
+     */
     public function queryTheme($thId) {
-		
-		$queryResultAll = 
+
+        $queryResultAll =
             $this->queryThemeByWhere("`ThID`=".$this->connDB->quote($thId));
-        
+
         // 如果有查到一筆以上
         if( count($queryResultAll) >= 1 ) {
             return $queryResultAll[0];
@@ -107,14 +107,14 @@ class DBTheme extends Database {
             return null;
         }
     }
-    
+
     /**
      * 查詢所有主題資料
-     * 
-     * @return array 主題資料陣列，格式為: 
-     *     
+     *
+     * @return array 主題資料陣列，格式為:
+     *
      *     array(
-     *         array( 
+     *         array(
      *             'theme_id'      => <主題ID>,
      *             'name'          => <主題名稱>,
      *             'learn_time'    => <預估的學習時間>,
@@ -124,20 +124,20 @@ class DBTheme extends Database {
      *             'modify_time'   => <主題資料修改時間>
      *         )
      *     );
-     * 
-     */ 
+     *
+     */
     public function queryAllTheme() {
-        
+
         return $this->queryThemeByWhere("1");
     }
-    
+
 //    /**
 //     * 修改一個標的資訊
-//     * 
+//     *
 //     * @param int    $tId   標的編號
 //     * @param string $field 欄位名稱
 //     * @param string $value 內容
-//     */ 
+//     */
 //    public function changeTargetData($tId, $field, $value) {
 //        $sqlField = null;
 //        switch($field) {
@@ -153,16 +153,16 @@ class DBTheme extends Database {
 //            case 'Fj':            $sqlField = 'Fj';          break;
 //            default:              $sqlField = $field;        break;
 //        }
-//        
-//        
+//
+//
 //        $sqlString = "UPDATE ".$this->table('Target').
 //                     " SET `".$sqlField."` = :value".
 //                     " WHERE `TID` = :tid";
-//        
+//
 //        $query = $this->connDB->prepare($sqlString);
-//		$query->bindParam(':tid', $tId);
+//        $query->bindParam(':tid', $tId);
 //        $query->bindParam(':value', $value);
-//		$query->execute();
+//        $query->execute();
 //    }
 
 }

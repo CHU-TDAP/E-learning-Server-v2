@@ -14,9 +14,9 @@ require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
 
 /**
  * 學習標的資料表
- * 
+ *
  * 此檔案針對學習標的，以及學習標的的區域、廳等的資料表進行操作。
- * 
+ *
  *
  * @author          Yuan Chiu <chyuaner@gmail.com>
  * @version         2.0.0
@@ -24,14 +24,14 @@ require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
  * @subpackage      Database
  */
 class DBTarget extends Database {
-    
+
     /**
      * 內部使用的查詢動作
      * @param string $where 查詢語法
      * @return array 查詢結果陣列
-     */ 
+     */
     protected function queryTargetByWhere($where) {
-        
+
         $sqlString = "SELECT `TID`, Target.`AID`, Area.`HID`, ".
                      "`TNum`, `TName`, `TMapID`, `TLearnTime`, ".
                      "`PLj`, `Mj`, `S`, IF(`Mj` >= `PLj`, 1, 0) AS Fj ".
@@ -39,17 +39,17 @@ class DBTarget extends Database {
                      "LEFT JOIN `".$this->table('Area')."` as Area ".
                      "ON Area.`AID` = Target.`AID` ".
                      "WHERE ".$where;
-		
-		$query = $this->connDB->prepare($sqlString);
-		$query->execute();
-		
-		$queryResultAll = $query->fetchAll();
+
+        $query = $this->connDB->prepare($sqlString);
+        $query->execute();
+
+        $queryResultAll = $query->fetchAll();
         // 如果有查到一筆以上
         if( count($queryResultAll) >= 1 ) {
             // 製作回傳結果陣列
             $result = array();
-            foreach($queryResultAll as $key => $thisResult) { 
-                
+            foreach($queryResultAll as $key => $thisResult) {
+
                 array_push($result,
                     array( 'target_id'     => $thisResult['TID'],
                            'area_id'       => $thisResult['AID'],
@@ -71,27 +71,27 @@ class DBTarget extends Database {
             return null;
         }
     }
-    
-    
+
+
     /**
      * 查詢一個標的資料
-     * 
-     * 
-     * 範例: 
-     * 
+     *
+     *
+     * 範例:
+     *
      *     require_once __DIR__.'/../config.php';
      *     require_once UELEARNING_LIB_ROOT.'/Database/DBTarget.php';
      *     use UElearning\Database;
-     * 
+     *
      *     $db = new Database\DBTarget();
-     *     
+     *
      *     $targetInfo = $db->queryTarget(4);
      *     echo '<pre>'; print_r($targetInfo); echo '</pre>';
-     *     
-     * 
+     *
+     *
      * @param int $tId 標的ID
-     * @return array 標的資料陣列，格式為: 
-     *     array( 
+     * @return array 標的資料陣列，格式為:
+     *     array(
      *         'target_id'     => <標的ID>,
      *         'area_id'       => <標的所在的區域ID>,
      *         'hall_id'       => <標的所在的廳ID>,
@@ -104,12 +104,12 @@ class DBTarget extends Database {
      *         'S'             => <學習標的飽和率上限>,
      *         'Fj'            => <學習標的滿額指標>
      *     );
-     * 
-     */ 
+     *
+     */
     public function queryTarget($tId) {
-		
-		$queryResultAll = $this->queryTargetByWhere("`TID`=".$this->connDB->quote($tId));
-        
+
+        $queryResultAll = $this->queryTargetByWhere("`TID`=".$this->connDB->quote($tId));
+
         // 如果有查到一筆以上
         if( count($queryResultAll) >= 1 ) {
             return $queryResultAll[0];
@@ -119,14 +119,14 @@ class DBTarget extends Database {
             return null;
         }
     }
-    
+
     /**
      * 查詢所有標的資料
-     * 
-     * @return array 標的資料陣列，格式為: 
-     *     
+     *
+     * @return array 標的資料陣列，格式為:
+     *
      *     array(
-     *         array( 
+     *         array(
      *             'target_id'     => <標的ID>,
      *             'area_id'       => <標的所在的區域ID>,
      *             'hall_id'       => <標的所在的廳ID>,
@@ -140,20 +140,20 @@ class DBTarget extends Database {
      *             'Fj'            => <學習標的滿額指標>
      *         )
      *     );
-     * 
-     */ 
+     *
+     */
     public function queryAllTarget() {
-        
+
         return $this->queryAreaByWhere("1");
     }
-    
+
     /**
      * 修改一個標的資訊
-     * 
+     *
      * @param int    $tId   標的編號
      * @param string $field 欄位名稱
      * @param string $value 內容
-     */ 
+     */
     public function changeTargetData($tId, $field, $value) {
         $sqlField = null;
         switch($field) {
@@ -169,40 +169,40 @@ class DBTarget extends Database {
             case 'Fj':            $sqlField = 'Fj';          break;
             default:              $sqlField = $field;        break;
         }
-        
-        
+
+
         $sqlString = "UPDATE ".$this->table('Target').
                      " SET `".$sqlField."` = :value".
                      " WHERE `TID` = :tid";
-        
+
         $query = $this->connDB->prepare($sqlString);
-		$query->bindParam(':tid', $tId);
+        $query->bindParam(':tid', $tId);
         $query->bindParam(':value', $value);
-		$query->execute();
+        $query->execute();
     }
-    
+
     // ========================================================================
-    
+
     /**
      * 內部使用的查詢動作
      * @param string $where 查詢語法
      * @return array 查詢結果陣列
-     */ 
+     */
     protected function queryAreaByWhere($where) {
-        
+
         $sqlString = "SELECT * FROM `".$this->table('Area')."`".
                      "WHERE ".$where;
-		
-		$query = $this->connDB->prepare($sqlString);
-		$query->execute();
-		
-		$queryResultAll = $query->fetchAll();
+
+        $query = $this->connDB->prepare($sqlString);
+        $query->execute();
+
+        $queryResultAll = $query->fetchAll();
         // 如果有查到一筆以上
         if( count($queryResultAll) >= 1 ) {
             // 製作回傳結果陣列
             $result = array();
-            foreach($queryResultAll as $key => $thisResult) { 
-                
+            foreach($queryResultAll as $key => $thisResult) {
+
                 array_push($result,
                     array( 'area_id'       => $thisResult['AID'],
                            'hall_id'       => $thisResult['HID'],
@@ -220,26 +220,26 @@ class DBTarget extends Database {
             return null;
         }
     }
-    
+
     /**
      * 查詢一個區域資料
-     * 
-     * 
-     * 範例: 
-     * 
+     *
+     *
+     * 範例:
+     *
      *     require_once __DIR__.'/../config.php';
      *     require_once UELEARNING_LIB_ROOT.'/Database/DBTarget.php';
      *     use UElearning\Database;
-     * 
+     *
      *     $db = new Database\DBTarget();
-     *     
+     *
      *     $areaInfo = $db->queryArea(4);
      *     echo '<pre>'; print_r($areaInfo); echo '</pre>';
-     *     
-     * 
+     *
+     *
      * @param int $aId 區域ID
-     * @return array 區域資料陣列，格式為: 
-     *     array( 
+     * @return array 區域資料陣列，格式為:
+     *     array(
      *         'area_id'       => <區域ID>,
      *         'hall_id'       => <區域所在的廳ID>,
      *         'floor'         => <區域所在的樓層>,
@@ -248,12 +248,12 @@ class DBTarget extends Database {
      *         'map_url'       => <地圖路徑>,
      *         'introduction'  => <區域簡介>
      *     );
-     * 
-     */ 
+     *
+     */
     public function queryArea($aId) {
-		
-		$queryResultAll = $this->queryAreaByWhere("`AID`=".$this->connDB->quote($aId));
-        
+
+        $queryResultAll = $this->queryAreaByWhere("`AID`=".$this->connDB->quote($aId));
+
         // 如果有查到一筆以上
         if( count($queryResultAll) >= 1 ) {
             return $queryResultAll[0];
@@ -263,14 +263,14 @@ class DBTarget extends Database {
             return null;
         }
     }
-    
+
     /**
      * 查詢所有區域資料
-     * 
-     * @return array 區域資料陣列，格式為: 
-     *     
+     *
+     * @return array 區域資料陣列，格式為:
+     *
      *     array(
-     *         array( 
+     *         array(
      *             'area_id'       => <區域ID>,
      *             'hall_id'       => <區域所在的廳ID>,
      *             'floor'         => <區域所在的樓層>,
@@ -280,20 +280,20 @@ class DBTarget extends Database {
      *             'introduction'  => <區域簡介>
      *         )
      *     );
-     * 
-     */ 
+     *
+     */
     public function queryAllArea() {
-        
+
         return $this->queryAreaByWhere("1");
     }
-    
+
     ///**
     // * 修改一個標的資訊
-    // * 
+    // *
     // * @param int    $tId   標的編號
     // * @param string $field 欄位名稱
     // * @param string $value 內容
-    // */ 
+    // */
     //function changeTargetData($tId, $field, $value) {
     ////TODO: 待修成Area
     //    $sqlField = null;
@@ -310,40 +310,40 @@ class DBTarget extends Database {
     //        case 'Fj':            $sqlField = 'Fj';          break;
     //        default:              $sqlField = $field;        break;
     //    }
-    //    
-    //    
+    //
+    //
     //    $sqlString = "UPDATE ".$this->table('Target').
     //                 " SET `".$sqlField."` = :value".
     //                 " WHERE `TID` = :tid";
-    //    
+    //
     //    $query = $this->connDB->prepare($sqlString);
-	//	$query->bindParam(':tid', $tId);
+    //    $query->bindParam(':tid', $tId);
     //    $query->bindParam(':value', $value);
-	//	$query->execute();
+    //    $query->execute();
     //}
-    
+
     // ========================================================================
-    
+
     /**
      * 內部使用的查詢動作
      * @param string $where 查詢語法
      * @return array 查詢結果陣列
-     */ 
+     */
     protected function queryHallByWhere($where) {
-        
+
         $sqlString = "SELECT * FROM `".$this->table('Hall')."`".
                      "WHERE ".$where;
-		
-		$query = $this->connDB->prepare($sqlString);
-		$query->execute();
-		
-		$queryResultAll = $query->fetchAll();
+
+        $query = $this->connDB->prepare($sqlString);
+        $query->execute();
+
+        $queryResultAll = $query->fetchAll();
         // 如果有查到一筆以上
         if( count($queryResultAll) >= 1 ) {
             // 製作回傳結果陣列
             $result = array();
-            foreach($queryResultAll as $key => $thisResult) { 
-                
+            foreach($queryResultAll as $key => $thisResult) {
+
                 array_push($result,
                     array( 'hall_id'       => $thisResult['HID'],
                            'name'          => $thisResult['HName'],
@@ -358,37 +358,37 @@ class DBTarget extends Database {
             return null;
         }
     }
-    
+
     /**
      * 查詢一個廳資料
-     * 
-     * 
-     * 範例: 
-     * 
+     *
+     *
+     * 範例:
+     *
      *     require_once __DIR__.'/../config.php';
      *     require_once UELEARNING_LIB_ROOT.'/Database/DBTarget.php';
      *     use UElearning\Database;
-     * 
+     *
      *     $db = new Database\DBTarget();
-     *     
+     *
      *     $hallInfo = $db->queryHall(1);
      *     echo '<pre>'; print_r($hallInfo); echo '</pre>';
-     *     
-     * 
+     *
+     *
      * @param int $hId 廳ID
-     * @return array 區域資料陣列，格式為: 
-     *     array( 
+     * @return array 區域資料陣列，格式為:
+     *     array(
      *         'hall_id'       => <廳的ID>,
      *         'name'          => <廳名稱>,
      *         'map_url'       => <地圖路徑>,
      *         'introduction'  => <區域簡介>
      *     );
-     * 
-     */ 
+     *
+     */
     public function queryHall($hId) {
-		
-		$queryResultAll = $this->queryHallByWhere("`HID`=".$this->connDB->quote($hId));
-        
+
+        $queryResultAll = $this->queryHallByWhere("`HID`=".$this->connDB->quote($hId));
+
         // 如果有查到一筆以上
         if( count($queryResultAll) >= 1 ) {
             return $queryResultAll[0];
@@ -398,33 +398,33 @@ class DBTarget extends Database {
             return null;
         }
     }
-    
+
     /**
      * 查詢所有區域資料
-     * 
-     * @return array 區域資料陣列，格式為: 
-     *     
+     *
+     * @return array 區域資料陣列，格式為:
+     *
      *     array(
-     *         array( 
+     *         array(
      *             'hall_id'       => <廳的廳ID>,
      *             'name'          => <廳名稱>,
      *             'map_url'       => <地圖路徑>,
      *             'introduction'  => <區域簡介>
      *     );
-     * 
-     */ 
+     *
+     */
     public function queryAllHall() {
-        
+
         return $this->queryHallByWhere("1");
     }
-    
+
     ///**
     // * 修改一個標的資訊
-    // * 
+    // *
     // * @param int    $tId   標的編號
     // * @param string $field 欄位名稱
     // * @param string $value 內容
-    // */ 
+    // */
     //function changeTargetData($tId, $field, $value) {
     ////TODO: 待修成Area
     //    $sqlField = null;
@@ -441,16 +441,16 @@ class DBTarget extends Database {
     //        case 'Fj':            $sqlField = 'Fj';          break;
     //        default:              $sqlField = $field;        break;
     //    }
-    //    
-    //    
+    //
+    //
     //    $sqlString = "UPDATE ".$this->table('Target').
     //                 " SET `".$sqlField."` = :value".
     //                 " WHERE `TID` = :tid";
-    //    
+    //
     //    $query = $this->connDB->prepare($sqlString);
-	//	$query->bindParam(':tid', $tId);
+    //    $query->bindParam(':tid', $tId);
     //    $query->bindParam(':value', $value);
-	//	$query->execute();
+    //    $query->execute();
     //}
-    
+
 }
