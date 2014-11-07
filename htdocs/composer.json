@@ -6,5 +6,8 @@
             "name": "Yuan Chiu",
             "email": "chyuaner@gmail.com"
         }
+    ],
+    "require": {
+        "slim/slim": "2.*"
     }
 }
