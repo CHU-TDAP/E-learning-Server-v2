@@ -59,41 +59,35 @@ class UserSession {
      */
     public function login($userId, $password, $agent) {
 
-        try {
-            $user = new User($userId);
+        $user = new User($userId);
 
-            // 登入密碼錯誤的話
-            if( !$user->isPasswordCorrect($password) ) {
-                throw new Exception\UserPasswordErrException($userId);
-            }
-            // 此帳號已被停用
-            else if( !$user->isEnable() ) {
-                throw new Exception\UserNoActivatedException($userId);
-            }
-            // 沒問題，登入此帳號
-            else {
-
-                // 使用資料庫
-                $db = new Database\DBUserSession();
-
-                // 產生登入token
-                $passUtil = new Util\Password();
-                $token = null;
-                // 防止產生出重複的token
-                do {
-                    $token = $passUtil->generator(32);
-                }
-                while ($db->queryByToken($token));
-
-                // 登入資訊寫入資料庫
-                $db->login($token, $userId, $agent);
-
-                return $token;
-            }
+        // 登入密碼錯誤的話
+        if( !$user->isPasswordCorrect($password) ) {
+            throw new Exception\UserPasswordErrException($userId);
         }
-        // 沒有找到使用者
-        catch (Exception\UserNoFoundException $e) {
-            echo 'No Found user: '. $e->getUserId();
+        // 此帳號已被停用
+        else if( !$user->isEnable() ) {
+            throw new Exception\UserNoActivatedException($userId);
+        }
+        // 沒問題，登入此帳號
+        else {
+
+            // 使用資料庫
+            $db = new Database\DBUserSession();
+
+            // 產生登入token
+            $passUtil = new Util\Password();
+            $token = null;
+            // 防止產生出重複的token
+            do {
+                $token = $passUtil->generator(32);
+            }
+            while ($db->queryByToken($token));
+
+            // 登入資訊寫入資料庫
+            $db->login($token, $userId, $agent);
+
+            return $token;
         }
     }
 
