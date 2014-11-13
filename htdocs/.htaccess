@@ -9,4 +9,4 @@ RewriteEngine On
 ## For API
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule (API|api)/v2/(.*)$ API/v2/index.php/$1 [L]
+RewriteRule (API|api)/v2/(.*)$ api/v2/index.php/$1 [L]

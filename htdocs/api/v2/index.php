@@ -71,7 +71,7 @@ $app->error(function (\Exception $e) use ($app) {
 
 
 // 測試用 Say hello!~~~
-$app->get('/Hello/:name', function ($name) use ($app) {
+$app->get('/hello/:name', function ($name) use ($app) {
     $app->view(new \JsonApiView());
     $app->add(new \JsonApiMiddleware());
 
@@ -83,7 +83,7 @@ $app->get('/Hello/:name', function ($name) use ($app) {
 
 // ============================================================================
 
-$app->group('/Users', 'APIrequest', function () use ($app) {
+$app->group('/users', 'APIrequest', function () use ($app) {
 
     // 建立帳號
     $app->post('/', function () use ($app) {
@@ -114,13 +114,13 @@ $app->group('/Users', 'APIrequest', function () use ($app) {
 
     });
 
-    $app->post('/:user_id/Login/', function ($user_id) use ($app) {
+    $app->post('/:user_id/login/', function ($user_id) use ($app) {
         // TODO: 登入
         APIdisableFunc($app);
     });
 });
 
-$app->group('/UTokens', 'APIrequest', function () use ($app) {
+$app->group('/tokens', 'APIrequest', function () use ($app) {
 
     $app->get('/:token', function ($token) {
         //echo "Login Token: $token";
