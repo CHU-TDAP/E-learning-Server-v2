@@ -12,8 +12,8 @@ class ApiTemplates {
 
         $array += array(
             'error'       => true,
-            'message'     => '',
-            'message_cht' => '缺少必要的參數',
+            'msg'     => '',
+            'msg_cht' => '缺少必要的參數',
             'substatus'   => 101
         );
         $this->app->render(400, $array);
@@ -23,8 +23,8 @@ class ApiTemplates {
 
         $array = array(
             'error'       => true,
-            'message'     => '',
-            'message_cht' => '輸入參數的Content-Type不在支援範圍內 或是沒有輸入',
+            'msg'     => '',
+            'msg_cht' => '輸入參數的Content-Type不在支援範圍內 或是沒有輸入',
             'substatus'   => 102
         );
         $this->app->render(400, $array);
@@ -34,8 +34,8 @@ class ApiTemplates {
 
         $array += array(
             'error'       => true,
-            'message'     => 'This function is not enable.',
-            'message_cht' => '此功能尚未開放'
+            'msg'     => 'This function is not enable.',
+            'msg_cht' => '此功能尚未開放'
         );
         $this->app->render(405, $array);
     }
