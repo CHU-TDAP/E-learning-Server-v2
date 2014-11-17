@@ -27,7 +27,7 @@ function APIrequest() {
 $app->get('/hello/:name', 'APIrequest', function ($name) use ($app) {
     $app->render(200,array(
         'error'   => false,
-        'message' => 'Hello, $name'
+        'msg' => 'Hello, $name'
     ));
 });
 
@@ -63,8 +63,8 @@ $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
             $app->render(404,array(
                 'user_id'     => $user_id,
                 'error'       => true,
-                'message'     => '\''.$user_id.'\' is not found',
-                'message_cht' => '找不到\''.$user_id.'\'使用者'
+                'msg'     => '\''.$user_id.'\' is not found',
+                'msg_cht' => '找不到\''.$user_id.'\'使用者'
             ));
         }
     });
@@ -73,23 +73,30 @@ $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
      * 登入帳號
      * POST http://localhost/api/v2/users/{帳號ID}/login
      */
-    $app->post('/:user_id/login/', function ($user_id) use ($app, $app_template) {
+    $app->post('/:user_id/login', function ($user_id) use ($app) {
 
         // 取得帶來的參數
         $cType = $app->request->getContentType();
         if($cType == 'application/x-www-form-urlencoded') {
             $password = $_POST['password'];
-            $browser = $_POST['browser'];
+            $browser  = isset($_POST['browser']) ? $_POST['browser'] : 'api';
         }
         else if($cType == 'application/json') {
             $postData = $app->request->getBody();
             $postDataArray = json_decode($postData);
-
-            $password = $postDataArray['password'];
-            $browser  = $postDataArray['browser'];
+            $password = $postDataArray->password;
+            $browser  = isset($postDataArray->browser)
+                            ? $postDataArray->browser : 'api';
         }
         else {
-            $app_template->inputContentTypeErr();
+            $app->render(400, array(
+                    'Content-Type'=> $cType,
+                    'error'       => true,
+                    'msg'     => '',
+                    'msg_cht' => '輸入參數的Content-Type不在支援範圍內 或是沒有輸入',
+                    'substatus'   => 102
+                )
+            );
         }
         if(!isset($browser)) { $browser = 'api'; }
 
@@ -103,8 +110,8 @@ $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
                 'token'       => $loginToken,
                 'browser'     => $browser,
                 'error'       => false,
-                'message'     => '\''.$user_id.'\' is logined',
-                'message_cht' => '\''.$user_id.'\'使用者已登入'
+                'msg'     => '\''.$user_id.'\' is logined',
+                'msg_cht' => '\''.$user_id.'\'使用者已登入'
             ));
         }
         catch (Exception\UserNoFoundException $e) {
@@ -112,18 +119,17 @@ $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
                 'user_id'     => $user_id,
                 'browser'     => $browser,
                 'error'       => true,
-                'message'     => '\''.$user_id.'\' is not found',
-                'message_cht' => '找不到\''.$user_id.'\'使用者'
+                'msg'     => '\''.$user_id.'\' is not found',
+                'msg_cht' => '找不到\''.$user_id.'\'使用者'
             ));
         }
         catch (Exception\UserPasswordErrException $e) {
             $app->render(401,array(
                 'user_id'     => $user_id,
-                'password'    => $password,
                 'browser'     => $browser,
                 'error'       => true,
-                'message'     => 'Input \''.$user_id.'\' password is wrong',
-                'message_cht' => '\''.$user_id.'\'使用者密碼錯誤',
+                'msg'     => 'Input \''.$user_id.'\' password is wrong',
+                'msg_cht' => '\''.$user_id.'\'使用者密碼錯誤',
                 'substatus'   => 201
             ));
         }
@@ -132,8 +138,8 @@ $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
                 'user_id'     => $user_id,
                 'browser'     => $browser,
                 'error'       => true,
-                'message'     => '\''.$user_id.'\' is not enable',
-                'message_cht' => '\''.$user_id.'\'帳號目前未啟用',
+                'msg'     => '\''.$user_id.'\' is not enable',
+                'msg_cht' => '\''.$user_id.'\'帳號目前未啟用',
                 'substatus'   => 202
             ));
         }
@@ -190,8 +196,8 @@ else {
 
         $app->render(404,array(
             'error'       => true,
-            'message'     => 'No this function.',
-            'message_cht' => '沒有此功能'
+            'msg'     => 'No this function.',
+            'msg_cht' => '沒有此功能'
         ));
     });
 }
