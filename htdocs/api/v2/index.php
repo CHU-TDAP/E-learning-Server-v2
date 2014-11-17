@@ -33,7 +33,7 @@ $app->get('/hello/:name', 'APIrequest', function ($name) use ($app) {
 
 // ============================================================================
 
-$app->group('/users', 'APIrequest', function () use ($app) {
+$app->group('/users', 'APIrequest', function () use ($app, $app_template) {
 
     /*
      * 建立帳號
@@ -73,7 +73,7 @@ $app->group('/users', 'APIrequest', function () use ($app) {
      * 登入帳號
      * POST http://localhost/api/v2/users/{帳號ID}/login
      */
-    $app->post('/:user_id/login/', function ($user_id) use ($app) {
+    $app->post('/:user_id/login/', function ($user_id) use ($app, $app_template) {
 
         // 取得帶來的參數
         $cType = $app->request->getContentType();
