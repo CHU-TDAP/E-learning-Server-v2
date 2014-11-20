@@ -247,7 +247,7 @@ class User {
      * @return string 班級ID
      * @since 2.0.0
      */
-    public function getClass(){
+    public function getClassId(){
         return $this->queryResultArray['class_id'];
     }
 
@@ -378,6 +378,26 @@ class User {
 
         // TODO: 防呆- 無此教材
         $this->setUpdate('material_mode', $style);
+    }
+
+    /**
+     * 取得是否允需此人進行非預約學習
+     *
+     * @return bool 是否允許非預約學習
+     * @since  2.0.0
+     */
+    public function isEnableNoAppoint(){
+        return $this->queryResultArray['enable_noAppoint'];
+    }
+
+    /**
+     * 設定是否允需此人進行非預約學習
+     *
+     * @param bool 是否允許非預約學習
+     * @since 2.0.0
+     */
+    public function setEnableNoAppoint($value){
+        $this->setUpdate('enable_noAppoint', $value);
     }
 
     // ------------------------------------------------------------------------

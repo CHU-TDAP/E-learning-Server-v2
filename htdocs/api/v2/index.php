@@ -27,7 +27,7 @@ function APIrequest() {
 $app->get('/hello/:name', 'APIrequest', function ($name) use ($app) {
     $app->render(200,array(
         'error'   => false,
-        'msg' => 'Hello, $name'
+        'msg' => 'Hello, '.$name
     ));
 });
 
@@ -98,7 +98,6 @@ $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
                 )
             );
         }
-        if(!isset($browser)) { $browser = 'api'; }
 
         // 進行登入
         try {
@@ -144,6 +143,7 @@ $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
             ));
         }
     });
+
 });
 
 $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
@@ -152,10 +152,102 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
      * 取得已登入的帳號資訊
      * GET http://localhost/api/v2/tokens/{登入Token}
      */
-    $app->get('/:token', function ($token) use ($app, $app_template) {
-        //echo "Login Token: $token";
-        // TODO: 登入Token
-        $app_template->noEnableFunc();
+    $app->get('/:token', function ($token) use ($app) {
+
+        try {
+            // 正常寫法
+            $userSession = new User\UserSession();
+            $user = $userSession->getUser($token);
+
+            $app->render(200,array(
+                'token'              => $token,
+                'user_id'            => $user->getId(),
+                'nickname'           => $user->getNickName(),
+                'group_id'           => $user->getGroupID(),
+                'group_name'         => $user->getGroupName(),
+                'class_id'           => $user->getClassId(),
+                'class_name'         => $user->getClassName(),
+                'enable'             => $user->isEnable(),
+                'build_time'         => $user->getCreateTime(),
+                'modify_time'        => $user->getModifyTime(),
+                'learnStyle_mode'    => $user->getLearnStyle(),
+                'material_mode'      => $user->getMaterialStyle(),
+                'enable_noAppoint'   => $user->isEnableNoAppoint(),
+                'realname'           => $user->getRealName(),
+                'email'              => $user->getEmail(),
+                'memo'               => $user->getMemo(),
+                'error'              => false
+            ));
+        }
+        catch (Exception\LoginTokenNoFoundException $e) {
+            $app->render(404,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No \''.$token.'\' session. Please login again.',
+                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入'
+            ));
+        }
+    });
+
+    /*
+     * 登出此登入階段
+     * DELETE http://localhost/api/v2/tokens/{登入Token}
+     */
+    $app->delete('/:token', function ($token) use ($app) {
+
+        try {
+            $session = new User\UserSession();
+            $user_id = $session->getUserId($token);
+            $session->logout($token);
+
+            $app->render(201,array(
+                'token'   => $token,
+                'user_id' => $user_id,
+                'error'   => false,
+                'msg'     => '\''.$user_id.'\' this session is logout.',
+                'msg_cht' => '\''.$user_id.'\'此登入階段已登出'
+            ));
+        }
+        catch (Exception\LoginTokenNoFoundException $e) {
+            $app->render(404,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No \''.$token.'\' session. Please login again.',
+                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入'
+            ));
+        }
+    });
+
+    /*
+     * 登出此此使用者其他登入階段
+     * DELETE http://localhost/api/v2/tokens/{登入Token}/session/other
+     */
+    $app->delete('/:token/session/other', function ($token) use ($app) {
+
+        try {
+            $session = new User\UserSession();
+            $user_id = $session->getUserId($token);
+            $logoutTotal = $session->logoutOtherSession($token);
+            $inLoginTotal = $session->getCurrentLoginTotalByUserId($user_id);
+
+            $app->render(201,array(
+                'token'        => $token,
+                'user_id'      => $user_id,
+                'logout_total' => $logoutTotal,
+                'login_total'  => $inLoginTotal,
+                'error'        => false,
+                'msg'          => '\''.$user_id.'\' other session is logout.',
+                'msg_cht'      => '\''.$user_id.'\'此登入階段之外的皆已登出'
+            ));
+        }
+        catch (Exception\LoginTokenNoFoundException $e) {
+            $app->render(404,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No \''.$token.'\' session. Please login again.',
+                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入'
+            ));
+        }
     });
 
 });
