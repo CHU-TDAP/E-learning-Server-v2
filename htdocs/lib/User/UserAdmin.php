@@ -101,7 +101,7 @@ class UserAdmin {
                     $userInfoArray['material_mode'] = null;
                 }
                 if( !isset($userInfoArray['enable_noAppoint']) ){
-                    $userInfoArray['enable_noAppoint'] = null;
+                    $userInfoArray['enable_noAppoint'] = true;
                 }
                 if( !isset($userInfoArray['nickname']) ){
                     $userInfoArray['nickname'] = null;

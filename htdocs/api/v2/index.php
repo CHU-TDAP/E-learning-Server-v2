@@ -4,11 +4,13 @@ require UELEARNING_ROOT.'/vendor/autoload.php';
 require_once __DIR__.'/src/ApiTemplates.php';
 require_once UELEARNING_LIB_ROOT.'/User/User.php';
 require_once UELEARNING_LIB_ROOT.'/User/UserSession.php';
+require_once UELEARNING_LIB_ROOT.'/User/UserAdmin.php';
 use UElearning\User;
 use UElearning\Exception;
 
 $app = new \Slim\Slim(array(
-    'templates.path' => './' // 設定Path
+    'templates.path' => './', // 設定Path
+    'debug' => true
 ));
 $app_template = new ApiTemplates($app);
 
@@ -40,7 +42,113 @@ $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
      * POST http://localhost/api/v2/users
      */
     $app->post('/', function () use ($app) {
-        $app_template->noEnableFunc();
+        // 取得帶來的參數
+        $cType = $app->request->getContentType();
+        if($cType == 'application/x-www-form-urlencoded') {
+            $user_id          = $_POST['user_id'];
+            $password         = $_POST['password'];
+            $group_id         = $_POST['group_id'];
+            $class_id         = isset($_POST['class_id'])
+                                    ? $_POST['class_id'] : null;
+            $enable           = isset($_POST['enable'])
+                                    ? $_POST['enable'] : null;
+            $learnStyle_mode  = isset($_POST['learnStyle_mode'])
+                                    ? $_POST['learnStyle_mode'] : null;
+            $material_mode    = isset($_POST['material_mode'])
+                                    ? $_POST['material_mode'] : null;
+            $enable_noAppoint = isset($_POST['enable_noAppoint'])
+                                    ? $_POST['enable_noAppoint'] : null;
+            $nickname         = isset($_POST['nickname'])
+                                    ? $_POST['nickname'] : null;
+            $realname         = isset($_POST['realname'])
+                                    ? $_POST['realname'] : null;
+            $email            = isset($_POST['email'])
+                                    ? $_POST['email'] : null;
+            $memo             = isset($_POST['memo'])
+                                    ? $_POST['memo'] : null;;
+        }
+        else /*if($cType == 'application/json')*/ {
+            $postData = $app->request->getBody();
+            $postDataArray = json_decode($postData);
+            $user_id          = $postDataArray->user_id;
+            $password         = $postDataArray->password;
+            $group_id         = $postDataArray->group_id;
+            $class_id         = isset($postDataArray->class_id)
+                                    ? $postDataArray->class_id : null;
+            $enable           = isset($postDataArray->enable)
+                                    ? $postDataArray->enable : null;
+            $learnStyle_mode  = isset($postDataArray->learnStyle_mode)
+                                    ? $postDataArray->learnStyle_mode : null;
+            $material_mode    = isset($postDataArray->material_mode)
+                                    ? $postDataArray->material_mode : null;
+            $enable_noAppoint = isset($postDataArray->enable_noAppoint)
+                                    ? $postDataArray->enable_noAppoint : null;
+            $nickname         = isset($postDataArray->nickname)
+                                    ? $postDataArray->nickname : null;
+            $realname         = isset($postDataArray->realname)
+                                    ? $postDataArray->realname : null;
+            $email            = isset($postDataArray->email)
+                                    ? $postDataArray->email : null;
+            $memo             = isset($postDataArray->memo)
+                                    ? $postDataArray->memo : null;
+        }
+        /*else {
+            $app->render(400, array(
+                    'Content-Type'=> $cType,
+                    'error'       => true,
+                    'msg'     => '',
+                    'msg_cht' => '輸入參數的Content-Type不在支援範圍內 或是沒有輸入',
+                    'substatus'   => 102
+                )
+            );
+        }*/
+
+        // 建立使用者帳號
+        try {
+            $userAdmin = new User\UserAdmin();
+            $userAdmin->create(
+                array( 'user_id'            => $user_id,
+                       'password'           => $password,
+                       'group_id'           => $group_id,
+                       'class_id'           => $class_id,
+                       'enable'             => $enable,
+                       'learnStyle_mode'    => $learnStyle_mode,
+                       'material_mode'      => $material_mode,
+                       'enable_noAppoint'   => $enable_noAppoint,
+                       'nickname'           => $nickname,
+                       'realname'           => $realname,
+                       'email'              => $email,
+                       'memo'               => $memo)
+            );
+
+            // 顯示建立成功
+            $app->render(200,array(
+                'user_id'            => $user_id,
+                'group_id'           => $group_id,
+                'class_id'           => $class_id,
+                'enable'             => $enable,
+                'learnStyle_mode'    => $learnStyle_mode,
+                'material_mode'      => $material_mode,
+                'enable_noAppoint'   => $enable_noAppoint,
+                'nickname'           => $nickname,
+                'realname'           => $realname,
+                'email'              => $email,
+                'memo'               => $memo,
+                'error'   => false,
+                'msg'     => '\''.$user_id.'\' is created.',
+                'msg_cht' => '\''.$user_id.'\'使用者已成功建立'
+            ));
+
+        }
+        // 若已有重複帳號名稱
+        catch (Exception\UserIdExistException $e) {
+             $app->render(409,array(
+                'user_id'     => $user_id,
+                'error'       => true,
+                'msg'     => '\''.$user_id.'\' is exist.',
+                'msg_cht' => '\''.$user_id.'\'使用者名稱已被使用'
+            ));
+        }
     });
 
     /*
@@ -81,14 +189,14 @@ $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
             $password = $_POST['password'];
             $browser  = isset($_POST['browser']) ? $_POST['browser'] : 'api';
         }
-        else if($cType == 'application/json') {
+        else /*if($cType == 'application/json')*/ {
             $postData = $app->request->getBody();
             $postDataArray = json_decode($postData);
             $password = $postDataArray->password;
             $browser  = isset($postDataArray->browser)
                             ? $postDataArray->browser : 'api';
         }
-        else {
+        /*else {
             $app->render(400, array(
                     'Content-Type'=> $cType,
                     'error'       => true,
@@ -97,7 +205,7 @@ $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
                     'substatus'   => 102
                 )
             );
-        }
+        }*/
 
         // 進行登入
         try {
