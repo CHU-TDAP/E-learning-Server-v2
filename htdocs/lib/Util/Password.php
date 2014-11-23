@@ -104,7 +104,7 @@ class Password {
     }
 
     /**
-     * 加密這段字
+     * 確認是否吻合
      *
      * @param string $encrypted 已加密字串
      * @param string $text 原本字串
@@ -121,6 +121,28 @@ class Password {
         }
         else {
             return false;
+        }
+    }
+
+    /**
+     * 確認所有的加密法是否吻合
+     *
+     * @param string $encrypted 已加密字串
+     * @param string $text 原本字串
+     * @return bool true代表與加密後字串一樣
+     * @since 2.0.0
+     */
+    public function checkSameTryAll($encrypted, $text) {
+        // 判斷是否吻合
+        switch($encrypted) {
+            case $this->encrypt($text):
+            case $text:
+            case $this->sha1Encrypt($text):
+            case $this->md5Encrypt($text):
+            case $this->cryptEncrypt($text):
+                return true;
+            default:
+                return false;
         }
     }
 

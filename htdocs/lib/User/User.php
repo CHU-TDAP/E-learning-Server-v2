@@ -139,7 +139,7 @@ class User {
     public function isPasswordCorrect($inputPasswd){
         $passUtil    = new Util\Password();
         $this_passwd = $this->queryResultArray['password'];
-        return $passUtil->checkSame($this_passwd, $inputPasswd);
+        return $passUtil->checkSameTryAll($this_passwd, $inputPasswd);
     }
 
     /**

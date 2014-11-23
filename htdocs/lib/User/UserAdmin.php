@@ -53,8 +53,6 @@ class UserAdmin {
      * @param array $userInfoArray 使用者資訊陣列，格式為:
      *     array( 'user_id'            => 'root',
      *            'password'           => 'pass123',
-     *            'password_encrypt'   => null,              // (optional) 預設為null
-     *            'password_encrypted' => null,              // (optional) 預設為false
      *            'group_id'           => 'user',
      *            'class_id'           => '5-2',             // (optional)
      *            'enable'             => true,              // (optional) 預設為true
