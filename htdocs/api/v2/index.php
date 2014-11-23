@@ -5,7 +5,9 @@ require_once __DIR__.'/src/ApiTemplates.php';
 require_once UELEARNING_LIB_ROOT.'/User/User.php';
 require_once UELEARNING_LIB_ROOT.'/User/UserSession.php';
 require_once UELEARNING_LIB_ROOT.'/User/UserAdmin.php';
+require_once UELEARNING_LIB_ROOT.'/Study/StudyActivityManager.php';
 use UElearning\User;
+use UElearning\Study;
 use UElearning\Exception;
 
 $app = new \Slim\Slim(array(
@@ -211,11 +213,30 @@ $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
         try {
             $session = new User\UserSession();
             $loginToken = $session->login($user_id, $password, $browser);
+            $user = $session->getUser($loginToken);
 
             $app->render(201,array(
                 'user_id'     => $user_id,
                 'token'       => $loginToken,
                 'browser'     => $browser,
+                'user' => array(
+                    'id'            => $user->getId(),
+                    'user_id'            => $user->getId(),
+                    'nickname'           => $user->getNickName(),
+                    'group_id'           => $user->getGroupID(),
+                    'group_name'         => $user->getGroupName(),
+                    'class_id'           => $user->getClassId(),
+                    'class_name'         => $user->getClassName(),
+                    'enable'             => $user->isEnable(),
+                    'build_time'         => $user->getCreateTime(),
+                    'modify_time'        => $user->getModifyTime(),
+                    'learnStyle_mode'    => $user->getLearnStyle(),
+                    'material_mode'      => $user->getMaterialStyle(),
+                    'enable_noAppoint'   => $user->isEnableNoAppoint(),
+                    'realname'           => $user->getRealName(),
+                    'email'              => $user->getEmail(),
+                    'memo'               => $user->getMemo(),
+                ),
                 'error'       => false,
                 'msg'     => '\''.$user_id.'\' is logined',
                 'msg_cht' => '\''.$user_id.'\'使用者已登入'
@@ -268,23 +289,26 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             $user = $userSession->getUser($token);
 
             $app->render(200,array(
-                'token'              => $token,
-                'user_id'            => $user->getId(),
-                'nickname'           => $user->getNickName(),
-                'group_id'           => $user->getGroupID(),
-                'group_name'         => $user->getGroupName(),
-                'class_id'           => $user->getClassId(),
-                'class_name'         => $user->getClassName(),
-                'enable'             => $user->isEnable(),
-                'build_time'         => $user->getCreateTime(),
-                'modify_time'        => $user->getModifyTime(),
-                'learnStyle_mode'    => $user->getLearnStyle(),
-                'material_mode'      => $user->getMaterialStyle(),
-                'enable_noAppoint'   => $user->isEnableNoAppoint(),
-                'realname'           => $user->getRealName(),
-                'email'              => $user->getEmail(),
-                'memo'               => $user->getMemo(),
-                'error'              => false
+                'token' => $token,
+                'user' => array(
+                    'id'            => $user->getId(),
+                    'user_id'            => $user->getId(),
+                    'nickname'           => $user->getNickName(),
+                    'group_id'           => $user->getGroupID(),
+                    'group_name'         => $user->getGroupName(),
+                    'class_id'           => $user->getClassId(),
+                    'class_name'         => $user->getClassName(),
+                    'enable'             => $user->isEnable(),
+                    'build_time'         => $user->getCreateTime(),
+                    'modify_time'        => $user->getModifyTime(),
+                    'learnStyle_mode'    => $user->getLearnStyle(),
+                    'material_mode'      => $user->getMaterialStyle(),
+                    'enable_noAppoint'   => $user->isEnableNoAppoint(),
+                    'realname'           => $user->getRealName(),
+                    'email'              => $user->getEmail(),
+                    'memo'               => $user->getMemo(),
+                ),
+                'error' => false
             ));
         }
         catch (Exception\LoginTokenNoFoundException $e) {
@@ -358,6 +382,64 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
         }
     });
 
+    // ------------------------------------------------------------------------
+
+    /*
+     * 取得可用的學習活動
+     * GET http://localhost/api/v2/tokens/{登入Token}/Activity
+     */
+    $app->get('/:token/activity', function ($token) use ($app) {
+        try {
+            $session = new User\UserSession();
+            $user_id = $session->getUserId($token);
+
+            $studyMgr = new Study\StudyActivityManager();
+            $studyList = $studyMgr->getEnableActivityByUserId($user_id);
+
+            $app->render(200,array(
+                'token'        => $token,
+                'user_id'      => $user_id,
+                'enable_study' => array(
+                    $studyList
+                ),
+                'error'        => false,
+                'msg'          => '\''.$user_id.'\' other session is logout.',
+                'msg_cht'      => '\''.$user_id.'\'此登入階段之外的皆已登出'
+            ));
+        }
+        catch (Exception\LoginTokenNoFoundException $e) {
+            $app->render(404,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No \''.$token.'\' session. Please login again.',
+                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入'
+            ));
+        }
+    });
+
+    /*
+     * 開始進行一場學習活動
+     * GET http://localhost/api/v2/tokens/{登入Token}/Activity
+     */
+    $app->post('/:token/activity', function ($token) use ($app) {
+        // TODO: 開始進行一場學習活動
+    });
+
+    /*
+     * 取得學習中狀況資料
+     * GET http://localhost/api/v2/tokens/{登入Token}/activity/{學習中活動編號}
+     */
+    $app->get('/:token/activity/:said', function ($token, $saId) use ($app) {
+        // TODO: 學習中狀況資料
+    });
+
+    /*
+     * 預約學習活動資料
+     * GET http://localhost/api/v2/tokens/{登入Token}/will/{預約編號}
+     */
+    $app->get('/:token/will/:swid', function ($token, $swId) use ($app) {
+        // TODO: 學習中狀況資料
+    });
 });
 
 // ============================================================================
