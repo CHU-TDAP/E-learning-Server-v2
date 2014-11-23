@@ -121,9 +121,11 @@ class DBUser extends Database {
         //紀錄使用者帳號進資料庫
         $sqlString = "INSERT INTO ".$this->table('User').
             " (`UID`, `UPassword`, `GID`, `CID`, `UEnabled`,
+            `UBuildTime`, `UModifyTime`,
             `LMode`, `MMode`, `UEnable_NoAppoint`,
             `UNickname`, `URealName`, `UEmail`, `UMemo`)
             VALUES ( :id , :passwd, :gid , :cid , :enable ,
+            NOW(), NOW(),
             :lmode , :mmode , :enpublic ,
             :nickname , :realname , :email , :memo )";
 
@@ -406,8 +408,12 @@ class DBUser extends Database {
 
         // 紀錄使用者帳號進資料庫
         $sqlString = "INSERT INTO ".$this->table('AGroup').
-            " (`GID`, `GName`, `GMemo`, `GAuth_Admin`, `GAuth_ClientAdmin`)
-            VALUES ( :id , :name, :memo , :auth_admin , :auth_clientAdmin )";
+            " (`GID`, `GName`, `GMemo`,
+            `GBuildTime`, `GModifyTime`,
+            `GAuth_Admin`, `GAuth_ClientAdmin`)
+            VALUES ( :id , :name, :memo ,
+            NOW(), NOW(),
+            :auth_admin , :auth_clientAdmin )";
 
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":id", $gId);
@@ -593,8 +599,10 @@ class DBUser extends Database {
 
         // 紀錄使用者帳號進資料庫
         $sqlString = "INSERT INTO ".$this->table('CGroup').
-            " (`CID`, `CName`, `CMemo`)
-            VALUES ( :id , :name , :memo )";
+            " (`CID`, `CName`, `CMemo`,
+            `CBuildTime`, `CModifyTime`)
+            VALUES ( :id , :name , :memo ,
+            NOW(), NOW() )";
 
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":id", $cId);

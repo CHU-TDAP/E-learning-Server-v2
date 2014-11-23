@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- 主機: localhost
--- 產生時間： 2014 年 10 月 28 日 07:28
+-- 產生時間： 2014 年 11 月 23 日 09:16
 -- 伺服器版本: 5.6.16
 -- PHP 版本： 5.5.9
 
@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS `chu__AGroup` (
   `GID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `GName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `GMemo` tinytext COLLATE utf8_unicode_ci,
-  `GBuildTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `GModifyTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '權限群組資訊修改時間',
+  `GBuildTime` datetime NOT NULL,
+  `GModifyTime` datetime NOT NULL COMMENT '權限群組資訊修改時間',
   `GAuth_Admin` tinyint(1) NOT NULL,
   `GAuth_ClientAdmin` tinyint(1) NOT NULL,
   PRIMARY KEY (`GID`)
@@ -42,18 +42,11 @@ CREATE TABLE IF NOT EXISTS `chu__AGroup` (
 --
 
 INSERT INTO `chu__AGroup` (`GID`, `GName`, `GMemo`, `GBuildTime`, `GModifyTime`, `GAuth_Admin`, `GAuth_ClientAdmin`) VALUES
-('admin', '管理員', NULL, '2014-10-07 08:38:03', '2014-10-23 05:33:32', 0, 0),
-('student', '學生', NULL, '2014-10-07 08:38:03', '2014-10-23 05:33:32', 0, 0),
-('teacher', '老師', NULL, '2014-10-07 08:38:03', '2014-10-23 05:33:32', 0, 0),
-('user', '一般使用者', NULL, '2014-10-23 20:14:52', '2014-10-23 20:14:52', 0, 1);
+('admin', '管理員', NULL, '2014-10-07 16:38:03', '2014-10-23 13:33:32', 0, 0),
+('student', '學生', NULL, '2014-10-07 16:38:03', '2014-10-23 13:33:32', 0, 0),
+('teacher', '老師', NULL, '2014-10-07 16:38:03', '2014-10-23 13:33:32', 0, 0),
+('user', '一般使用者', NULL, '2014-10-24 04:14:52', '2014-10-24 04:14:52', 0, 1);
 
--- --------------------------------------------------------
-
---
--- 替換檢視表以便查看 `chu__AGroup_with_people`
---
-CREATE TABLE IF NOT EXISTS `chu__AGroup_with_people` (
-);
 -- --------------------------------------------------------
 
 --
@@ -101,26 +94,11 @@ CREATE TABLE IF NOT EXISTS `chu__CGroup` (
   `CID` int(11) NOT NULL AUTO_INCREMENT,
   `CName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `CMemo` tinytext COLLATE utf8_unicode_ci,
-  `CBuildTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `CModifyTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `CBuildTime` datetime NOT NULL,
+  `CModifyTime` datetime NOT NULL,
   PRIMARY KEY (`CID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者班級分類' AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者班級分類' AUTO_INCREMENT=1 ;
 
---
--- 資料表的匯出資料 `chu__CGroup`
---
-
-INSERT INTO `chu__CGroup` (`CID`, `CName`, `CMemo`, `CBuildTime`, `CModifyTime`) VALUES
-(1, NULL, NULL, '2014-10-26 11:00:39', '2014-10-26 11:00:39'),
-(2, NULL, NULL, '2014-10-26 11:00:55', '2014-10-26 11:00:55');
-
--- --------------------------------------------------------
-
---
--- 替換檢視表以便查看 `chu__CGroup_with_people`
---
-CREATE TABLE IF NOT EXISTS `chu__CGroup_with_people` (
-);
 -- --------------------------------------------------------
 
 --
@@ -1071,7 +1049,7 @@ INSERT INTO `chu__Hall` (`HID`, `HName`, `HMapID`, `HIntroduction`) VALUES
 CREATE TABLE IF NOT EXISTS `chu__Log` (
   `LID` int(11) NOT NULL AUTO_INCREMENT,
   `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `Date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `Date` datetime NOT NULL,
   `Encode` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`LID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
@@ -1167,10 +1145,9 @@ CREATE TABLE IF NOT EXISTS `chu__Recommand` (
 CREATE TABLE IF NOT EXISTS `chu__Study` (
   `SID` int(10) NOT NULL AUTO_INCREMENT,
   `SaID` int(10) NOT NULL,
-  `UID` int(30) NOT NULL,
   `TID` int(10) NOT NULL COMMENT '標的編號',
-  `In_TargetTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '進入標的時間',
-  `Out_TargetTime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '離開標的時間',
+  `In_TargetTime` datetime NOT NULL COMMENT '進入標的時間',
+  `Out_TargetTime` datetime DEFAULT NULL COMMENT '離開標的時間',
   PRIMARY KEY (`SID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者經過哪些標的的紀錄' AUTO_INCREMENT=1 ;
 
@@ -1184,8 +1161,8 @@ CREATE TABLE IF NOT EXISTS `chu__StudyActivity` (
   `SaID` int(10) NOT NULL AUTO_INCREMENT COMMENT '學習活動流水編號',
   `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT '使用者ID',
   `ThID` int(10) NOT NULL COMMENT '主題編號',
-  `StartTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '開始學習時間',
-  `EndTime` timestamp NULL DEFAULT NULL COMMENT '結束學習時間（學習中為NULL）',
+  `StartTime` datetime NOT NULL COMMENT '開始學習時間',
+  `EndTime` datetime DEFAULT NULL COMMENT '結束學習時間（學習中為NULL）',
   `LearnTime` int(4) NOT NULL COMMENT '預定學習所需時間',
   `Delay` int(11) NOT NULL DEFAULT '0' COMMENT '時間延長',
   `TimeForce` tinyint(1) NOT NULL DEFAULT '0' COMMENT '學習時間已過是否強制中止學習',
@@ -1205,16 +1182,16 @@ CREATE TABLE IF NOT EXISTS `chu__StudyWill` (
   `SwID` int(10) NOT NULL AUTO_INCREMENT COMMENT '預約學習活動流水編號',
   `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `ThID` int(10) NOT NULL COMMENT '主題編號',
-  `StartTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '預約生效時間',
-  `ExpiredTime` timestamp NULL DEFAULT NULL COMMENT '過期時間',
+  `StartTime` datetime NOT NULL COMMENT '預約生效時間',
+  `ExpiredTime` datetime DEFAULT NULL COMMENT '過期時間',
   `LearnTime` int(4) NOT NULL,
   `TimeForce` tinyint(1) NOT NULL DEFAULT '1' COMMENT '學習時間已過是否強制中止學習',
   `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
   `LModeForce` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否拒絕前往非推薦點進行學習',
   `MMode` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
   `Lock` tinyint(1) NOT NULL DEFAULT '1' COMMENT '鎖定不讓學生更改',
-  `BuildTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `ModifyTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `BuildTime` datetime NOT NULL,
+  `ModifyTime` datetime NOT NULL,
   PRIMARY KEY (`SwID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='預約學習活動' AUTO_INCREMENT=1 ;
 
@@ -1261,20 +1238,6 @@ INSERT INTO `chu__Target` (`TID`, `AID`, `TNum`, `TName`, `TMapID`, `TLearnTime`
 -- --------------------------------------------------------
 
 --
--- 替換檢視表以便查看 `chu__target_full_data`
---
-CREATE TABLE IF NOT EXISTS `chu__target_full_data` (
-);
--- --------------------------------------------------------
-
---
--- 替換檢視表以便查看 `chu__Target_with_Area`
---
-CREATE TABLE IF NOT EXISTS `chu__Target_with_Area` (
-);
--- --------------------------------------------------------
-
---
 -- 資料表結構 `chu__TBelong`
 --
 
@@ -1318,8 +1281,8 @@ CREATE TABLE IF NOT EXISTS `chu__Theme` (
   `ThName` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '主題名稱',
   `ThLearnTime` int(4) NOT NULL COMMENT '學習此主題要花的總時間(m)',
   `ThIntroduction` tinytext COLLATE utf8_unicode_ci COMMENT '介紹',
-  `ThBuildTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `ThModifyTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ThBuildTime` datetime NOT NULL,
+  `ThModifyTime` datetime NOT NULL,
   PRIMARY KEY (`ThID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='主題' AUTO_INCREMENT=2 ;
 
@@ -1328,7 +1291,7 @@ CREATE TABLE IF NOT EXISTS `chu__Theme` (
 --
 
 INSERT INTO `chu__Theme` (`ThID`, `ThName`, `ThLearnTime`, `ThIntroduction`, `ThBuildTime`, `ThModifyTime`) VALUES
-(1, '生命科學', 40, NULL, '2014-10-23 09:21:03', '2014-10-23 09:21:03');
+(1, '生命科學', 40, NULL, '2014-10-23 17:21:03', '2014-10-23 17:21:03');
 
 -- --------------------------------------------------------
 
@@ -1342,8 +1305,8 @@ CREATE TABLE IF NOT EXISTS `chu__User` (
   `GID` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT '使用者群組',
   `CID` int(11) DEFAULT NULL COMMENT '使用者班級',
   `UEnabled` tinyint(1) NOT NULL DEFAULT '1' COMMENT '帳號啟用狀態',
-  `UBuildTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '帳號建立時間',
-  `UModifyTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '帳號資訊修改時間',
+  `UBuildTime` datetime NOT NULL COMMENT '帳號建立時間',
+  `UModifyTime` datetime NOT NULL COMMENT '帳號資訊修改時間',
   `LMode` int(2) DEFAULT NULL COMMENT '學習導引模式',
   `MMode` varchar(10) COLLATE utf8_unicode_ci DEFAULT 'normal' COMMENT '教材模式',
   `UEnable_NoAppoint` tinyint(1) NOT NULL DEFAULT '1' COMMENT '開放非預約學習',
@@ -1365,43 +1328,11 @@ CREATE TABLE IF NOT EXISTS `chu__UserSession` (
   `UToken` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '此登入階段的token',
   `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `UAgent` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '使用哪個裝置登入',
-  `ULoginDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '登入時間',
-  `ULogoutDate` timestamp NULL DEFAULT NULL COMMENT '登出時間',
+  `ULoginDate` datetime NOT NULL COMMENT '登入時間',
+  `ULogoutDate` datetime DEFAULT NULL COMMENT '登出時間',
   PRIMARY KEY (`UsID`),
   UNIQUE KEY `UToken` (`UToken`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者登入紀錄' AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- 檢視表結構 `chu__AGroup_with_people`
---
-DROP TABLE IF EXISTS `chu__AGroup_with_people`;
--- 使用中(#1356 - View 'UElearning.chu__AGroup_with_people' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them)
-
--- --------------------------------------------------------
-
---
--- 檢視表結構 `chu__CGroup_with_people`
---
-DROP TABLE IF EXISTS `chu__CGroup_with_people`;
--- 使用中(#1356 - View 'UElearning.chu__CGroup_with_people' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them)
-
--- --------------------------------------------------------
-
---
--- 檢視表結構 `chu__target_full_data`
---
-DROP TABLE IF EXISTS `chu__target_full_data`;
--- 使用中(#1356 - View 'UElearning.chu__target_full_data' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them)
-
--- --------------------------------------------------------
-
---
--- 檢視表結構 `chu__Target_with_Area`
---
-DROP TABLE IF EXISTS `chu__Target_with_Area`;
--- 使用中(#1356 - View 'UElearning.chu__Target_with_Area' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them)
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
