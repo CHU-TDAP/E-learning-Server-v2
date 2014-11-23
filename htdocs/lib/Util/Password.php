@@ -63,7 +63,9 @@ class Password {
         $password = '';
 
         // remove o,0,1,l
-        $word = 'abcdefghijkmnpqrstuvwxyz!@#%^*()-ABCDEFGHIJKLMNPQRSTUVWXYZ;{}[]23456789';
+        $word = 'abcdefghijkmnpqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ123456789';
+        // TODO: 更改成下面包含標點符號來增加安全性（目前沒加是因為暫時不想處理編碼問題）
+        // $word = 'abcdefghijkmnpqrstuvwxyz!@#%^*()-ABCDEFGHIJKLMNPQRSTUVWXYZ;{}[]23456789';
         $len = strlen($word);
 
         for ($i = 0; $i < $password_len; $i++) {
