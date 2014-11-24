@@ -37,6 +37,100 @@ $app->get('/hello/:name', 'APIrequest', function ($name) use ($app) {
 
 // ============================================================================
 
+function login($user_id = null) {
+    $app = \Slim\Slim::getInstance();
+
+    if(!isset($user_id)) {
+        $user_id = $_POST['user_id'];
+    }
+    // 取得帶來的參數
+    $cType = $app->request->getContentType();
+    if($cType == 'application/x-www-form-urlencoded') {
+        $password = $_POST['password'];
+        $browser  = isset($_POST['browser']) ? $_POST['browser'] : 'api';
+    }
+    else /*if($cType == 'application/json')*/ {
+        $postData = $app->request->getBody();
+        $postDataArray = json_decode($postData);
+        $password = $postDataArray->password;
+        $browser  = isset($postDataArray->browser)
+                        ? $postDataArray->browser : 'api';
+    }
+    /*else {
+        $app->render(400, array(
+                'Content-Type'=> $cType,
+                'error'       => true,
+                'msg'     => '',
+                'msg_cht' => '輸入參數的Content-Type不在支援範圍內 或是沒有輸入',
+                'substatus'   => 102
+            )
+        );
+    }*/
+
+    // 進行登入
+    try {
+        $session = new User\UserSession();
+        $loginToken = $session->login($user_id, $password, $browser);
+        $user = $session->getUser($loginToken);
+
+        $app->render(201,array(
+            'user_id'     => $user_id,
+            'token'       => $loginToken,
+            'browser'     => $browser,
+            'user' => array(
+                'id'            => $user->getId(),
+                'user_id'            => $user->getId(),
+                'nickname'           => $user->getNickName(),
+                'group_id'           => $user->getGroupID(),
+                'group_name'         => $user->getGroupName(),
+                'class_id'           => $user->getClassId(),
+                'class_name'         => $user->getClassName(),
+                'enable'             => $user->isEnable(),
+                'build_time'         => $user->getCreateTime(),
+                'modify_time'        => $user->getModifyTime(),
+                'learnStyle_mode'    => $user->getLearnStyle(),
+                'material_mode'      => $user->getMaterialStyle(),
+                'enable_noAppoint'   => $user->isEnableNoAppoint(),
+                'realname'           => $user->getRealName(),
+                'email'              => $user->getEmail(),
+                'memo'               => $user->getMemo(),
+            ),
+            'error'       => false,
+            'msg'     => '\''.$user_id.'\' is logined',
+            'msg_cht' => '\''.$user_id.'\'使用者已登入'
+        ));
+    }
+    catch (Exception\UserNoFoundException $e) {
+        $app->render(404,array(
+            'user_id'     => $user_id,
+            'browser'     => $browser,
+            'error'       => true,
+            'msg'     => '\''.$user_id.'\' is not found',
+            'msg_cht' => '找不到\''.$user_id.'\'使用者'
+        ));
+    }
+    catch (Exception\UserPasswordErrException $e) {
+        $app->render(401,array(
+            'user_id'     => $user_id,
+            'browser'     => $browser,
+            'error'       => true,
+            'msg'     => 'Input \''.$user_id.'\' password is wrong',
+            'msg_cht' => '\''.$user_id.'\'使用者密碼錯誤',
+            'substatus'   => 201
+        ));
+    }
+    catch (Exception\UserNoActivatedException $e) {
+        $app->render(401,array(
+            'user_id'     => $user_id,
+            'browser'     => $browser,
+            'error'       => true,
+            'msg'     => '\''.$user_id.'\' is not enable',
+            'msg_cht' => '\''.$user_id.'\'帳號目前未啟用',
+            'substatus'   => 202
+        ));
+    }
+}
+
 $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
 
     /*
@@ -183,99 +277,17 @@ $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
      * 登入帳號
      * POST http://localhost/api/v2/users/{帳號ID}/login
      */
-    $app->post('/:user_id/login', function ($user_id) use ($app) {
-
-        // 取得帶來的參數
-        $cType = $app->request->getContentType();
-        if($cType == 'application/x-www-form-urlencoded') {
-            $password = $_POST['password'];
-            $browser  = isset($_POST['browser']) ? $_POST['browser'] : 'api';
-        }
-        else /*if($cType == 'application/json')*/ {
-            $postData = $app->request->getBody();
-            $postDataArray = json_decode($postData);
-            $password = $postDataArray->password;
-            $browser  = isset($postDataArray->browser)
-                            ? $postDataArray->browser : 'api';
-        }
-        /*else {
-            $app->render(400, array(
-                    'Content-Type'=> $cType,
-                    'error'       => true,
-                    'msg'     => '',
-                    'msg_cht' => '輸入參數的Content-Type不在支援範圍內 或是沒有輸入',
-                    'substatus'   => 102
-                )
-            );
-        }*/
-
-        // 進行登入
-        try {
-            $session = new User\UserSession();
-            $loginToken = $session->login($user_id, $password, $browser);
-            $user = $session->getUser($loginToken);
-
-            $app->render(201,array(
-                'user_id'     => $user_id,
-                'token'       => $loginToken,
-                'browser'     => $browser,
-                'user' => array(
-                    'id'            => $user->getId(),
-                    'user_id'            => $user->getId(),
-                    'nickname'           => $user->getNickName(),
-                    'group_id'           => $user->getGroupID(),
-                    'group_name'         => $user->getGroupName(),
-                    'class_id'           => $user->getClassId(),
-                    'class_name'         => $user->getClassName(),
-                    'enable'             => $user->isEnable(),
-                    'build_time'         => $user->getCreateTime(),
-                    'modify_time'        => $user->getModifyTime(),
-                    'learnStyle_mode'    => $user->getLearnStyle(),
-                    'material_mode'      => $user->getMaterialStyle(),
-                    'enable_noAppoint'   => $user->isEnableNoAppoint(),
-                    'realname'           => $user->getRealName(),
-                    'email'              => $user->getEmail(),
-                    'memo'               => $user->getMemo(),
-                ),
-                'error'       => false,
-                'msg'     => '\''.$user_id.'\' is logined',
-                'msg_cht' => '\''.$user_id.'\'使用者已登入'
-            ));
-        }
-        catch (Exception\UserNoFoundException $e) {
-            $app->render(404,array(
-                'user_id'     => $user_id,
-                'browser'     => $browser,
-                'error'       => true,
-                'msg'     => '\''.$user_id.'\' is not found',
-                'msg_cht' => '找不到\''.$user_id.'\'使用者'
-            ));
-        }
-        catch (Exception\UserPasswordErrException $e) {
-            $app->render(401,array(
-                'user_id'     => $user_id,
-                'browser'     => $browser,
-                'error'       => true,
-                'msg'     => 'Input \''.$user_id.'\' password is wrong',
-                'msg_cht' => '\''.$user_id.'\'使用者密碼錯誤',
-                'substatus'   => 201
-            ));
-        }
-        catch (Exception\UserNoActivatedException $e) {
-            $app->render(401,array(
-                'user_id'     => $user_id,
-                'browser'     => $browser,
-                'error'       => true,
-                'msg'     => '\''.$user_id.'\' is not enable',
-                'msg_cht' => '\''.$user_id.'\'帳號目前未啟用',
-                'substatus'   => 202
-            ));
-        }
-    });
+    $app->post('/:user_id/login', 'login');
 
 });
 
 $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
+
+    /*
+     * 登入帳號
+     * POST http://localhost/api/v2/tokens
+     */
+    $app->post('/', 'login');
 
     /*
      * 取得已登入的帳號資訊
@@ -388,7 +400,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
      * 取得可用的學習活動
      * GET http://localhost/api/v2/tokens/{登入Token}/Activity
      */
-    $app->get('/:token/activity', function ($token) use ($app) {
+    $app->get('/:token/activitys', function ($token) use ($app) {
         try {
             $session = new User\UserSession();
             $user_id = $session->getUserId($token);
