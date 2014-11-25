@@ -134,13 +134,25 @@ class Password {
      */
     public function checkSameTryAll($encrypted, $text) {
         // 判斷是否吻合
-        if($encrypted == $this->encrypt($text)
-        || $encrypted == $text
-        || (function_exists('sha1') && $encrypted == $this->sha1Encrypt($text))
-        || (function_exists('md5') && $encrypted == $this->md5Encrypt($text))
-        || (function_exists('crypt') && $encrypted == $this->cryptEncrypt($text))
-        ) return true;
-        else return false;
+        if($encrypted == $this->encrypt($text) ||
+           $encrypted == $text)
+            return true;
+        else {
+            if (function_exists('md5')) {
+                if($encrypted == $this->md5Encrypt($encrypted))
+                    return true;
+            }
+            if (function_exists('sha1')) {
+                if($encrypted == $this->sha1Encrypt($encrypted))
+                    return true;
+            }
+            if (function_exists('crypt')) {
+                if($encrypted == $this->cryptEncrypt($encrypted))
+                    return true;
+            }
+
+            return false;
+        }
     }
 
     // ------------------------------------------------------------------------
