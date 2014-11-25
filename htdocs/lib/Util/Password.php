@@ -146,10 +146,10 @@ class Password {
                 if($encrypted == $this->sha1Encrypt($encrypted))
                     return true;
             }
-            if (function_exists('crypt')) {
-                if($encrypted == $this->cryptEncrypt($encrypted))
-                    return true;
-            }
+//            if (function_exists('crypt')) {
+//                if($encrypted == $this->cryptEncrypt($encrypted))
+//                    return true;
+//            }
 
             return false;
         }
@@ -179,15 +179,15 @@ class Password {
         return sha1($text);
     }
 
-    /**
-     * CRYPT加密這段字
-     *
-     * @param string $text 原本字串
-     * @return string 加密後結果字串
-     * @since 2.0.0
-     */
-    public function cryptEncrypt($text){
-        return crypt($text);
-    }
+//    /**
+//     * CRYPT加密這段字
+//     *
+//     * @param string $text 原本字串
+//     * @return string 加密後結果字串
+//     * @since 2.0.0
+//     */
+//    public function cryptEncrypt($text){
+//        return crypt($text);
+//    }
 
 }
