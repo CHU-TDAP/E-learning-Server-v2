@@ -218,7 +218,7 @@ $app->group('/users', 'APIrequest', function () use ($app, $app_template) {
             );
 
             // 顯示建立成功
-            $app->render(200,array(
+            $app->render(201,array(
                 'user_id'            => $user_id,
                 'group_id'           => $group_id,
                 'class_id'           => $class_id,
@@ -344,7 +344,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             $user_id = $session->getUserId($token);
             $session->logout($token);
 
-            $app->render(201,array(
+            $app->render(204,array(
                 'token'   => $token,
                 'user_id' => $user_id,
                 'error'   => false,
@@ -374,7 +374,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             $logoutTotal = $session->logoutOtherSession($token);
             $inLoginTotal = $session->getCurrentLoginTotalByUserId($user_id);
 
-            $app->render(201,array(
+            $app->render(204,array(
                 'token'        => $token,
                 'user_id'      => $user_id,
                 'logout_total' => $logoutTotal,
@@ -408,30 +408,25 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             $studyMgr = new Study\StudyActivityManager();
             $studyList = $studyMgr->getEnableActivityByUserId($user_id);
 
+            // TODO: $studyList 分離重新包裝陣列
             $app->render(200,array(
                 'token'        => $token,
                 'user_id'      => $user_id,
-                'enable_study' => array(
-                    $studyList
-                ),
+                'enable_study' => $studyList,
                 'error'        => false,
-                'msg'          => '\''.$user_id.'\' other session is logout.',
-                'msg_cht'      => '\''.$user_id.'\'此登入階段之外的皆已登出'
             ));
         }
         catch (Exception\LoginTokenNoFoundException $e) {
             $app->render(404,array(
                 'token'   => $token,
                 'error'   => true,
-                'msg'     => 'No \''.$token.'\' session. Please login again.',
-                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入'
             ));
         }
     });
 
     /*
      * 開始進行一場學習活動
-     * GET http://localhost/api/v2/tokens/{登入Token}/Activity
+     * POST http://localhost/api/v2/tokens/{登入Token}/Activity
      */
     $app->post('/:token/activity', function ($token) use ($app) {
         // TODO: 開始進行一場學習活動
