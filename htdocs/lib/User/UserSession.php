@@ -213,7 +213,10 @@ class UserSession {
      * @since 2.0.0
      */
     public function getTokenInfo($token) {
-        // TODO: 取得登入資訊
+        $db = new Database\DBUserSession();
+        $sessionArray = $db->queryByToken($token);
+        if(isset($sessionArray)) return $sessionArray;
+        else throw new Exception\LoginTokenNoFoundException($token);
     }
 
     // ========================================================================

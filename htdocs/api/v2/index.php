@@ -72,6 +72,7 @@ function login($user_id = null) {
         $session = new User\UserSession();
         $loginToken = $session->login($user_id, $password, $browser);
         $user = $session->getUser($loginToken);
+        $sessionInfo = $session->getTokenInfo($loginToken);
 
         $app->render(201,array(
             'user_id'     => $user_id,
@@ -95,9 +96,10 @@ function login($user_id = null) {
                 'email'              => $user->getEmail(),
                 'memo'               => $user->getMemo(),
             ),
+            'login_time'  => $sessionInfo['login_date'],
             'error'       => false,
-            'msg'     => '\''.$user_id.'\' is logined',
-            'msg_cht' => '\''.$user_id.'\'使用者已登入'
+            'msg'         => '\''.$user_id.'\' is logined',
+            'msg_cht'     => '\''.$user_id.'\'使用者已登入'
         ));
     }
     catch (Exception\UserNoFoundException $e) {
