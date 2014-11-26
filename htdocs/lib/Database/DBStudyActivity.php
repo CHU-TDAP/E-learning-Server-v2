@@ -807,7 +807,7 @@ $sqlString = $sqlString_SA." UNION ".$sqlString_SW." UNION ".$sqlString_TG;
                            'learnStyle_mode'  => $thisResult['LMode'],
                            'learnStyle_force' => $output_learnStyleForce,
                            'material_mode'    => $thisResult['MMode'],
-                           'lock'             => $thisResult['Lock'],
+                           'lock'             => $output_lock,
                            'target_total'     => $thisResult['TargetTotal'],
                            'learned_total'    => $thisResult['LearnedTotal']
                          )
