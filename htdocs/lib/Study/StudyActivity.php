@@ -7,6 +7,7 @@ namespace UElearning\Study;
 
 require_once UELEARNING_LIB_ROOT.'/Database/DBStudyActivity.php';
 require_once UELEARNING_LIB_ROOT.'/User/User.php';
+require_once UELEARNING_LIB_ROOT.'/Study/Theme.php';
 require_once UELEARNING_LIB_ROOT.'/Study/Exception.php';
 use UElearning\Database;
 use UElearning\Exception;
@@ -182,7 +183,7 @@ class StudyActivity {
      * @since 2.0.0
      */
     public function getId() {
-        return $this->id;
+        return (int)$this->id;
     }
 
     /**
@@ -228,6 +229,20 @@ class StudyActivity {
         return $this->queryResultArray['theme_id'];
     }
 
+    /**
+     * 取得這次是的主題名稱
+     *
+     * @return string 主題名稱
+     * @since 2.0.0
+     */
+    public function getThemeName() {
+        // TODO: 改成由資料庫直接查詢名稱以增佳能
+        $themeId = $this->queryResultArray['theme_id'];
+        $theme = new Theme($themeId);
+
+        return $theme->getName();
+    }
+
     // ------------------------------------------------------------------------
     // 時間控制:
 
@@ -267,7 +282,7 @@ class StudyActivity {
      * @return int 可實際學習時間(分)
      * @since 2.0.0
      */
-    public function getRealLearnTimeWith() {
+    public function getRealLearnTime() {
 
         $learnTime = $this->queryResultArray['learn_time'];
         $delay = $this->queryResultArray['delay'];

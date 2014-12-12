@@ -189,19 +189,19 @@ class DBStudyActivity extends Database {
                 else { $output_learnStyleForce = false; }
 
                 array_push($result,
-                    array( 'activity_id'      => $thisResult['SaID'],
+                    array( 'activity_id'      => (int)$thisResult['SaID'],
                            'user_id'          => $thisResult['UID'],
-                           'theme_id'         => $thisResult['ThID'],
+                           'theme_id'         => (int)$thisResult['ThID'],
                            'start_time'       => $thisResult['StartTime'],
                            'end_time'         => $thisResult['EndTime'],
-                           'learn_time'       => $thisResult['LearnTime'],
-                           'delay'            => $thisResult['Delay'],
+                           'learn_time'       => (int)$thisResult['LearnTime'],
+                           'delay'            => (int)$thisResult['Delay'],
                            'time_force'       => $output_time_force,
-                           'learnStyle_mode'  => $thisResult['LMode'],
+                           'learnStyle_mode'  => (int)$thisResult['LMode'],
                            'learnStyle_force' => $output_learnStyleForce,
                            'material_mode'    => $thisResult['MMode'],
-                           'target_total'     => $thisResult['TargetTotal'],
-                           'learned_total'    => $thisResult['LearnedTotal']
+                           'target_total'     => (int)$thisResult['TargetTotal'],
+                           'learned_total'    => (int)$thisResult['LearnedTotal']
                          )
                 );
             }

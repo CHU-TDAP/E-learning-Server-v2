@@ -5,6 +5,7 @@ require_once __DIR__.'/src/ApiTemplates.php';
 require_once UELEARNING_LIB_ROOT.'/User/User.php';
 require_once UELEARNING_LIB_ROOT.'/User/UserSession.php';
 require_once UELEARNING_LIB_ROOT.'/User/UserAdmin.php';
+require_once UELEARNING_LIB_ROOT.'/Study/StudyActivity.php';
 require_once UELEARNING_LIB_ROOT.'/Study/StudyActivityManager.php';
 use UElearning\User;
 use UElearning\Study;
@@ -412,16 +413,18 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
 
             // TODO: $studyList 分離重新包裝陣列
             $app->render(200,array(
-                'token'        => $token,
-                'user_id'      => $user_id,
-                'enable_study' => $studyList,
-                'error'        => false,
+                'token'           => $token,
+                'user_id'         => $user_id,
+                'enable_activity' => $studyList,
+                'error'           => false,
             ));
         }
         catch (Exception\LoginTokenNoFoundException $e) {
             $app->render(404,array(
                 'token'   => $token,
                 'error'   => true,
+                'msg'     => 'No \''.$token.'\' session. Please login again.',
+                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入'
             ));
         }
     });
@@ -430,8 +433,104 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
      * 開始進行一場學習活動
      * POST http://localhost/api/v2/tokens/{登入Token}/Activity
      */
-    $app->post('/:token/activity', function ($token) use ($app) {
-        // TODO: 開始進行一場學習活動
+    $app->post('/:token/activitys', function ($token) use ($app) {
+
+        // 取得帶來的參數
+        $cType = $app->request->getContentType();
+        if($cType == 'application/x-www-form-urlencoded') {
+            $themeId          = $_POST['theme_id'];
+            $learnTime        = isset($_POST['learn_time'])
+                                    ? $_POST['learn_time'] : null;
+            $timeForce        = isset($_POST['time_force'])
+                                    ? $_POST['time_force'] : null;
+            $learnStyle       = isset($_POST['learnStyle_mode'])
+                                    ? $_POST['learnStyle_mode'] : null;
+            $learnStyle_force = isset($_POST['learnStyle_force'])
+                                    ? $_POST['learnStyle_force'] : null;
+            $materialMode     = isset($_POST['material_mode'])
+                                    ? $_POST['material_mode'] : null;
+        }
+        else /*if($cType == 'application/json')*/ {
+            $postData = $app->request->getBody();
+            $postDataArray = json_decode($postData);
+            //$user_id          = $postDataArray->user_id;
+            $app->render(400, array(
+                    'Content-Type'=> $cType,
+                    'error'       => true,
+                    'msg'     => '',
+                    'msg_cht' => '輸入參數的Content-Type不在支援範圍內 或是沒有輸入',
+                    'substatus'   => 102
+                )
+            );
+        }
+        /*else {
+            $app->render(400, array(
+                    'Content-Type'=> $cType,
+                    'error'       => true,
+                    'msg'     => '',
+                    'msg_cht' => '輸入參數的Content-Type不在支援範圍內 或是沒有輸入',
+                    'substatus'   => 102
+                )
+            );
+        }*/
+
+        try {
+            // 查詢使用者
+            $session = new User\UserSession();
+            $user_id = $session->getUserId($token);
+
+            // 開始進行學習活動
+            $studyMgr = new Study\StudyActivityManager();
+            $studyId  = $studyMgr->startActivity($user_id, $themeId,
+                                                 $learnTime, $timeForce,
+                                                 $learnStyle, $learnStyle_force,
+                                                 $materialMode);
+
+            // 取得開始後的學習活動資訊
+            $sact = new Study\StudyActivity($studyId);
+
+
+            // 噴出資訊
+            $app->render(200,array(
+                'token'       => $token,
+                'user_id'     => $user_id,
+                'activity_id' => $sact->getId(),
+                'activity'    => array(
+                    'activity_id'      => $sact->getId(),
+                    'theme_id'         => $sact->getThemeId(),
+                    'theme_name'       => $sact->getThemeName(),
+                    'start_time'       => $sact->getStartTime(),
+                    'have_time'        => $sact->getRealLearnTime(),
+                    'learn_time'       => $sact->getLearnTime(),
+                    'delay'            => $sact->getDelay(),
+                    'remaining_time'   => $sact->getRealLearnTime(),
+                    'time_force'       => $sact->isForceLearnTime(),
+                    'learnStyle_mode'  => $sact->getLearnStyle(),
+                    'learnStyle_force' => $sact->isForceLearnStyle(),
+                    'material_mode'    => $sact->getMaterialStyle(),
+                    'target_total'     => $sact->getPointTotal(),
+                    'learned_total'    => $sact->getLearnedPointTotal()
+                ),
+                'error'            => false,
+            ));
+        }
+        catch (Exception\LoginTokenNoFoundException $e) {
+            $app->render(404,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No \''.$token.'\' session. Please login again.',
+                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入'
+            ));
+        }
+        catch (Exception\StudyActivityNoFoundException $e) {
+            $app->render(500,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'Start activity fail.',
+                'msg_cht' => '建立學習活動失敗'
+            ));
+        }
+
     });
 
     /*
