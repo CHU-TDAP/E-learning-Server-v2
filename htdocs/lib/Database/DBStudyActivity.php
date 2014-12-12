@@ -152,7 +152,12 @@ class DBStudyActivity extends Database {
     protected function queryActivityByWhere($where) {
 
         $sqlString = "SELECT `SaID`, `UID`, `ThID`, ".
-                     "`StartTime`, `EndTime`, ".
+                     "(SELECT `ThName` FROM `chu__Theme` AS `th` ".
+                     "WHERE `th`.`ThID` = `sa`.`ThID`) AS `ThName`, ".
+                     "`StartTime`, ".
+                     "FROM_UNIXTIME(UNIX_TIMESTAMP(`StartTime`)+(`LearnTime`+`Delay`)*60)".
+                     " AS `ExpiredTime`, ".
+                     "`EndTime`, ".
                      "`LearnTime`, `Delay`, `TimeForce`, ".
                      "`LMode`, `LModeForce`, `MMode`, ".
 
@@ -192,7 +197,9 @@ class DBStudyActivity extends Database {
                     array( 'activity_id'      => (int)$thisResult['SaID'],
                            'user_id'          => $thisResult['UID'],
                            'theme_id'         => (int)$thisResult['ThID'],
+                           'theme_name'       => $thisResult['ThName'],
                            'start_time'       => $thisResult['StartTime'],
+                           'expired_time'     => $thisResult['ExpiredTime'],
                            'end_time'         => $thisResult['EndTime'],
                            'learn_time'       => (int)$thisResult['LearnTime'],
                            'delay'            => (int)$thisResult['Delay'],

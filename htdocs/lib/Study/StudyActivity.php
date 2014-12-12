@@ -236,11 +236,7 @@ class StudyActivity {
      * @since 2.0.0
      */
     public function getThemeName() {
-        // TODO: 改成由資料庫直接查詢名稱以增佳能
-        $themeId = $this->queryResultArray['theme_id'];
-        $theme = new Theme($themeId);
-
-        return $theme->getName();
+        return $this->queryResultArray['theme_name'];
     }
 
     // ------------------------------------------------------------------------
@@ -254,6 +250,16 @@ class StudyActivity {
      */
     public function getStartTime() {
         return $this->queryResultArray['start_time'];
+    }
+
+    /**
+     * 取得這次學習的過期時間
+     *
+     * @return string 過期時間
+     * @since 2.0.0
+     */
+    public function getExpiredTime() {
+        return $this->queryResultArray['expired_time'];
     }
 
     /**

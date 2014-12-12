@@ -7,6 +7,9 @@ namespace UElearning\Study;
 require_once UELEARNING_LIB_ROOT.'/Database/DBStudyActivity.php';
 require_once UELEARNING_LIB_ROOT.'/Study/Exception.php';
 require_once UELEARNING_LIB_ROOT.'/Study/StudyWill.php';
+require_once UELEARNING_LIB_ROOT.'/Study/Theme.php';
+require_once UELEARNING_LIB_ROOT.'/User/User.php';
+use UElearning\User;
 use UElearning\Database;
 use UElearning\Exception;
 
@@ -48,6 +51,8 @@ class StudyActivityManager {
      * @param int    $learnStyle       將推薦幾個學習點
      * @param bool   $learnStyle_force 是否拒絕前往非推薦的學習點
      * @param string $materialMode     教材風格
+     * @throw UElearning\Exception\UserNoFoundException
+     * @throw UElearning\Exception\ThemeNoFoundException
      * @return int 本次學習活動的流水編號
      * @since 2.0.0
      */
@@ -55,16 +60,54 @@ class StudyActivityManager {
                             $learnStyle, $learnStyle_force, $materialMode )
     {
 
-        if($this->checkDataIsExist($userId, $themeId, $materialMode)) {
+        $user = new User\User($userId);
 
-            // 存入資料庫
-            $db = new Database\DBStudyActivity();
-            $resultId = $db->insertActivity($userId, $themeId, null, null,
-                $learnTime, 0, $timeForce, $learnStyle, $learnStyle_force, $materialMode);
+        $theme = new Theme($themeId);
 
-            // 傳回新增後得到的編號
-            return $resultId;
+        // 若無指定學習時間
+        if(!isset($learnTime)) {
+            $learnTime = $theme->getLearnTime();
         }
+
+        // 若無指定強制時間
+        if(!isset($timeForce)) {
+            $timeForce = false;
+        }
+
+        // 若無指定學習導引模式
+        if(!isset($learnStyle)) {
+            // 若使用者有偏好
+            if($user->getLearnStyle() == null){
+                $learnStyle = $user->getLearnStyle();
+            }
+            else {
+                $learnStyle = LMODE;
+            }
+        }
+
+        // 若無指定強制學習導引模式
+        if(!isset($learnStyle_force)) {
+            $learnStyle_force = false;
+        }
+
+        // 若無指定教材
+        if(!isset($materialMode)) {
+            // 若使用者有偏好
+            if($user->getMaterialStyle() == null)
+                $materialMode = $user->getMaterialStyle();
+            else {
+                $materialMode = MMODE;
+            }
+
+        }
+
+        // 存入資料庫
+        $db = new Database\DBStudyActivity();
+        $resultId = $db->insertActivity($userId, $themeId, null, null,
+            $learnTime, 0, $timeForce, $learnStyle, $learnStyle_force, $materialMode);
+
+        // 傳回新增後得到的編號
+        return $resultId;
     }
 
     /**
