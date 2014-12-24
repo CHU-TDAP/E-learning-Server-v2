@@ -106,7 +106,7 @@ class StudyActivity {
     /**
      * 結束這次學習
 *    *
-     * @throw \UElearning\Exception\StudyActivityNoFoundException
+     * @throw \UElearning\Exception\StudyActivityFinishedException
      * @since 2.0.0
      */
     public function finishActivity() {

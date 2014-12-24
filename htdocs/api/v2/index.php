@@ -607,6 +607,93 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
     });
 
     /*
+     * 結束這場學習活動
+     * POST http://localhost/api/v2/tokens/{登入Token}/activitys/{學習中活動編號}/finish
+     */
+    $app->post('/:token/activitys/:said/finish', function ($token, $saId) use ($app) {
+
+        try {
+            // 查詢使用者
+            $session = new User\UserSession();
+            $user_id = $session->getUserId($token);
+
+            // 取得開始後的學習活動資訊
+            $sact = new Study\StudyActivity($saId);
+
+            // 確認此學習活動是否為本人所有
+            if($sact->getUserId() == $user_id) {
+
+                // 結束學習活動
+
+                $sact->finishActivity();
+
+                // 噴出學習完畢後的活動資料
+                $app->render(201,array(
+                    'token'       => $token,
+                    'user_id'     => $user_id,
+                    'activity_id' => $sact->getId(),
+                    'activity'    => array(
+                        'activity_id'      => $sact->getId(),
+                        'theme_id'         => $sact->getThemeId(),
+                        'theme_name'       => $sact->getThemeName(),
+                        'start_time'       => $sact->getStartTime(),
+                        'end_time'         => $sact->getEndTime(),
+                        'learnStyle_mode'  => $sact->getLearnStyle(),
+                        'learnStyle_force' => $sact->isForceLearnStyle(),
+                        'material_mode'    => $sact->getMaterialStyle(),
+                        'target_total'     => $sact->getPointTotal(),
+                        'learned_total'    => $sact->getLearnedPointTotal()
+                    ),
+                    'error'            => false
+                ));
+            }
+            // 若非本人所有，則視同無此活動
+            else {
+                throw new Exception\StudyActivityNoFoundException($saId);
+            }
+        }
+        catch (Exception\LoginTokenNoFoundException $e) {
+            $app->render(401,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No \''.$token.'\' session. Please login again.',
+                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入',
+                'substatus'   => 204
+            ));
+        }
+        catch (Exception\StudyActivityNoFoundException $e) {
+            $app->render(404,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No found this activity.',
+                'msg_cht' => '沒有此學習活動'
+            ));
+        }
+        catch (Exception\StudyActivityFinishedException $e) {
+            $app->render(405,array(
+                'token'       => $token,
+                'user_id'     => $user_id,
+                'activity_id' => $sact->getId(),
+                'activity'    => array(
+                    'activity_id'      => $sact->getId(),
+                    'theme_id'         => $sact->getThemeId(),
+                    'theme_name'       => $sact->getThemeName(),
+                    'start_time'       => $sact->getStartTime(),
+                    'end_time'         => $sact->getEndTime(),
+                    'learnStyle_mode'  => $sact->getLearnStyle(),
+                    'learnStyle_force' => $sact->isForceLearnStyle(),
+                    'material_mode'    => $sact->getMaterialStyle(),
+                    'target_total'     => $sact->getPointTotal(),
+                    'learned_total'    => $sact->getLearnedPointTotal()
+                ),
+                'error'   => true,
+                'msg'     => 'The activity is endded',
+                'msg_cht' => '此活動已經結束了'
+            ));
+        }
+    });
+
+    /*
      * 預約學習活動資料
      * GET http://localhost/api/v2/tokens/{登入Token}/will/{預約編號}
      */
