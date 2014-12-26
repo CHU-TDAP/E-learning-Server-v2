@@ -28,6 +28,8 @@ class RecommandPoint
 	 * @type double
 	 */
 	private const $ALPHA = 0.5;
+    
+    private 
 	
 	
 	public function __construct()
@@ -41,14 +43,14 @@ class RecommandPoint
 	 */
 	private function computeNormalizationParameter()
 	{
-		
+        $
 	}
 	
 	/**
 	 * 推薦學習點
 	 * @return array 學習點清單
 	 */
-	public function recommand()
+	public function recommand($   )
 	{
 		
 	}
