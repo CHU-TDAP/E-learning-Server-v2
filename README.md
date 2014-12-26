@@ -96,15 +96,27 @@ Linux Debian: `sudo a2enmod rewrite`
 
 ## 開發需求
 * 支援UTF-8編碼的文字編輯器
+    * 最好是能支援EditorConfig 統一撰寫風格外掛
 * 開發文件產生器: phpdoc
 * 單元測試: phpunit
-* 自動化建置工具
-    * guard（需有ruby環境）
-        * guard-shell
-        * guard-livereload
-        * guard-phpunit2 (不是guard-phpunit)
+* PHP套件管理: composer, pear
+* API Framework: slim/slim
+* 自動化建置工具 guard（需有ruby環境）
+    * guard-shell
+    * guard-livereload
+    * guard-phpunit2 (不是guard-phpunit)
 
 ## 建置開發環境
+### 在文字編輯器安裝EditorConfig
+建議安裝EditorConfig，安裝後撰寫程式碼時會自動統一編碼、換行符號、Tab鍵為四個空格
+<http://editorconfig.org/#download>
+
+### 安裝PHP套件管理程式-composer
+    curl -sS https://getcomposer.org/installer | php
+    
+### 安裝本站必要套件 (必要)
+    composer install
+
 ### 安裝PHP套件管理程式-pear
     sudo apt-get install php-pear
 
