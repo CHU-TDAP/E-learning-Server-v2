@@ -155,6 +155,22 @@ PS. 若出現`ArgumentError: invalid byte sequence in US-ASCII`錯誤，是因�
 
 支援主流瀏覽器: Firefox, Chrome, Safari
 
+## 推薦的開發工具
+### 文字編輯器
+#### Brackets
+<http://brackets.io/>
+
+##### Brackets-Plugin
+* EditorConfig
+* Brackets Git
+* PHP Syntax Hint
+* QuickDocsPHP
+* Todo
+
+### API測試工具
+#### Postman
+<http://www.getpostman.com/>
+
 ## 自動化建置 (開發前建議啟動)
 撰寫程式前，可在專案內下以下指令即可啟動
 
