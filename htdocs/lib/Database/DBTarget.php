@@ -146,13 +146,17 @@ class DBTarget extends Database {
     public function queryAllTargetByTheme($thID) {
 
         $sqlString = "SELECT `ThID`, Target.`TID`, `Weights`, ".
-            "Target.`AID`, Area.`HID`, `TNum`, `TName`, `TMapID`, `TLearnTime`, ".
+            "Area.`HID`, Hall.`HName`, ".
+            "Target.`AID`, Area.`AName`, Area.`AFloor`, Area.`ANum`, ".
+            "`TNum`, `TName`, `TMapID`, `TLearnTime`, ".
             "`PLj`, `Mj`, `S`, IF(`Mj` >= `PLj`, 1, 0) AS Fj ".
             "FROM `".$this->table('TBelong')."` AS Belong ".
             "LEFT JOIN `".$this->table('Target')."` as Target ".
             "ON Belong.`TID` = Target.`TID` ".
             "LEFT JOIN `".$this->table('Area')."` as Area ".
             "ON Area.`AID` = Target.`AID` ".
+            "LEFT JOIN `".$this->table('Hall')."` as Hall ".
+            "ON Area.`HID` = Hall.`HID`".
             "WHERE `ThID` = ".$this->connDB->quote($thID);
 
         $query = $this->connDB->prepare($sqlString);
@@ -169,8 +173,12 @@ class DBTarget extends Database {
                     array( 'theme_id'      => $thisResult['ThID'],
                            'target_id'     => $thisResult['TID'],
                            'weights'       => $thisResult['Weights'],
-                           'area_id'       => $thisResult['AID'],
                            'hall_id'       => $thisResult['HID'],
+                           'hall_name'     => $thisResult['HName'],
+                           'area_id'       => $thisResult['AID'],
+                           'area_name'     => $thisResult['AName'],
+                           'floor'         => $thisResult['AFloor'],
+                           'area_number'   => $thisResult['ANum'],
                            'target_number' => $thisResult['TNum'],
                            'name'          => $thisResult['TName'],
                            'map_url'       => $thisResult['TMapID'],
