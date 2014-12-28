@@ -121,6 +121,75 @@ class DBTarget extends Database {
     }
 
     /**
+     * 查詢此主題內所有標的資料
+     *
+     * @param  int   $thID 主題ID
+     * @return array 標的資料陣列，格式為:
+     *
+     *     array(
+     *         array(
+     *             'target_id'     => <標的ID>,
+     *             'area_id'       => <標的所在的區域ID>,
+     *             'hall_id'       => <標的所在的廳ID>,
+     *             'target_number' => <地圖上的標的編號>,
+     *             'name'          => <標的名稱>,
+     *             'map_url'       => <地圖路徑>,
+     *             'learn_time'    => <預估的學習時間>,
+     *             'PLj'           => <學習標的的人數限制>,
+     *             'Mj'            => <目前人數>,
+     *             'S'             => <學習標的飽和率上限>,
+     *             'Fj'            => <學習標的滿額指標>
+     *         )
+     *     );
+     *
+     */
+    public function queryAllTargetByTheme($thID) {
+
+        $sqlString = "SELECT `ThID`, Target.`TID`, `Weights`, ".
+            "Target.`AID`, Area.`HID`, `TNum`, `TName`, `TMapID`, `TLearnTime`, ".
+            "`PLj`, `Mj`, `S`, IF(`Mj` >= `PLj`, 1, 0) AS Fj ".
+            "FROM `".$this->table('TBelong')."` AS Belong ".
+            "LEFT JOIN `".$this->table('Target')."` as Target ".
+            "ON Belong.`TID` = Target.`TID` ".
+            "LEFT JOIN `".$this->table('Area')."` as Area ".
+            "ON Area.`AID` = Target.`AID` ".
+            "WHERE `ThID` = ".$this->connDB->quote($thID);
+
+        $query = $this->connDB->prepare($sqlString);
+        $query->execute();
+
+        $queryResultAll = $query->fetchAll();
+        // 如果有查到一筆以上
+        if( count($queryResultAll) >= 1 ) {
+            // 製作回傳結果陣列
+            $result = array();
+            foreach($queryResultAll as $key => $thisResult) {
+
+                array_push($result,
+                    array( 'theme_id'      => $thisResult['ThID'],
+                           'target_id'     => $thisResult['TID'],
+                           'weights'       => $thisResult['Weights'],
+                           'area_id'       => $thisResult['AID'],
+                           'hall_id'       => $thisResult['HID'],
+                           'target_number' => $thisResult['TNum'],
+                           'name'          => $thisResult['TName'],
+                           'map_url'       => $thisResult['TMapID'],
+                           'learn_time'    => $thisResult['TLearnTime'],
+                           'PLj'           => $thisResult['PLj'],
+                           'Mj'            => $thisResult['Mj'],
+                           'S'             => $thisResult['S'],
+                           'Fj'            => $thisResult['Fj']
+                ));
+            }
+            return $result;
+        }
+        // 若都沒查到的話
+        else {
+            return null;
+        }
+    }
+
+    /**
      * 查詢所有標的資料
      *
      * @return array 標的資料陣列，格式為:
@@ -144,7 +213,7 @@ class DBTarget extends Database {
      */
     public function queryAllTarget() {
 
-        return $this->queryAreaByWhere("1");
+        return $this->queryTargetByWhere("1");
     }
 
     /**
