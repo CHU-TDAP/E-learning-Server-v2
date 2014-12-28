@@ -6,6 +6,7 @@
 namespace UElearning\Target;
 
 require_once UELEARNING_LIB_ROOT.'/Database/DBTarget.php';
+require_once UELEARNING_LIB_ROOT.'/Database/DBMaterial.php';
 require_once UELEARNING_LIB_ROOT.'/Target/Exception.php';
 use UElearning\Database;
 use UElearning\Exception;
@@ -183,6 +184,37 @@ class Target {
     public function getMapUrl(){
         return $this->queryResultArray['map_url'];
     }
+
+    /**
+     * 取得標的的教材路徑
+     *
+     * @param bool   $isEntity 是否為實體教材
+     * @param string $mode     教材種類
+     * @return string 教材檔案路徑
+     * @since 2.0.0
+     */
+    public function getMaterialUrl($isEntity, $mode){
+
+        $db = new Database\DBMaterial();
+        $query = $db->queryAllMaterialByTargetId($this->tId);
+
+        foreach($query as $thisData) {
+
+            if($thisData['is_entity'] != 0) {
+                $thisEntiry = true;
+            }
+            else { $thisEntiry = false; }
+
+            if($thisEntiry==$isEntity && $thisData['mode'] == $mode) {
+                return $thisData['url'];
+                break;
+            }
+        }
+
+        return null;
+    }
+
+    // ========================================================================
 
     /**
      * 取得預估的學習時間
