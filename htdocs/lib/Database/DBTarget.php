@@ -128,9 +128,15 @@ class DBTarget extends Database {
      *
      *     array(
      *         array(
+     *             'theme_id'      => <主題ID>,
      *             'target_id'     => <標的ID>,
-     *             'area_id'       => <標的所在的區域ID>,
+     *             'weights'       => <權重>
      *             'hall_id'       => <標的所在的廳ID>,
+     *             'hall_name'     => <標的所在的廳名稱>,
+     *             'area_id'       => <標的所在的區域ID>,
+     *             'area_name'     => <標的所在的區域名稱>,
+     *             'floor'         => <標的所在的區域樓層>,
+     *             'area_number'   => <標的所在的區域地圖上編號>,
      *             'target_number' => <地圖上的標的編號>,
      *             'name'          => <標的名稱>,
      *             'map_url'       => <地圖路徑>,
