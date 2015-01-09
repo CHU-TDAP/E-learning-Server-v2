@@ -305,6 +305,29 @@ class StudyWill {
     }
 
     /**
+     * 取得預約學習是否使用虛擬學習點
+     *
+     * @return bool 是否啟用虛擬學習點
+     * @since 2.0.0
+     */
+    public function isEnableVirtual(){
+        return $this->queryResultArray['enable_virtual'];
+    }
+
+    /**
+     * 設定預約學習是否使用虛擬學習點
+     *
+     * @param bool $value 是否啟用虛擬學習點
+     * @since 2.0.0
+     */
+    public function setEnableVirtual($value){
+        $db = new Database\DBStudyActivity();
+        $db->changeWillActivityData($this->id, 'enable_virtual', $value);
+
+        $this->getQuery();
+    }
+
+    /**
      * 取得預約學習的教材風格
      *
      * @return string 教材風格

@@ -52,12 +52,14 @@ class DBStudyActivity extends Database {
      * @param bool   $timeForce        時間到時是否強制中止學習
      * @param int    $learnStyle       學習導引模式
      * @param bool   $learnStyle_force 拒絕前往非推薦的學習點
+     * @param bool   $enable_virtual   是否啟用虛擬教材
      * @param string $materialMode     教材模式
      * @since 2.0.0
      */
     public function insertActivity($userId, $themeId, $startTime, $endTime,
                              $learnTime, $delay, $timeForce,
-                             $learnStyle, $learnStyle_force, $materialMode)
+                             $learnStyle, $learnStyle_force, $enable_virtual,
+                             $materialMode)
     {
 
         // 自動填入未填的時間
@@ -107,10 +109,10 @@ class DBStudyActivity extends Database {
         $sqlString = "INSERT INTO `".$this->table('StudyActivity').
             "` (`UID`, `ThID`,
             `StartTime`, `EndTime`, `LearnTime`, `Delay`, `TimeForce`,
-            `LMode`, `LModeForce`, `MMode`)
+            `LMode`, `LModeForce`, `EnableVirtual`, `MMode`)
             VALUES ( :uid , :thid ,
             ".$to_startTime.", ".$to_endTime.", ".$to_learnTime." , :delay , :timeforce ,
-            ".$to_learnStyle.", :lstyle_force , ".$to_materialMode.")";
+            ".$to_learnStyle.", :lstyle_force , :enable_virtual , ".$to_materialMode.")";
 
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":uid", $userId);
@@ -118,6 +120,7 @@ class DBStudyActivity extends Database {
         $query->bindParam(":delay", $delay);
         $query->bindParam(":timeforce", $timeForce);
         $query->bindParam(":lstyle_force", $learnStyle_force);
+        $query->bindParam(":enable_virtual", $enable_virtual);
         $query->execute();
 
         // 取得剛剛加入的ID
@@ -159,7 +162,7 @@ class DBStudyActivity extends Database {
                      " AS `ExpiredTime`, ".
                      "`EndTime`, ".
                      "`LearnTime`, `Delay`, `TimeForce`, ".
-                     "`LMode`, `LModeForce`, `MMode`, ".
+                     "`LMode`, `LModeForce`, `EnableVirtual`, `MMode`, ".
 
                      "(SELECT count(`TID`)
                      FROM `".$this->table('TBelong')."` AS `belong`
@@ -193,6 +196,11 @@ class DBStudyActivity extends Database {
                 }
                 else { $output_learnStyleForce = false; }
 
+                if($thisResult['EnableVirtual'] != '0') {
+                    $output_enable_virtual = true;
+                }
+                else { $output_enable_virtual = false; }
+
                 array_push($result,
                     array( 'activity_id'      => (int)$thisResult['SaID'],
                            'user_id'          => $thisResult['UID'],
@@ -206,6 +214,7 @@ class DBStudyActivity extends Database {
                            'time_force'       => $output_time_force,
                            'learnStyle_mode'  => (int)$thisResult['LMode'],
                            'learnStyle_force' => $output_learnStyleForce,
+                           'enable_virtual'   => $output_enable_virtual,
                            'material_mode'    => $thisResult['MMode'],
                            'target_total'     => (int)$thisResult['TargetTotal'],
                            'learned_total'    => (int)$thisResult['LearnedTotal']
@@ -249,6 +258,7 @@ class DBStudyActivity extends Database {
      *            'time_force'       => <時間到時是否強制中止學習>,
      *            'learnStyle_mode'  => <學習導引模式>,
      *            'learnStyle_force' => <拒絕前往非推薦的學習點>,
+     *            'enable_virtual'   => <是否啟用虛擬教材>,
      *            'material_mode'    => <教材模式>,
      *            'target_total'     => <有多少標的學習>,
      *            'learned_total'    => <已經完成多少標的學習>
@@ -287,6 +297,7 @@ class DBStudyActivity extends Database {
      *             'time_force'       => <時間到時是否強制中止學習>,
      *             'learnStyle_mode'  => <學習導引模式>,
      *             'learnStyle_force' => <拒絕前往非推薦的學習點>,
+     *             'enable_virtual'   => <是否啟用虛擬教材>,
      *             'material_mode'    => <教材模式>,
      *             'target_total'     => <有多少標的學習>,
      *             'learned_total'    => <已經完成多少標的學習>
@@ -315,6 +326,7 @@ class DBStudyActivity extends Database {
      *             'delay'            => <延誤結束時間(分)>,
      *             'learnStyle_mode'  => <學習導引模式>,
      *             'learnStyle_force' => <拒絕前往非推薦的學習點>,
+     *             'enable_virtual'   => <是否啟用虛擬教材>,
      *             'material_mode'    => <教材模式>,
      *             'target_total'     => <有多少標的學習>,
      *             'learned_total'    => <已經完成多少標的學習>
@@ -393,13 +405,15 @@ class DBStudyActivity extends Database {
      * @param bool   $timeForce        時間到時是否強制中止學習
      * @param int    $learnStyle       學習導引模式
      * @param bool   $learnStyle_force 拒絕前往非推薦的學習點
+     * @param bool   $enable_virtual   是否啟用虛擬教材
      * @param string $materialMode     教材模式
      * @param string $isLock           是否鎖定不讓學生更改
      * @since 2.0.0
      */
     public function insertWillActivity($userId, $themeId, $startTime, $expiredTime,
                              $learnTime, $timeForce,
-                             $learnStyle, $learnStyle_force, $materialMode, $isLock)
+                             $learnStyle, $learnStyle_force, $enable_virtual,
+                             $materialMode, $isLock)
     {
 
         // 自動填入未填的時間
@@ -448,16 +462,18 @@ class DBStudyActivity extends Database {
         $sqlString = "INSERT INTO `".$this->table('StudyWill').
             "` (`UID`, `ThID`,
             `StartTime`, `ExpiredTime`, `LearnTime`, `TimeForce`,
-            `LMode`, `LModeForce`, `MMode`, `Lock`)
+            `LMode`, `LModeForce`, `EnableVirtual`, `MMode`, `Lock`)
             VALUES ( :uid , :thid ,
             ".$to_startTime.", ".$to_expiredTime.", ".$to_learnTime." , :timeforce ,
-            ".$to_learnStyle.", :lstyle_force , ".$to_materialMode.", :lock )";
+            ".$to_learnStyle.", :lstyle_force , :enable_virtual ,
+            ".$to_materialMode.", :lock )";
 
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":uid", $userId);
         $query->bindParam(":thid", $themeId);
         $query->bindParam(":timeforce", $timeForce);
         $query->bindParam(":lstyle_force", $learnStyle_force);
+        $query->bindParam(":enable_virtual", $enable_virtual);
         $query->bindParam(":lock", $isLock);
         $query->execute();
 
@@ -494,7 +510,7 @@ class DBStudyActivity extends Database {
 
         $sqlString = "SELECT `SwID`, `UID`, `ThID`, ".
                      "`StartTime`, `ExpiredTime`, `LearnTime`, `TimeForce`, ".
-                     "`LMode`, `LModeForce`, `MMode`, `Lock`, ".
+                     "`LMode`, `LModeForce`, `EnableVirtual`, `MMode`, `Lock`, ".
 
                      "(SELECT count(`TID`)
                      FROM `".$this->table('TBelong')."` AS `belong`
@@ -530,6 +546,11 @@ class DBStudyActivity extends Database {
                 }
                 else { $output_isLock = false; }
 
+                if($thisResult['EnableVirtual'] != '0') {
+                    $output_enable_virtual = true;
+                }
+                else { $output_enable_virtual = false; }
+
                 array_push($result,
                     array( 'activity_will_id' => $thisResult['SwID'],
                            'user_id'          => $thisResult['UID'],
@@ -540,6 +561,7 @@ class DBStudyActivity extends Database {
                            'time_force'       => $output_time_force,
                            'learnStyle_mode'  => $thisResult['LMode'],
                            'learnStyle_force' => $output_learnStyleForce,
+                           'enable_virtual'   => $output_enable_virtual,
                            'material_mode'    => $thisResult['MMode'],
                            'is_lock'          => $output_isLock,
                            'target_total'     => $thisResult['TargetTotal'],
@@ -583,6 +605,7 @@ class DBStudyActivity extends Database {
      *            'time_force'       => <時間到時是否強制中止學習>,
      *            'learnStyle_mode'  => <學習導引模式>,
      *            'learnStyle_force' => <拒絕前往非推薦的學習點>,
+     *            'enable_virtual'   => <是否啟用虛擬教材>,
      *            'material_mode'    => <教材模式>,
      *            'is_lock'          => <是否鎖定不讓學生更改>,
      *            'target_total'     => <有多少標的學習>,
@@ -621,7 +644,8 @@ class DBStudyActivity extends Database {
      *             'learn_time'       => <學習所需時間(分)>
      *             'time_force'       => <時間到時是否強制中止
      *             'learnStyle_mode'  => <學習導引模式>,
-     *             'learnStyle_force' => <拒絕前往非推薦的學習
+     *             'learnStyle_force' => <拒絕前往非推薦的學習>,
+     *             'enable_virtual'   => <是否啟用虛擬教材>,
      *             'material_mode'    => <教材模式>,
      *             'is_lock'          => <是否鎖定不讓學生更改
      *             'target_total'     => <有多少標的學習>,
@@ -652,7 +676,8 @@ class DBStudyActivity extends Database {
      *             'learn_time'       => <學習所需時間(分)>
      *             'time_force'       => <時間到時是否強制中止
      *             'learnStyle_mode'  => <學習導引模式>,
-     *             'learnStyle_force' => <拒絕前往非推薦的學習
+     *             'learnStyle_force' => <拒絕前往非推薦的學習>,
+     *             'enable_virtual'   => <是否啟用虛擬教材>,
      *             'material_mode'    => <教材模式>,
      *             'is_lock'          => <是否鎖定不讓學生更改
      *             'target_total'     => <有多少標的學習>,
@@ -678,18 +703,19 @@ class DBStudyActivity extends Database {
     public function changeWillActivityData($id, $field, $value) {
         $sqlField = null;
         switch($field) {
-            case 'user_id':          $sqlField = 'UID';         break;
-            case 'theme_id':         $sqlField = 'ThID';        break;
-            case 'start_time':       $sqlField = 'StartTime';   break;
-            case 'expired_time':     $sqlField = 'ExpiredTime'; break;
-            case 'learn_time':       $sqlField = 'LearnTime';   break;
-            case 'learn_time':       $sqlField = 'TLearnTime';  break;
-            case 'time_force':       $sqlField = 'TimeForce';   break;
-            case 'learnStyle_mode':  $sqlField = 'LMode';       break;
-            case 'learnStyle_force': $sqlField = 'LModeForce';  break;
-            case 'material_mode':    $sqlField = 'MMode';       break;
-            case 'is_lock':          $sqlField = 'Lock';        break;
-            default:                 $sqlField = $field;        break;
+            case 'user_id':          $sqlField = 'UID';           break;
+            case 'theme_id':         $sqlField = 'ThID';          break;
+            case 'start_time':       $sqlField = 'StartTime';     break;
+            case 'expired_time':     $sqlField = 'ExpiredTime';   break;
+            case 'learn_time':       $sqlField = 'LearnTime';     break;
+            case 'learn_time':       $sqlField = 'TLearnTime';    break;
+            case 'time_force':       $sqlField = 'TimeForce';     break;
+            case 'learnStyle_mode':  $sqlField = 'LMode';         break;
+            case 'learnStyle_force': $sqlField = 'LModeForce';    break;
+            case 'enable_virtual':   $sqlField = 'EnableVirtual'; break;
+            case 'material_mode':    $sqlField = 'MMode';         break;
+            case 'is_lock':          $sqlField = 'Lock';          break;
+            default:                 $sqlField = $field;          break;
         }
 
         $sqlString = "UPDATE ".$this->table('StudyWill').
@@ -721,7 +747,7 @@ SELECT 'study' AS `Type`,
   (`LearnTime`+`Delay`) AS `HaveTime`, `LearnTime`, `Delay`,
   ceiling((UNIX_TIMESTAMP(`StartTime`)+(`LearnTime`+`Delay`)*60-UNIX_TIMESTAMP(NOW()))/60) AS `RemainingTime`, `TimeForce`,
 
-  `LMode`, `LModeForce`, `MMode`, '1' AS `Lock`,
+  `LMode`, `LModeForce`, `MMode`, `EnableVirtual`, '1' AS `Lock`,
 
 (SELECT count(`TID`) FROM `".$this->table('TBelong')."` AS `belong` WHERE `belong`.`ThID` = `sa`.`ThID`) AS `  TargetTotal`,
 (SELECT count(DISTINCT `TID`) FROM `".$this->table('Study')."` AS `study` WHERE `Out_TargetTime` IS NOT NULL   AND `study`.`SaID` = `sa`.`SaID`) AS `LearnedTotal`
@@ -740,7 +766,7 @@ SELECT 'will' AS `Type`,
   `StartTime`, `ExpiredTime`, `LearnTime` AS `HaveTime`, `LearnTime`, 0 AS `Delay`,
   `LearnTime` AS `RemainingTime`, `TimeForce`,
 
-  `LMode`, `LModeForce`, `MMode`, `Lock`,
+  `LMode`, `LModeForce`, `MMode`, `EnableVirtual`, `Lock`,
 
   (SELECT count(`TID`) FROM `".$this->table('TBelong')."` AS `belong` WHERE `belong`.`ThID` = `sw`.`ThID`) AS `TargetTotal`,
   0 AS `LearnedTotal`
@@ -760,7 +786,7 @@ SELECT 'theme' AS `Type`,
   NULL, NULL, `ThLearnTime` AS `HaveTime`, `ThLearnTime`, 0 AS `Delay`,
   `ThLearnTime` AS `RemainingTime`, NULL,
 
-  NULL, NULL, NULL, 0 AS `Lock`,
+  NULL, NULL, NULL, 0 AS `EnableVirtual`, 0 AS `Lock`,
 
   (SELECT count(`TID`) FROM `".$this->table('TBelong')."` AS `belong` WHERE `belong`.`ThID` = `th`.`ThID`) AS `TargetTotal`,
   0 AS `LearnedTotal`
@@ -796,6 +822,11 @@ $sqlString = $sqlString_SA." UNION ".$sqlString_SW." UNION ".$sqlString_TG;
                 }
                 else { $output_lock = false; }
 
+                if($thisResult['EnableVirtual'] != '0') {
+                    $output_enable_virtual = true;
+                }
+                else { $output_enable_virtual = false; }
+
                 array_push($result,
                     array( 'type'             => $thisResult['Type'],
                            'id'               => $thisResult['ID'],
@@ -813,6 +844,7 @@ $sqlString = $sqlString_SA." UNION ".$sqlString_SW." UNION ".$sqlString_TG;
                            'time_force'       => $output_time_force,
                            'learnStyle_mode'  => $thisResult['LMode'],
                            'learnStyle_force' => $output_learnStyleForce,
+                           'enable_virtual'   => $output_enable_virtual,
                            'material_mode'    => $thisResult['MMode'],
                            'lock'             => $output_lock,
                            'target_total'     => $thisResult['TargetTotal'],

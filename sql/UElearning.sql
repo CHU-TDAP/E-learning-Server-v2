@@ -1,13 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 3.4.11.1deb2+deb7u1
+-- version 4.1.6
 -- http://www.phpmyadmin.net
 --
 -- 主機: localhost
--- 產生日期: 2014 年 12 月 27 日 03:15
--- 伺服器版本: 5.5.40
--- PHP 版本: 5.6.0
+-- 產生時間： 2015 年 01 月 06 日 12:56
+-- 伺服器版本: 5.6.16
+-- PHP 版本： 5.5.9
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
@@ -17,13 +17,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- 資料庫: `uelearning`
+-- 資料庫： `UElearning`
 --
 
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__AGroup`
+-- 資料表結構 `chu__AGroup`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__AGroup` (
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `chu__AGroup` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者群組權限管理分類';
 
 --
--- 轉存資料表中的資料 `chu__AGroup`
+-- 資料表的匯出資料 `chu__AGroup`
 --
 
 INSERT INTO `chu__AGroup` (`GID`, `GName`, `GMemo`, `GBuildTime`, `GModifyTime`, `GAuth_Admin`, `GAuth_ClientAdmin`) VALUES
@@ -50,7 +50,7 @@ INSERT INTO `chu__AGroup` (`GID`, `GName`, `GMemo`, `GBuildTime`, `GModifyTime`,
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Area`
+-- 資料表結構 `chu__Area`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__Area` (
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `chu__Area` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='標的所在的區域分類' AUTO_INCREMENT=15 ;
 
 --
--- 轉存資料表中的資料 `chu__Area`
+-- 資料表的匯出資料 `chu__Area`
 --
 
 INSERT INTO `chu__Area` (`AID`, `HID`, `AFloor`, `ANum`, `AName`, `AMapID`, `AIntroduction`) VALUES
@@ -87,7 +87,7 @@ INSERT INTO `chu__Area` (`AID`, `HID`, `AFloor`, `ANum`, `AName`, `AMapID`, `AIn
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__CGroup`
+-- 資料表結構 `chu__CGroup`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__CGroup` (
@@ -102,18 +102,19 @@ CREATE TABLE IF NOT EXISTS `chu__CGroup` (
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Edge`
+-- 資料表結構 `chu__Edge`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__Edge` (
   `Ti` int(11) NOT NULL,
   `Tj` int(11) NOT NULL,
   `MoveTime` int(4) NOT NULL COMMENT '移動時間(分鐘)',
-  `Distance` int(11) NOT NULL COMMENT '距離(M)'
+  `Distance` int(11) NOT NULL COMMENT '距離(M)',
+  PRIMARY KEY (`Ti`,`Tj`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='標的和標的之間';
 
 --
--- 轉存資料表中的資料 `chu__Edge`
+-- 資料表的匯出資料 `chu__Edge`
 --
 
 INSERT INTO `chu__Edge` (`Ti`, `Tj`, `MoveTime`, `Distance`) VALUES
@@ -346,7 +347,7 @@ INSERT INTO `chu__Edge` (`Ti`, `Tj`, `MoveTime`, `Distance`) VALUES
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Hall`
+-- 資料表結構 `chu__Hall`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__Hall` (
@@ -358,7 +359,7 @@ CREATE TABLE IF NOT EXISTS `chu__Hall` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='區域所在的廳分類' AUTO_INCREMENT=2 ;
 
 --
--- 轉存資料表中的資料 `chu__Hall`
+-- 資料表的匯出資料 `chu__Hall`
 --
 
 INSERT INTO `chu__Hall` (`HID`, `HName`, `HMapID`, `HIntroduction`) VALUES
@@ -367,7 +368,7 @@ INSERT INTO `chu__Hall` (`HID`, `HName`, `HMapID`, `HIntroduction`) VALUES
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Log`
+-- 資料表結構 `chu__Log`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__Log` (
@@ -381,7 +382,7 @@ CREATE TABLE IF NOT EXISTS `chu__Log` (
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Material`
+-- 資料表結構 `chu__Material`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__Material` (
@@ -394,7 +395,7 @@ CREATE TABLE IF NOT EXISTS `chu__Material` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='教材' AUTO_INCREMENT=31 ;
 
 --
--- 轉存資料表中的資料 `chu__Material`
+-- 資料表的匯出資料 `chu__Material`
 --
 
 INSERT INTO `chu__Material` (`MID`, `TID`, `MEntity`, `MMode`, `MUrl`) VALUES
@@ -432,7 +433,7 @@ INSERT INTO `chu__Material` (`MID`, `TID`, `MEntity`, `MMode`, `MUrl`) VALUES
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__MaterialKind`
+-- 資料表結構 `chu__MaterialKind`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__MaterialKind` (
@@ -442,7 +443,7 @@ CREATE TABLE IF NOT EXISTS `chu__MaterialKind` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- 轉存資料表中的資料 `chu__MaterialKind`
+-- 資料表的匯出資料 `chu__MaterialKind`
 --
 
 INSERT INTO `chu__MaterialKind` (`MkID`, `MkName`) VALUES
@@ -451,7 +452,7 @@ INSERT INTO `chu__MaterialKind` (`MkID`, `MkName`) VALUES
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Recommand`
+-- 資料表結構 `chu__Recommand`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__Recommand` (
@@ -463,13 +464,14 @@ CREATE TABLE IF NOT EXISTS `chu__Recommand` (
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Study`
+-- 資料表結構 `chu__Study`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__Study` (
   `SID` int(10) NOT NULL AUTO_INCREMENT,
   `SaID` int(10) NOT NULL,
   `TID` int(10) NOT NULL COMMENT '標的編號',
+  `IsEntity` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否為實際抵達學習點',
   `In_TargetTime` datetime NOT NULL COMMENT '進入標的時間',
   `Out_TargetTime` datetime DEFAULT NULL COMMENT '離開標的時間',
   PRIMARY KEY (`SID`)
@@ -478,7 +480,7 @@ CREATE TABLE IF NOT EXISTS `chu__Study` (
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__StudyActivity`
+-- 資料表結構 `chu__StudyActivity`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__StudyActivity` (
@@ -492,6 +494,7 @@ CREATE TABLE IF NOT EXISTS `chu__StudyActivity` (
   `TimeForce` tinyint(1) NOT NULL DEFAULT '0' COMMENT '學習時間已過是否強制中止學習',
   `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
   `LModeForce` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否拒絕前往非推薦點進行學習',
+  `EnableVirtual` tinyint(1) NOT NULL DEFAULT '0',
   `MMode` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
   PRIMARY KEY (`SaID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='學習活動' AUTO_INCREMENT=1 ;
@@ -499,7 +502,7 @@ CREATE TABLE IF NOT EXISTS `chu__StudyActivity` (
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__StudyWill`
+-- 資料表結構 `chu__StudyWill`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__StudyWill` (
@@ -512,6 +515,7 @@ CREATE TABLE IF NOT EXISTS `chu__StudyWill` (
   `TimeForce` tinyint(1) NOT NULL DEFAULT '1' COMMENT '學習時間已過是否強制中止學習',
   `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
   `LModeForce` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否拒絕前往非推薦點進行學習',
+  `EnableVirtual` tinyint(1) NOT NULL DEFAULT '0',
   `MMode` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
   `Lock` tinyint(1) NOT NULL DEFAULT '1' COMMENT '鎖定不讓學生更改',
   `BuildTime` datetime NOT NULL,
@@ -522,7 +526,7 @@ CREATE TABLE IF NOT EXISTS `chu__StudyWill` (
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Target`
+-- 資料表結構 `chu__Target`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__Target` (
@@ -539,7 +543,7 @@ CREATE TABLE IF NOT EXISTS `chu__Target` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='標的資訊';
 
 --
--- 轉存資料表中的資料 `chu__Target`
+-- 資料表的匯出資料 `chu__Target`
 --
 
 INSERT INTO `chu__Target` (`TID`, `AID`, `TNum`, `TName`, `TMapID`, `TLearnTime`, `PLj`, `Mj`, `S`) VALUES
@@ -563,7 +567,7 @@ INSERT INTO `chu__Target` (`TID`, `AID`, `TNum`, `TName`, `TMapID`, `TLearnTime`
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__TBelong`
+-- 資料表結構 `chu__TBelong`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__TBelong` (
@@ -575,7 +579,7 @@ CREATE TABLE IF NOT EXISTS `chu__TBelong` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='標的和主題之間';
 
 --
--- 轉存資料表中的資料 `chu__TBelong`
+-- 資料表的匯出資料 `chu__TBelong`
 --
 
 INSERT INTO `chu__TBelong` (`ThID`, `TID`, `Weights`) VALUES
@@ -598,7 +602,7 @@ INSERT INTO `chu__TBelong` (`ThID`, `TID`, `Weights`) VALUES
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Theme`
+-- 資料表結構 `chu__Theme`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__Theme` (
@@ -612,7 +616,7 @@ CREATE TABLE IF NOT EXISTS `chu__Theme` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='主題' AUTO_INCREMENT=3 ;
 
 --
--- 轉存資料表中的資料 `chu__Theme`
+-- 資料表的匯出資料 `chu__Theme`
 --
 
 INSERT INTO `chu__Theme` (`ThID`, `ThName`, `ThLearnTime`, `ThIntroduction`, `ThBuildTime`, `ThModifyTime`) VALUES
@@ -621,7 +625,7 @@ INSERT INTO `chu__Theme` (`ThID`, `ThName`, `ThLearnTime`, `ThIntroduction`, `Th
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__User`
+-- 資料表結構 `chu__User`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__User` (
@@ -645,7 +649,7 @@ CREATE TABLE IF NOT EXISTS `chu__User` (
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__UserSession`
+-- 資料表結構 `chu__UserSession`
 --
 
 CREATE TABLE IF NOT EXISTS `chu__UserSession` (

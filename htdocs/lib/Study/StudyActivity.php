@@ -403,6 +403,16 @@ class StudyActivity {
     }
 
     /**
+     * 取得預約學習是否使用虛擬學習點
+     *
+     * @return bool 是否啟用虛擬學習點
+     * @since 2.0.0
+     */
+    public function isEnableVirtual(){
+        return $this->queryResultArray['enable_virtual'];
+    }
+
+    /**
      * 取得這次學習的教材風格
      *
      * @return string 教材風格
