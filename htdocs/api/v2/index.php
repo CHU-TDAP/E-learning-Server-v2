@@ -454,6 +454,8 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                                     ? $_POST['learnStyle_mode'] : null;
             $learnStyle_force = isset($_POST['learnStyle_force'])
                                     ? $_POST['learnStyle_force'] : null;
+            $enable_virtual   = isset($_POST['enable_virtual'])
+                                    ? $_POST['enable_virtual'] : null;
             $materialMode     = isset($_POST['material_mode'])
                                     ? $_POST['material_mode'] : null;
         }
@@ -491,7 +493,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             $studyId  = $studyMgr->startActivity($user_id, $themeId,
                                                  $learnTime, $timeForce,
                                                  $learnStyle, $learnStyle_force,
-                                                 $materialMode);
+                                                 $enable_virtual, $materialMode);
 
             // 取得開始後的學習活動資訊
             $sact = new Study\StudyActivity($studyId);
@@ -515,6 +517,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     'time_force'       => $sact->isForceLearnTime(),
                     'learnStyle_mode'  => $sact->getLearnStyle(),
                     'learnStyle_force' => $sact->isForceLearnStyle(),
+                    'enable_virtual'   => $sact->isEnableVirtual(),
                     'material_mode'    => $sact->getMaterialStyle(),
                     'target_total'     => $sact->getPointTotal(),
                     'learned_total'    => $sact->getLearnedPointTotal()
@@ -577,6 +580,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                         'time_force'       => $sact->isForceLearnTime(),
                         'learnStyle_mode'  => $sact->getLearnStyle(),
                         'learnStyle_force' => $sact->isForceLearnStyle(),
+                        'enable_virtual'   => $sact->isEnableVirtual(),
                         'material_mode'    => $sact->getMaterialStyle(),
                         'target_total'     => $sact->getPointTotal(),
                         'learned_total'    => $sact->getLearnedPointTotal()
@@ -643,6 +647,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                         'end_time'         => $sact->getEndTime(),
                         'learnStyle_mode'  => $sact->getLearnStyle(),
                         'learnStyle_force' => $sact->isForceLearnStyle(),
+                        'enable_virtual'   => $sact->isEnableVirtual(),
                         'material_mode'    => $sact->getMaterialStyle(),
                         'target_total'     => $sact->getPointTotal(),
                         'learned_total'    => $sact->getLearnedPointTotal()
