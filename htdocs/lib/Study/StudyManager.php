@@ -44,6 +44,25 @@ class StudyManager {
     }
 
     /**
+     * 此標的是否已學習過
+     *
+     * @param int $activity_id 活動編號
+     * @param string $target_id 標的編號
+     * @return bool 是否已學習過
+     */
+    public function isTargetLearned($activity_id, $target_id) {
+
+        $db = new Database\DBStudy();
+        $query = $db->getAllStudyIdByTargetId($activity_id, $target_id);
+        if(count($query) > 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
      * 進入標的
      *
      * @param int $activity_id 活動編號

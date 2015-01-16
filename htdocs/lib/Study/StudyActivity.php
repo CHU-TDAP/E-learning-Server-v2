@@ -8,6 +8,7 @@ namespace UElearning\Study;
 require_once UELEARNING_LIB_ROOT.'/Database/DBStudyActivity.php';
 require_once UELEARNING_LIB_ROOT.'/User/User.php';
 require_once UELEARNING_LIB_ROOT.'/Study/Theme.php';
+require_once UELEARNING_LIB_ROOT.'/Study/StudyManager.php';
 require_once UELEARNING_LIB_ROOT.'/Study/Exception.php';
 use UElearning\Database;
 use UElearning\Exception;
@@ -420,6 +421,63 @@ class StudyActivity {
      */
     public function getMaterialStyle() {
         return $this->queryResultArray['material_mode'];
+    }
+
+    // ========================================================================
+
+    /**
+     * 此標的是否已學習過
+     *
+     * @param string $target_id 標的編號
+     * @return bool 是否已學習過
+     */
+    public function isTargetLearned($target_id) {
+
+        // 活動編號
+        $saId = $this->id;
+
+        $sct = new StudyManager();
+        return $sct->isTargetLearned($saId, $target_id);
+    }
+
+    /**
+     * 進入標的
+     *
+     * @param int  $target_id 標的編號
+     * @param bool $is_entity 是否為現場學習
+     * @throw UElearning\Exception\InLearningException
+     * return int 進出紀錄編號
+     */
+    public function toInTarget($target_id, $is_entity) {
+
+        // 活動編號
+        $saId = $this->id;
+
+        $sct = new StudyManager();
+        // 進入學習點
+        try{
+            return $sct->toInTarget($saId, $target_id, $is_entity);
+        }
+        // 若狀態為正在標的內學習時，強制當成離開標的，重新進入
+        catch (Exception\InLearningException $e) {
+            throw $e;
+        }
+
+    }
+
+    /**
+     * 離開標的
+     *
+     * @param int $target_id 標的編號
+     */
+    public function toOutTarget($target_id) {
+
+        // 活動編號
+        $saId = $this->id;
+
+        $sct = new StudyManager();
+        // 離開學習點
+        $sct->toOutTarget($saId, $target_id);
     }
 
 }
