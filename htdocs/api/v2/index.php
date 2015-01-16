@@ -79,10 +79,14 @@ function login($user_id = null) {
         $user = $session->getUser($loginToken);
         $sessionInfo = $session->getTokenInfo($loginToken);
 
+        //取得現在時間，用字串的形式
+        $nowDate = date("Y-m-d H:i:s");
+
+        // 輸出結果
         $app->render(201,array(
-            'user_id'     => $user_id,
-            'token'       => $loginToken,
-            'browser'     => $browser,
+            'user_id'      => $user_id,
+            'token'        => $loginToken,
+            'browser'      => $browser,
             'user' => array(
                 'id'            => $user->getId(),
                 'user_id'            => $user->getId(),
@@ -101,10 +105,11 @@ function login($user_id = null) {
                 'email'              => $user->getEmail(),
                 'memo'               => $user->getMemo(),
             ),
-            'login_time'  => $sessionInfo['login_date'],
-            'error'       => false,
-            'msg'         => '\''.$user_id.'\' is logined',
-            'msg_cht'     => '\''.$user_id.'\'使用者已登入'
+            'login_time'   => $sessionInfo['login_date'],
+            'current_time' => $nowDate,
+            'error'        => false,
+            'msg'          => '\''.$user_id.'\' is logined',
+            'msg_cht'      => '\''.$user_id.'\'使用者已登入'
         ));
     }
     catch (Exception\UserNoFoundException $e) {
@@ -932,15 +937,14 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             // 確認此學習活動是否為本人所有
             if($sact->getUserId() == $user_id) {
 
-                $sct = new Study\StudyManager();
                 // 進入學習點
                 try{
-                    $sid = $sct->toInTarget($saId, $tId, $is_entity);
+                    $sid = $sact->toInTarget($tId, $is_entity);
                 }
                 // 若狀態為正在標的內學習時，強制當成離開標的，重新進入
                 catch (Exception\InLearningException $e) {
-                    $sct->toOutTarget($saId, $tId);
-                    $sid = $sct->toInTarget($saId, $tId, $is_entity);
+                    $sact->toOutTarget($tId);
+                    $sid = $sact->toInTarget($tId, $is_entity);
                 }
 
                 // 噴出結果
@@ -996,9 +1000,8 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             // 確認此學習活動是否為本人所有
             if($sact->getUserId() == $user_id) {
 
-                $sct = new Study\StudyManager();
                 // 離開學習點
-                $sct->toOutTarget($saId, $tId);
+                $sact->toOutTarget($tId);
 
                 // 噴出結果
                 $app->render(201,array(
@@ -1058,9 +1061,14 @@ else {
 
     // API首頁
     $app->get('/', 'APIrequest', function () use ($app) {
+
+        //取得現在時間，用字串的形式
+        $nowDate = date("Y-m-d H:i:s");
+
         $app->render(200, array(
             'title'   => '',
             'version' => '2.0',
+            'current_time' => $nowDate,
             'error'   => false,
         ));
     });
