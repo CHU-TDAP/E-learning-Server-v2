@@ -280,6 +280,25 @@ class DBStudy extends Database {
     }
 
     /**
+     * 此活動內離開所有學習點
+     *
+     * @param string $activity_id 活動編號
+     * @since 2.0.0
+     */
+    public function allToOutTaeget($activity_id)
+    {
+
+        // 寫入
+        $sqlString = "UPDATE `".$this->table('Study').
+            "` SET `Out_TargetTime` = NOW()
+            WHERE `SaID` = :id ";
+
+        $query = $this->connDB->prepare($sqlString);
+        $query->bindParam(":id", $activity_id);
+        $query->execute();
+    }
+
+    /**
      * 取得目前正在進行的標的編號
      *
      * @param int $activity_id 活動編號
@@ -334,28 +353,39 @@ class DBStudy extends Database {
     /**
      * 取得所有在此標的的記錄編號
      *
-     * 正常來說只會有一個，但考量使用者可能在這次活動內同一標的進出兩次以上，故還是以陣列輸出。
+     * 正常來說只會有一個，但考量使用者可能在這次活動內同一標的進出兩次以上，故還是以二維陣列輸出。
      *
      * @param int $activity_id 活動編號
      * @param int $target_id 標的編號
-     * @return array 所有進出記錄編號
+     * @return array 所有進出記錄資訊陣列
      * @since 2.0.0
      */
     public function getAllStudyIdByTargetId($activity_id, $target_id) {
 
-        $sqlString = "SELECT `SID` FROM `".$this->table('Study')."` ".
-            "WHERE `TID` = :tid AND `SaID` = :said ";
+        $queryResultAll = $this->queryByWhere(
+            "`TID` = ".$this->connDB->quote($target_id).
+            " AND `SaID` = ".$this->connDB->quote($activity_id));
 
-        $query = $this->connDB->prepare($sqlString);
-        $query->bindParam(":said", $activity_id);
-        $query->bindParam(":tid", $target_id);
-        $query->execute();
+        return $queryResultAll;
+    }
 
-        $output = array();
+    /**
+     * 取得在此標學習中的記錄編號
+     *
+     * 正常來說只會有一個，但考量使用者可能在這次活動內同一標的進出兩次以上，故還是以陣列輸出。
+     *
+     * @param int $activity_id 活動編號
+     * @param int $target_id 標的編號
+     * @return array 所有進出記錄資訊陣列
+     * @since 2.0.0
+     */
+    public function getInStudyIdByTargetId($activity_id, $target_id) {
 
-        while($queryResult = $query->fetch()) {
-            array_push($output, $queryResult[0]);
-        }
-        return $output;
+        $queryResultAll = $this->queryByWhere(
+            "`TID` = ".$this->connDB->quote($target_id).
+            " AND `SaID` = ".$this->connDB->quote($activity_id).
+            " AND `Out_TargetTime` IS NULL");
+
+        return $queryResultAll;
     }
 }

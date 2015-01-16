@@ -46,17 +46,17 @@ class StudyManager {
     /**
      * 進入標的
      *
-     * @param string $activity_id 活動編號
-     * @param string $target_id   標的編號
-     * @param string $is_entity   是否為現場學習
+     * @param int $activity_id 活動編號
+     * @param int $target_id   標的編號
+     * @param bool $is_entity   是否為現場學習
      * return int 進出紀錄編號
      */
     public function toInTarget($activity_id, $target_id, $is_entity) {
 
         // 若沒有任一個點正在學習中
-        if($this->getCurrentInTargetId($activity_id) != null) {
+        if($this->getCurrentInTargetId($activity_id) == null) {
             $db = new Database\DBStudy();
-            return $db->toInTaeget(string $activity_id, string $target_id, string $is_entity);
+            return $db->toInTaeget($activity_id, $target_id, $is_entity);
         }
         else {
             throw new Exception\InLearningException();
@@ -66,20 +66,21 @@ class StudyManager {
     /**
      * 離開標的
      *
-     * @param string $activity_id 活動編號
-     * @param string $target_id   標的編號
-     * @param string $is_entity   是否為現場學習
-     * return int 進出紀錄編號
+     * @param int $activity_id 活動編號
+     * @param int $target_id   標的編號
      */
     public function toOutTarget($activity_id, $target_id) {
 
-        // 若沒有任一個點正在學習中
-        if($this->getCurrentInTargetId($activity_id) != null) {
-            $db = new Database\DBStudy();
-            return $db->toInTaeget(string $activity_id, string $target_id, string $is_entity);
-        }
-        else {
-            throw new Exception\InLearningException();
+        // 從資料庫取得此活動此標的學習中資料
+        $db = new Database\DBStudy();
+        $learning_array = $db->getInStudyIdByTargetId($activity_id, $target_id);
+
+        if(isset($learning_array)) {
+
+            foreach($learning_array as $thisArray) {
+
+                $db->toOutTaeget($thisArray['study_id']);
+            }
         }
     }
 }

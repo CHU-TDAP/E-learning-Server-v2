@@ -7,6 +7,7 @@ require_once UELEARNING_LIB_ROOT.'/User/UserSession.php';
 require_once UELEARNING_LIB_ROOT.'/User/UserAdmin.php';
 require_once UELEARNING_LIB_ROOT.'/Study/StudyActivity.php';
 require_once UELEARNING_LIB_ROOT.'/Study/StudyActivityManager.php';
+require_once UELEARNING_LIB_ROOT.'/Study/StudyManager.php';
 require_once UELEARNING_LIB_ROOT.'/Target/Target.php';
 require_once UELEARNING_LIB_ROOT.'/Target/TargetManager.php';
 use UElearning\User;
@@ -891,6 +892,148 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
         }
     });
 
+
+    /*
+     * 進入此學習點
+     * POST http://localhost/api/v2/tokens/{登入Token}/activitys/{學習中活動編號}/points/{標的編號}/toin
+     */
+    $app->post('/:token/activitys/:said/points/:tid/toin', function ($token, $saId, $tId) use ($app) {
+
+        // 取得帶來的參數
+        $cType = $app->request->getContentType();
+        if($cType == 'application/x-www-form-urlencoded') {
+            $is_entity  = isset($_POST['is_entity']) ? $_POST['is_entity'] : true;
+        }
+        else /*if($cType == 'application/json')*/ {
+            $postData = $app->request->getBody();
+            $postDataArray = json_decode($postData);
+            $is_entity  = isset($postDataArray->is_entity)
+                            ? $postDataArray->is_entity : true;
+        }
+        /*else {
+            $app->render(400, array(
+                    'Content-Type'=> $cType,
+                    'error'       => true,
+                    'msg'     => '',
+                    'msg_cht' => '輸入參數的Content-Type不在支援範圍內 或是沒有輸入',
+                    'substatus'   => 102
+                )
+            );
+        }*/
+
+        try {
+            // 查詢使用者
+            $session = new User\UserSession();
+            $user_id = $session->getUserId($token);
+
+            // 取得開始後的學習活動資訊
+            $sact = new Study\StudyActivity($saId);
+
+            // 確認此學習活動是否為本人所有
+            if($sact->getUserId() == $user_id) {
+
+                $sct = new Study\StudyManager();
+                // 進入學習點
+                try{
+                    $sid = $sct->toInTarget($saId, $tId, $is_entity);
+                }
+                // 若狀態為正在標的內學習時，強制當成離開標的，重新進入
+                catch (Exception\InLearningException $e) {
+                    $sct->toOutTarget($saId, $tId);
+                    $sid = $sct->toInTarget($saId, $tId, $is_entity);
+                }
+
+                // 噴出結果
+                $app->render(200,array(
+                    'token'       => $token,
+                    'user_id'     => $user_id,
+                    'activity_id' => $sact->getId(),
+                    'study_id'    => $sid,
+                    'error'       => false
+                ));
+
+            }
+            // 若非本人所有，則視同無此活動
+            else {
+                throw new Exception\StudyActivityNoFoundException($saId);
+            }
+
+        }
+        catch (Exception\LoginTokenNoFoundException $e) {
+            $app->render(401,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No \''.$token.'\' session. Please login again.',
+                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入',
+                'substatus'   => 204
+            ));
+        }
+        catch (Exception\StudyActivityNoFoundException $e) {
+            $app->render(404,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No found this activity.',
+                'msg_cht' => '沒有此學習活動'
+            ));
+        }
+
+    });
+
+    /*
+     * 進入此學習點
+     * POST http://localhost/api/v2/tokens/{登入Token}/activitys/{學習中活動編號}/points/{標的編號}/toout
+     */
+    $app->post('/:token/activitys/:said/points/:tid/toout', function ($token, $saId, $tId) use ($app) {
+
+        try {
+            // 查詢使用者
+            $session = new User\UserSession();
+            $user_id = $session->getUserId($token);
+
+            // 取得開始後的學習活動資訊
+            $sact = new Study\StudyActivity($saId);
+
+            // 確認此學習活動是否為本人所有
+            if($sact->getUserId() == $user_id) {
+
+                $sct = new Study\StudyManager();
+                // 離開學習點
+                $sct->toOutTarget($saId, $tId);
+
+                // 噴出結果
+                $app->render(201,array(
+                    'token'       => $token,
+                    'user_id'     => $user_id,
+                    'activity_id' => $sact->getId(),
+                    'error'       => false
+                ));
+
+            }
+            // 若非本人所有，則視同無此活動
+            else {
+                throw new Exception\StudyActivityNoFoundException($saId);
+            }
+
+        }
+        catch (Exception\LoginTokenNoFoundException $e) {
+            $app->render(401,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No \''.$token.'\' session. Please login again.',
+                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入',
+                'substatus'   => 204
+            ));
+        }
+        catch (Exception\StudyActivityNoFoundException $e) {
+            $app->render(404,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No found this activity.',
+                'msg_cht' => '沒有此學習活動'
+            ));
+        }
+
+    });
 });
 
 // ============================================================================

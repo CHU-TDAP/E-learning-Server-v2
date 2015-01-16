@@ -50,7 +50,7 @@ class InLearningException extends \UnexpectedValueException {
      * 使用者帳號例外
      * @param int $id 輸入的標的ID
      */
-    public function __construct($id) {
+    public function __construct() {
         parent::__construct('Learning');
     }
 }
