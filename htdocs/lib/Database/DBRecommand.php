@@ -82,7 +82,7 @@ class DBRecommand extends Database
         $whereClause = $this->table('TBelong').".ThID = ".$this->connDB->quote($theme_number)." AND ".$this->table('TBelong').".TID = ".$this->connDB->quote($next_point);
         $AllOfResult = $this->queryBelongByWhere($whereClause);
 
-        if(count($AllOfResult) != 0) return $AllOfResult;
+        if(count($AllOfResult) != 0) return $AllOfResult[0];
         else return null;
     }
 

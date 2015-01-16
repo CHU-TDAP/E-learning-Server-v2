@@ -6,6 +6,8 @@ require_once UELEARNING_ROOT.'/config.php';
 require_once UELEARNING_LIB_ROOT.'/Target/Target.php';
 require_once UELEARNING_LIB_ROOT.'/Database/DBRecommand.php';
 require_once UELEARNING_LIB_ROOT.'/Study/Theme.php';
+require_once UELEARNING_LIB_ROOT.'/Study/Study.php';
+require_once UELEARNING_LIB_ROOT.'/Study/StudyActivity.php';
 use UElearning\Target;
 use UElearning\Study;
 use UElearning\Database;
@@ -47,7 +49,7 @@ class RecommandPoint
      * 計算正規化參數
      * @return double 正規化參數
      */
-    private function computeNormalizationParameter($theme_number)
+    public function computeNormalizationParameter($theme_number)
     {
         $normal = 0;  //正規化之後的GAMMA值
         $EntitySum = 0;  //實體學習點分別算銓重之後的值
@@ -62,7 +64,7 @@ class RecommandPoint
             $move_time = $edge[$i]["move_time"];
             $next_target = new Target\Target($next_point);
             $belong = $this->recommand->queryBelongByID($next_point,$theme->getId());
-            $weight = $belong[0]["weight"];
+            $weight = $belong["weight"];
 
             $VirtualSum += $weight / $next_target->getLearnTime();
 
