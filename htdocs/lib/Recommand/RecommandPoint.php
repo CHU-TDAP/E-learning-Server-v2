@@ -49,7 +49,7 @@ class RecommandPoint
      * 計算正規化參數
      * @return double 正規化參數
      */
-    public function computeNormalizationParameter($theme_number)
+    private function computeNormalizationParameter($theme_number)
     {
         $normal = 0;  //正規化之後的GAMMA值
         $EntitySum = 0;  //實體學習點分別算銓重之後的值
