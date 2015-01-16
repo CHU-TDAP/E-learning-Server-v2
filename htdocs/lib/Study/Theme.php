@@ -96,7 +96,7 @@ class Theme {
     /**
      * 建構子
      *
-     * @param int $inputTID 主題ID
+     * @param int $inputID 主題ID
      * @since 2.0.0
      */
     public function __construct($inputID){

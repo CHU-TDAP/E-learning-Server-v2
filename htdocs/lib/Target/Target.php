@@ -294,6 +294,17 @@ class Target {
     }
 
     /**
+     * 判斷目前標的人數是否為零
+     *
+     * @return bool true/此標的目前人數是空的,false/此標的目前人數不是空的
+     * @since 2.0.0
+     */
+    public function isNumberOfPeopleZero(){
+        if($this->getCurrentPeople() == 0) return true;
+        else return false;
+    }
+
+    /**
      * 增加學習標的目前人數
      *
      * 若要減少可直接在參數內帶入負值

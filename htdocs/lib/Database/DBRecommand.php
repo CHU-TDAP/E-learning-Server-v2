@@ -21,9 +21,10 @@ class DBRecommand extends Database
      * @param string $where SQL WHERE子句
      * @return array 查詢結果
      */
-	protected function queryEdgeByWhere($where)
-	{
-		$sqlString = "SELECT DISTINCT ".$this->table('Edge').".Ti, ".$this->table('Edge').".Tj, ".$this->table('Edge').".MoveTime".
+
+    protected function queryEdgeByWhere($where)
+    {
+        $sqlString = "SELECT DISTINCT ".$this->table('Edge').".Ti, ".$this->table('Edge').".Tj, ".$this->table('Edge').".MoveTime".
                      " FROM ".$this->table('Edge')." WHERE ".$where;
         $query = $this->connDB->prepare($sqlString);
         $query->execute();
@@ -44,11 +45,16 @@ class DBRecommand extends Database
             return $result;
         }
         else return null;
-	}
+    }
 
+    /**
+     * 內部查詢用
+     * @param string $where SQL WHERE子句
+     * @return array 查詢結果
+     */
     protected function queryBelongByWhere($where)
     {
-        $sqlString = "SELECT ".$this->table('tbelong').".Weights FROM ".$this->table('tbelong')." WHERE ".$where;
+        $sqlString = "SELECT ".$this->table('TBelong').".Weights FROM ".$this->table('TBelong')." WHERE ".$where;
         $query = $this->connDB->prepare($sqlString);
         $query->execute();
 
@@ -66,19 +72,29 @@ class DBRecommand extends Database
         else return null;
     }
 
+    /**
+     * 以下一個學習點和主題編號查詢屬於的權重資料
+     * @param string $next_point 下一個學習點編號
+     * @return array 查詢結果
+     */
     public function queryBelongByID($next_point,$theme_number)
     {
-        $whereClause = $this->table('tbelong').".thID = ".$this->connDB->quote($theme_number)." AND ".$this->table('tbelong').".TID = ".$this->connDB->quote($next_point);
+        $whereClause = $this->table('TBelong').".ThID = ".$this->connDB->quote($theme_number)." AND ".$this->table('TBelong').".TID = ".$this->connDB->quote($next_point);
         $AllOfResult = $this->queryBelongByWhere($whereClause);
 
         if(count($AllOfResult) != 0) return $AllOfResult;
         else return null;
     }
 
-
+    /**
+     * 以目前的學習點編號查詢下一個學習點的資訊
+     * @param string $currentPoint 目前的學習點編號
+     * @return array 查詢結果
+     */
     public function queryEdgeByID($currentPoint)
     {
-        $AllOfResult = $this->queryBelongByWhere("Ti = ".$this->connDB->quote($currentPoint));
+        //echo "EEEEEEEEE";
+        $AllOfResult = $this->queryEdgeByWhere($this->table('Edge').".Ti = ".$this->connDB->quote($currentPoint));
         if(count($AllOfResult) != 0) return $AllOfResult;
         else return null;
     }
