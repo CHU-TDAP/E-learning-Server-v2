@@ -54,6 +54,8 @@ class DBStudyActivity extends Database {
      * @param bool   $learnStyle_force 拒絕前往非推薦的學習點
      * @param bool   $enable_virtual   是否啟用虛擬教材
      * @param string $materialMode     教材模式
+     *
+     * @return int 剛新增的活動編號
      * @since 2.0.0
      */
     public function insertActivity($userId, $themeId, $startTime, $endTime,
@@ -408,6 +410,8 @@ class DBStudyActivity extends Database {
      * @param bool   $enable_virtual   是否啟用虛擬教材
      * @param string $materialMode     教材模式
      * @param string $isLock           是否鎖定不讓學生更改
+     *
+     * @return int 剛新增的活動編號
      * @since 2.0.0
      */
     public function insertWillActivity($userId, $themeId, $startTime, $expiredTime,

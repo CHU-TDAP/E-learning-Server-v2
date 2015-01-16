@@ -806,6 +806,91 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
         }
     });
 
+    /*
+     * 取得此標的資料
+     * GET http://localhost/api/v2/tokens/{登入Token}/activitys/{學習中活動編號}/points/{標的編號}
+     */
+    $app->get('/:token/activitys/:said/points/:tid', function ($token, $saId, $tId) use ($app) {
+
+        try {
+            // 查詢使用者
+            $session = new User\UserSession();
+            $user_id = $session->getUserId($token);
+
+            // 取得開始後的學習活動資訊
+            $sact = new Study\StudyActivity($saId);
+
+            // 確認此學習活動是否為本人所有
+            if($sact->getUserId() == $user_id) {
+
+                // 取得此活動的主題
+                $thid = $sact->getThemeId();
+
+                // 取得本次採用的教材風格
+                $materialMode = $sact->getMaterialStyle();
+
+                // 取得主題內所有的標的資訊
+                $target = new Target\Target($thid);
+                $materialUrl = $target->getMaterialUrl(true, $materialMode);
+                $virtualMaterialUrl = $target->getMaterialUrl(false, $materialMode);
+
+                // 處理噴出結果
+                $output_targets = array(
+                        'theme_id'      => $thid,
+                        'target_id'     => $target->getId(),
+                        'hall_id'       => $target->getHallId(),
+                        //'hall_name'     => $thisTargetArray['hall_name'],
+                        'area_id'       => $target->getAreaId(),
+                        //'area_name'     => $thisTargetArray['area_name'],
+                        //'floor'         => $thisTargetArray['floor'],
+                        //'area_number'   => $thisTargetArray['area_number'],
+                        'target_number' => $target->getNumber(),
+                        'name'          => $target->getName(),
+                        'map_url'       => $target->getMapUrl(),
+                        'material_url'  => $materialUrl,
+                        'virtual_material_url' => $virtualMaterialUrl,
+                        'learn_time'    => $target->getLearnTime(),
+                        'PLj'           => $target->getPLj(),
+                        'Mj'            => $target->getMj(),
+                        'S'             => $target->getS(),
+                        'Fj'            => $target->getFj()
+                );
+
+                // 噴出結果
+                $app->render(200,array(
+                    'token'       => $token,
+                    'user_id'     => $user_id,
+                    'activity_id' => $sact->getId(),
+                    'target'      => $output_targets,
+                    'error'       => false
+                ));
+
+            }
+            // 若非本人所有，則視同無此活動
+            else {
+                throw new Exception\StudyActivityNoFoundException($saId);
+            }
+
+        }
+        catch (Exception\LoginTokenNoFoundException $e) {
+            $app->render(401,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No \''.$token.'\' session. Please login again.',
+                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入',
+                'substatus'   => 204
+            ));
+        }
+        catch (Exception\StudyActivityNoFoundException $e) {
+            $app->render(404,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No found this activity.',
+                'msg_cht' => '沒有此學習活動'
+            ));
+        }
+    });
+
 });
 
 // ============================================================================
