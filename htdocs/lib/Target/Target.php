@@ -198,20 +198,23 @@ class Target {
         $db = new Database\DBMaterial();
         $query = $db->queryAllMaterialByTargetId($this->tId);
 
-        foreach($query as $thisData) {
+        if(count($query) > 0) {
 
-            if($thisData['is_entity'] != 0) {
-                $thisEntiry = true;
-            }
-            else { $thisEntiry = false; }
+            foreach($query as $thisData) {
+                if($thisData['is_entity'] != 0) {
+                    $thisEntiry = true;
+                }
+                else { $thisEntiry = false; }
 
-            if($thisEntiry==$isEntity && $thisData['mode'] == $mode) {
-                return $thisData['url'];
-                break;
+                if($thisEntiry==$isEntity && $thisData['mode'] == $mode) {
+                    return $thisData['url'];
+                    break;
+                }
             }
         }
-
-        return null;
+        else {
+            return null;
+        }
     }
 
     // ========================================================================
