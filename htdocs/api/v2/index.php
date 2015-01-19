@@ -609,6 +609,8 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             // 取得開始後的學習活動資訊
             $sact = new Study\StudyActivity($saId);
 
+            // TODO: 取得主題內所有的標的資訊
+
             // 確認此學習活動是否為本人所有
             if($sact->getUserId() == $user_id) {
 
