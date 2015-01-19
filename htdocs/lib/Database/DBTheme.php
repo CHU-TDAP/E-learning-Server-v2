@@ -28,7 +28,7 @@ class DBTheme extends Database {
     protected function queryThemeByWhere($where) {
 
         $sqlString = "SELECT `ThID`, `ThName`, ".
-                     "`ThLearnTime`, `ThIntroduction`, ".
+                     "`ThLearnTime`, `StartTID`, `ThIntroduction`, ".
                      "`ThBuildTime`, `ThModifyTime`, ".
                      "(SELECT count(`TID`) FROM `chu__TBelong` AS `belong`
                      WHERE `belong`.`ThID` = `theme`.`ThID`) AS `TargetTotal`".
@@ -46,13 +46,14 @@ class DBTheme extends Database {
             foreach($queryResultAll as $key => $thisResult) {
 
                 array_push($result,
-                    array( 'theme_id'      => $thisResult['ThID'],
-                           'name'          => $thisResult['ThName'],
-                           'learn_time'    => $thisResult['ThLearnTime'],
-                           'introduction'  => $thisResult['ThIntroduction'],
-                           'target_total'  => $thisResult['TargetTotal'],
-                           'build_time'    => $thisResult['ThBuildTime'],
-                           'modify_time'   => $thisResult['ThModifyTime'] )
+                    array( 'theme_id'        => $thisResult['ThID'],
+                           'name'            => $thisResult['ThName'],
+                           'learn_time'      => $thisResult['ThLearnTime'],
+                           'start_target_id' => $thisResult['StartTID'],
+                           'introduction'    => $thisResult['ThIntroduction'],
+                           'target_total'    => $thisResult['TargetTotal'],
+                           'build_time'      => $thisResult['ThBuildTime'],
+                           'modify_time'     => $thisResult['ThModifyTime'] )
                 );
             }
             return $result;

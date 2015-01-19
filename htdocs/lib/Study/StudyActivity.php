@@ -426,6 +426,19 @@ class StudyActivity {
     // ========================================================================
 
     /**
+     * 取得此主題的標的起始點
+     *
+     * @return int 標的編號
+     * @since 2.0.0
+     */
+    public function getStartTargetId(){
+        $theme = new Theme( $this->getThemeId() );
+        return $theme->getStartTargetId();
+    }
+
+    // ========================================================================
+
+    /**
      * 此標的是否已學習過
      *
      * @param string $target_id 標的編號
