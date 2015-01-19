@@ -547,7 +547,7 @@ CREATE TABLE IF NOT EXISTS `chu__Target` (
 --
 
 INSERT INTO `chu__Target` (`TID`, `AID`, `TNum`, `TName`, `TMapID`, `TLearnTime`, `PLj`, `Mj`, `S`) VALUES
-(0, 1, NULL, '入口', NULL, 0, 1000000000, 0, NULL),
+(0, 1, NULL, '入口', '1F.gif', 0, 1000000000, 0, NULL),
 (1, 1, NULL, '含有生物遺跡的岩石', 'map_01_02_03.png', 7, 2, 0, 1),
 (2, 1, NULL, '岩石中的紀錄', 'map_01_02_03.png', 8, 2, 0, 1),
 (3, 4, NULL, '生命在水中的演化', 'map_01_02_03.png', 3, 2, 0, 1),
