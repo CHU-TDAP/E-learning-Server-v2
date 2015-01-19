@@ -583,6 +583,7 @@ CREATE TABLE IF NOT EXISTS `chu__TBelong` (
 --
 
 INSERT INTO `chu__TBelong` (`ThID`, `TID`, `Weights`) VALUES
+(1, 0, 0),
 (1, 1, 1),
 (1, 2, 2),
 (1, 3, 4),
