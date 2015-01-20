@@ -1084,6 +1084,113 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
         }
 
     });
+
+    /*
+     * 推薦學習點
+     * GET http://localhost/api/v2/tokens/{登入Token}/activitys/{學習中活動編號}/recommand?current_point={目前所在的學習點編號}
+     */
+    $app->get('/:token/activitys/:said/recommand', function ($token, $saId) use ($app) {
+        if(isset($_GET['current_point'])) { $currentTId = $_GET['current_point']; }
+
+        function output_the_target_array($tId, $isEntity, $materialMode) {
+            $thisOutput = array();
+            $target = new Target\Target($tId);
+            $thisOutput = array(
+                'target_id'     => $target->getId(),
+                'is_entity'     => $isEntity,
+                'hall_id'       => $target->getHallId(),
+                'area_id'       => $target->getAreaId(),
+                'target_number' => $target->getNumber(),
+                'name'          => $target->getName(),
+                'map_url'       => $target->getMapUrl(),
+                'material_url'  => $target->getMaterialUrl($isEntity, $materialMode),
+                'learn_time'    => $target->getLearnTime(),
+                'PLj'           => $target->getPLj(),
+                'Mj'            => $target->getMj(),
+                'S'             => $target->getS(),
+                'Fj'            => $target->getFj()
+            );
+            return $thisOutput;
+        }
+
+        try {
+            // 查詢使用者
+            $session = new User\UserSession();
+            $user_id = $session->getUserId($token);
+
+            // 取得開始後的學習活動資訊
+            $sact = new Study\StudyActivity($saId);
+
+            // 確認此學習活動是否為本人所有
+            if($sact->getUserId() == $user_id) {
+
+                // 必填參數有填
+                if( isset($currentTId) ) {
+
+                    $currentTId = (int)$currentTId;
+
+                    // TODO: 動作撰寫區
+
+                    // 取得此活動的主題
+                    $tid = $sact->getThemeId();
+
+                    // 取得本次採用的教材風格
+                    $materialMode = $sact->getMaterialStyle();
+
+                    // 取得主題內所有的標的資訊
+                    $target_manager = new Target\TargetManager();
+                    $output_targets = array( output_the_target_array(3, true, $materialMode),
+                                             output_the_target_array(7, true, $materialMode),
+                                             output_the_target_array(12, true, $materialMode),
+                                        );
+                    $recommand_total = count($output_targets);
+
+                    // 噴出結果
+                    $app->render(200,array(
+                        'token'             => $token,
+                        'user_id'           => $user_id,
+                        'activity_id'       => $sact->getId(),
+                        'current_target_id' => $currentTId,
+                        'recommand_total'   => $recommand_total,
+                        'recommand_target'  => $output_targets,
+                        'error'             => false
+                    ));
+
+                }
+                else {
+                    $app->render(400,array(
+                        'token'   => $token,
+                        'error'   => true,
+                        'msg'     => 'No input \'current_point\' param.',
+                        'msg_cht' => '缺少 \'current_point\' 參數'
+                    ));
+                }
+
+            }
+            // 若非本人所有，則視同無此活動
+            else {
+                throw new Exception\StudyActivityNoFoundException($saId);
+            }
+
+        }
+        catch (Exception\LoginTokenNoFoundException $e) {
+            $app->render(401,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No \''.$token.'\' session. Please login again.',
+                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入',
+                'substatus'   => 204
+            ));
+        }
+        catch (Exception\StudyActivityNoFoundException $e) {
+            $app->render(404,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No found this activity.',
+                'msg_cht' => '沒有此學習活動'
+            ));
+        }
+    });
 });
 
 // ============================================================================
