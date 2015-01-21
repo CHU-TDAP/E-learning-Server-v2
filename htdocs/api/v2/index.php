@@ -614,6 +614,49 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             // 確認此學習活動是否為本人所有
             if($sact->getUserId() == $user_id) {
 
+                // 取得此活動的主題
+                $tid = $sact->getThemeId();
+
+                // 取得主題內所有的標的資訊
+                $target_manager = new Target\TargetManager();
+                $all_targets = $target_manager->getAllTargetInfoByTheme($tid);
+
+                // 取得本次採用的教材風格
+                $materialMode = $sact->getMaterialStyle();
+
+                // 處理噴出結果
+                $output_targets = array();
+                foreach($all_targets as $thisTargetArray) {
+
+                    // 取得教材路徑
+                    $targetObject = new Target\Target($thisTargetArray['target_id']);
+                    $materialUrl = $targetObject->getMaterialUrl(true, $materialMode);
+                    $virtualMaterialUrl = $targetObject->getMaterialUrl(false, $materialMode);
+
+                    $thisOutput = array(
+                        'theme_id'      => $thisTargetArray['theme_id'],
+                        'target_id'     => $thisTargetArray['target_id'],
+                        'weights'       => $thisTargetArray['weights'],
+                        'hall_id'       => $thisTargetArray['hall_id'],
+                        'hall_name'     => $thisTargetArray['hall_name'],
+                        'area_id'       => $thisTargetArray['area_id'],
+                        'area_name'     => $thisTargetArray['area_name'],
+                        'floor'         => $thisTargetArray['floor'],
+                        'area_number'   => $thisTargetArray['area_number'],
+                        'target_number' => $thisTargetArray['target_number'],
+                        'name'          => $thisTargetArray['name'],
+                        'map_url'       => $thisTargetArray['map_url'],
+                        'material_url'  => $materialUrl,
+                        'virtual_material_url' => $virtualMaterialUrl,
+                        'learn_time'    => $thisTargetArray['learn_time'],
+                        'PLj'           => $thisTargetArray['PLj'],
+                        'Mj'            => $thisTargetArray['Mj'],
+                        'S'             => $thisTargetArray['S'],
+                        'Fj'            => $thisTargetArray['Fj']
+                    );
+                    array_push($output_targets, $thisOutput);
+                }
+
                 // 噴出資訊
                 $app->render(200,array(
                     'token'       => $token,
@@ -638,6 +681,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                         'target_total'     => $sact->getPointTotal(),
                         'learned_total'    => $sact->getLearnedPointTotal()
                     ),
+                    'targets'    => $output_targets,
                     'error'            => false
                 ));
             }
