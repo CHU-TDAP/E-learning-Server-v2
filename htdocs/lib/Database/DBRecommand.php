@@ -89,7 +89,7 @@ class DBRecommand extends Database
     /**
      * 以目前的學習點編號查詢下一個學習點的資訊
      * @param string $currentPoint 目前的學習點編號
-     * @return array 查詢結果
+     * @return array
      */
     public function queryEdgeByID($currentPoint)
     {
