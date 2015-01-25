@@ -51,17 +51,17 @@ class DBTarget extends Database {
             foreach($queryResultAll as $key => $thisResult) {
 
                 array_push($result,
-                    array( 'target_id'     => $thisResult['TID'],
-                           'area_id'       => $thisResult['AID'],
-                           'hall_id'       => $thisResult['HID'],
-                           'target_number' => $thisResult['TNum'],
+                    array( 'target_id'     => (int)$thisResult['TID'],
+                           'area_id'       => (int)$thisResult['AID'],
+                           'hall_id'       => (int)$thisResult['HID'],
+                           'target_number' => (int)$thisResult['TNum'],
                            'name'          => $thisResult['TName'],
                            'map_url'       => $thisResult['TMapID'],
-                           'learn_time'    => $thisResult['TLearnTime'],
-                           'PLj'           => $thisResult['PLj'],
-                           'Mj'            => $thisResult['Mj'],
-                           'S'             => $thisResult['S'],
-                           'Fj'            => $thisResult['Fj']
+                           'learn_time'    => (int)$thisResult['TLearnTime'],
+                           'PLj'           => (int)$thisResult['PLj'],
+                           'Mj'            => (int)$thisResult['Mj'],
+                           'S'             => (int)$thisResult['S'],
+                           'Fj'            => (int)$thisResult['Fj']
                 ));
             }
             return $result;

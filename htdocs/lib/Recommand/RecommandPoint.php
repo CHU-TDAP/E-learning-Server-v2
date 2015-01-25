@@ -154,7 +154,7 @@ class RecommandPoint
             {
                 if($nextPoint->isNumberOfPeopleZero()) $Rj = 0;
                 else $Rj = $nextPoint->getMj()/$nextPoint->getPLj();
-                $pathCost = RecommandPoint::ALPHA * $this->gamma * ($weight * ($nextPoint->getS()-$Rj+1)/$moveTime + $nextPoint->getLearnTime());
+                $pathCost = RecommandPoint::ALPHA * $this->gamma * ($weight * ($nextPoint->getS()-$Rj+1)/($moveTime + $nextPoint->getLearnTime()));
                 $virtualCost = RecommandPoint::ALPHA * $this->gamma * ($weight/$nextPoint->getLearnTime());
             }
             array_push($recommand,array("nextPoint"=>$next_point,

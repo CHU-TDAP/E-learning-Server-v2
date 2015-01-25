@@ -105,7 +105,7 @@ class Target {
      * @since 2.0.0
      */
     public function __construct($inputTID){
-        $this->tId = $inputTID;
+        $this->tId = (int)$inputTID;
         $this->getQuery();
     }
 
