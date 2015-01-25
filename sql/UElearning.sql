@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- 主機: localhost
--- 產生時間： 2015 年 01 月 06 日 12:56
+-- 產生時間： 2015 年 01 月 19 日 15:32
 -- 伺服器版本: 5.6.16
 -- PHP 版本： 5.5.9
 
@@ -547,7 +547,7 @@ CREATE TABLE IF NOT EXISTS `chu__Target` (
 --
 
 INSERT INTO `chu__Target` (`TID`, `AID`, `TNum`, `TName`, `TMapID`, `TLearnTime`, `PLj`, `Mj`, `S`) VALUES
-(0, NULL, NULL, '入口', NULL, 0, 100000, 0, NULL),
+(0, 1, NULL, '入口', '1F.gif', 0, 1000000000, 0, NULL),
 (1, 1, NULL, '含有生物遺跡的岩石', 'map_01_02_03.png', 7, 2, 0, 1),
 (2, 1, NULL, '岩石中的紀錄', 'map_01_02_03.png', 8, 2, 0, 1),
 (3, 4, NULL, '生命在水中的演化', 'map_01_02_03.png', 3, 2, 0, 1),
@@ -583,6 +583,7 @@ CREATE TABLE IF NOT EXISTS `chu__TBelong` (
 --
 
 INSERT INTO `chu__TBelong` (`ThID`, `TID`, `Weights`) VALUES
+(1, 0, 0),
 (1, 1, 1),
 (1, 2, 2),
 (1, 3, 4),
@@ -609,18 +610,19 @@ CREATE TABLE IF NOT EXISTS `chu__Theme` (
   `ThID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ThName` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '主題名稱',
   `ThLearnTime` int(4) NOT NULL COMMENT '學習此主題要花的總時間(m)',
+  `StartTID` int(10) NOT NULL COMMENT '此主題的標的起始點',
   `ThIntroduction` tinytext COLLATE utf8_unicode_ci COMMENT '介紹',
   `ThBuildTime` datetime NOT NULL,
   `ThModifyTime` datetime NOT NULL,
   PRIMARY KEY (`ThID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='主題' AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='主題' AUTO_INCREMENT=2 ;
 
 --
 -- 資料表的匯出資料 `chu__Theme`
 --
 
-INSERT INTO `chu__Theme` (`ThID`, `ThName`, `ThLearnTime`, `ThIntroduction`, `ThBuildTime`, `ThModifyTime`) VALUES
-(1, '生命科學', 40, NULL, '2014-10-23 17:21:03', '2014-10-23 17:21:03');
+INSERT INTO `chu__Theme` (`ThID`, `ThName`, `ThLearnTime`, `StartTID`, `ThIntroduction`, `ThBuildTime`, `ThModifyTime`) VALUES
+(1, '生命科學', 40, 0, NULL, '2014-10-23 17:21:03', '2014-10-23 17:21:03');
 
 -- --------------------------------------------------------
 

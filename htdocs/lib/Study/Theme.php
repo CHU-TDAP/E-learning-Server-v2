@@ -148,6 +148,16 @@ class Theme {
     }
 
     /**
+     * 取得此主題的標的起始點
+     *
+     * @return int 標的編號
+     * @since 2.0.0
+     */
+    public function getStartTargetId(){
+        return (int)$this->queryResultArray['start_target_id'];
+    }
+
+    /**
      * 取得建立時間
      *
      * @return string 建立時間
