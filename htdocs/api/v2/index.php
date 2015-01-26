@@ -1033,21 +1033,37 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                 // 進入學習點
                 try{
                     $sid = $sact->toInTarget($tId, $is_entity);
+
+                    // 噴出結果
+                    $app->render(200,array(
+                        'token'       => $token,
+                        'user_id'     => $user_id,
+                        'activity_id' => $sact->getId(),
+                        'study_id'    => $sid,
+                        'error'       => false
+                    ));
                 }
                 // 若狀態為正在標的內學習時，強制當成離開標的，重新進入
                 catch (Exception\InLearningException $e) {
-                    $sact->toOutTarget($tId);
-                    $sid = $sact->toInTarget($tId, $is_entity);
-                }
 
-                // 噴出結果
-                $app->render(200,array(
-                    'token'       => $token,
-                    'user_id'     => $user_id,
-                    'activity_id' => $sact->getId(),
-                    'study_id'    => $sid,
-                    'error'       => false
-                ));
+                    // 查詢目前所在的標的
+                    $inTId = $sact->getCurrentInTarget();
+
+                    // 登記離開此標的
+                    $sact->toOutTarget($inTId);
+
+                    // 重新登記進入此標的
+                    $sid = $sact->toInTarget($tId, $is_entity);
+
+                    // 噴出結果
+                    $app->render(200,array(
+                        'token'       => $token,
+                        'user_id'     => $user_id,
+                        'activity_id' => $sact->getId(),
+                        'study_id'    => $sid,
+                        'error'       => false
+                    ));
+                }
 
             }
             // 若非本人所有，則視同無此活動
@@ -1192,6 +1208,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                         $result_recommand_total = $recommandTotal;
                     }
                     // 是否已經學完了
+                    // TODO: 改以取得已學習標的數來判定
                     if($recommandTotal <= 0) { $isEnd = true; }
                     else { $isEnd = false; }
 

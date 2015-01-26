@@ -439,6 +439,20 @@ class StudyActivity {
     // ========================================================================
 
     /**
+     * 取得目前已進入的學習點
+     *
+     * @return int 標的編號，若無則null
+     */
+    public function getCurrentInTarget() {
+
+        // 活動編號
+        $saId = $this->id;
+
+        $sct = new StudyManager();
+        return $sct->getCurrentInTargetId($saId);
+    }
+
+    /**
      * 此標的是否已學習過
      *
      * @param string $target_id 標的編號
