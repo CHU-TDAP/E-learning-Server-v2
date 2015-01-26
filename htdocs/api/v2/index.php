@@ -1191,7 +1191,9 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     else {
                         $result_recommand_total = $recommandTotal;
                     }
-
+                    // 是否已經學完了
+                    if($recommandTotal <= 0) { $isEnd = true; }
+                    else { $isEnd = false; }
 
                     // 製作
                     $output_targets = array();
@@ -1207,6 +1209,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                         'user_id'           => $user_id,
                         'activity_id'       => $sact->getId(),
                         'current_target_id' => $currentTId,
+                        'is_end'            => $isEnd,
                         'recommand_total'   => $result_recommand_total,
                         'recommand_target'  => $output_targets,
                         'error'             => false

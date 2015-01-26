@@ -266,7 +266,7 @@ class DBStudy extends Database {
      * @param string $study_id 此記錄編號
      * @since 2.0.0
      */
-    public function toOutTaeget($study_id)
+    public function toOutTarget($study_id)
     {
 
         // 寫入
@@ -285,7 +285,7 @@ class DBStudy extends Database {
      * @param string $activity_id 活動編號
      * @since 2.0.0
      */
-    public function allToOutTaeget($activity_id)
+    public function alltoOutTarget($activity_id)
     {
 
         // 寫入
