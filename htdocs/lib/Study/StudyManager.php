@@ -26,8 +26,8 @@ class StudyManager {
 
     /**
      * 取得目前已進入的學習點
-     * @param string $activity_id 活動編號
-     * @return string 標的編號，若無則null
+     * @param int $activity_id 活動編號
+     * @return int 標的編號，若無則null
      */
     public function getCurrentInTargetId($activity_id) {
 

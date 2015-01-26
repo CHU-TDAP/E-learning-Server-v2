@@ -267,7 +267,7 @@ class Target {
      * @param int $number 學習標的目前人數
      * @since 2.0.0
      */
-    function setMj($number){
+    public function setMj($number){
         $this->setUpdate('Mj', $number);
     }
 
@@ -280,7 +280,7 @@ class Target {
      * @return int 學習標的目前人數
      * @since 2.0.0
      */
-    function addMj($number){
+    public unction addMj($number){
         $setedNum = $this->queryResultArray['Mj']+$number;
         if($setedNum < 0) $setedNum = 0;
         $this->setUpdate('Mj', $setedNum);
