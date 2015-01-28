@@ -1208,9 +1208,12 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                         $result_recommand_total = $recommandTotal;
                     }
                     // 是否已經學完了
-                    // TODO: 改以取得已學習標的數來判定
-                    if($recommandTotal <= 0) { $isEnd = true; }
-                    else { $isEnd = false; }
+                    if($sact->getRemainingPointTotal() <= 0) {
+                        $isEnd = true;
+                    }
+                    else {
+                        $isEnd = false;
+                    }
 
                     // 製作
                     $output_targets = array();
