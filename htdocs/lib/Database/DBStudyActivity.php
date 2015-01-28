@@ -157,7 +157,7 @@ class DBStudyActivity extends Database {
     protected function queryActivityByWhere($where) {
 
         $sqlString = "SELECT `SaID`, `UID`, `ThID`, ".
-                     "(SELECT `ThName` FROM `chu__Theme` AS `th` ".
+                     "(SELECT `ThName` FROM `".$this->table('Theme')."` AS `th` ".
                      "WHERE `th`.`ThID` = `sa`.`ThID`) AS `ThName`, ".
                      "`StartTime`, ".
                      "FROM_UNIXTIME(UNIX_TIMESTAMP(`StartTime`)+(`LearnTime`+`Delay`)*60)".

@@ -30,7 +30,7 @@ class DBTheme extends Database {
         $sqlString = "SELECT `ThID`, `ThName`, ".
                      "`ThLearnTime`, `StartTID`, `ThIntroduction`, ".
                      "`ThBuildTime`, `ThModifyTime`, ".
-                     "(SELECT count(`TID`) FROM `chu__TBelong` AS `belong`
+                     "(SELECT count(`TID`) FROM `".$this->table('TBelong')."` AS `belong`
                      WHERE `belong`.`ThID` = `theme`.`ThID`) AS `TargetTotal`".
                      "FROM `".$this->table('Theme')."` AS `theme` ".
                      "WHERE ".$where;
