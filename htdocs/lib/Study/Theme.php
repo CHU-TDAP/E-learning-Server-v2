@@ -6,6 +6,7 @@
 namespace UElearning\Study;
 
 require_once UELEARNING_LIB_ROOT.'/Database/DBTheme.php';
+require_once UELEARNING_LIB_ROOT.'/Database/DBRecommand.php';
 require_once UELEARNING_LIB_ROOT.'/Study/Exception.php';
 use UElearning\Database;
 use UElearning\Exception;
@@ -174,6 +175,18 @@ class Theme {
      */
     public function getModifyTime(){
         return $this->queryResultArray['modify_time'];
+    }
+
+    /**
+     * 取得下一個標的所屬主題的權重
+     * @param string $next_point
+     * @return int weight 權重
+     * @since 2.0.0
+     */
+    public function getWeightByNextTarget($next_point){
+        $belong = new Database\DBRecommand();
+        $weight = $belong->queryBelongByID($next_point,$this->id);
+        return $weight['weight'];
     }
 
 }

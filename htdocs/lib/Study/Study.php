@@ -7,7 +7,9 @@ namespace UElearning\Study;
 
 require_once UELEARNING_LIB_ROOT.'/Database/DBStudy.php';
 require_once UELEARNING_LIB_ROOT.'/Study/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/Target/Target.php';
 use UElearning\Database;
+use UElearning\Target;
 use UElearning\Exception;
 
 /**
@@ -173,7 +175,15 @@ class Study {
      * @since 2.0.0
      */
     public function toOut() {
+
+        // 將資料庫內容標示已離開
         $db = new Database\DBStudy();
-        $db->toOutTaeget($this->id);
+        $db->toOutTarget($this->id);
+
+        // 將標的目前人數-1
+        if($this->isEntity()) {
+            $target = new Target\Target($this->getTargetId);
+            $target->addMj(-1);
+        }
     }
 }

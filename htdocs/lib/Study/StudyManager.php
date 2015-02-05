@@ -7,7 +7,10 @@ namespace UElearning\Study;
 
 require_once UELEARNING_LIB_ROOT.'/Database/DBStudy.php';
 require_once UELEARNING_LIB_ROOT.'/Study/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/Target/Target.php';
+require_once UELEARNING_LIB_ROOT.'/Target/Exception.php';
 use UElearning\Database;
+use UElearning\Target;
 use UElearning\Exception;
 
 /**
@@ -68,14 +71,24 @@ class StudyManager {
      * @param int $activity_id 活動編號
      * @param int $target_id   標的編號
      * @param bool $is_entity   是否為現場學習
+     * @throw UElearning\Exception\TargetNoFoundException
      * return int 進出紀錄編號
      */
     public function toInTarget($activity_id, $target_id, $is_entity) {
 
         // 若沒有任一個點正在學習中
         if($this->getCurrentInTargetId($activity_id) == null) {
+            // 紀錄進資料庫
             $db = new Database\DBStudy();
-            return $db->toInTaeget($activity_id, $target_id, $is_entity);
+            $id = $db->toInTaeget($activity_id, $target_id, $is_entity);
+
+            // 將標的目前人數+1
+            if($is_entity) {
+                $target = new Target\Target($target_id);
+                $target->addMj(1);
+            }
+
+            return $id;
         }
         else {
             throw new Exception\InLearningException();
@@ -93,12 +106,22 @@ class StudyManager {
         // 從資料庫取得此活動此標的學習中資料
         $db = new Database\DBStudy();
         $learning_array = $db->getInStudyIdByTargetId($activity_id, $target_id);
+        $target = new Target\Target($target_id);
 
+        // 找到正在學習中的資料
         if(isset($learning_array)) {
 
+            // 將所有此標的的進入紀錄全部標示
             foreach($learning_array as $thisArray) {
 
-                $db->toOutTaeget($thisArray['study_id']);
+                // 將此紀錄標示為已離開
+                $db->toOutTarget($thisArray['study_id']);
+
+                // 將標的目前人數-1
+                if($thisArray['is_entity'] = true) {
+                    $target = new Target\Target($target_id);
+                    $target->addMj(-1);
+                }
             }
         }
     }
