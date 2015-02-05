@@ -10,12 +10,12 @@ require_once UELEARNING_LIB_ROOT.'/Study/StudyActivityManager.php';
 require_once UELEARNING_LIB_ROOT.'/Study/StudyManager.php';
 require_once UELEARNING_LIB_ROOT.'/Target/Target.php';
 require_once UELEARNING_LIB_ROOT.'/Target/TargetManager.php';
-require_once UELEARNING_LIB_ROOT.'/Recommand/RecommandPoint.php';
+require_once UELEARNING_LIB_ROOT.'/Database/DBInfo.php';
 use UElearning\User;
 use UElearning\Study;
 use UElearning\Target;
-use UElearning\Recommand;
 use UElearning\Exception;
+use UElearning\Database;
 
 $app = new \Slim\Slim(array(
     'templates.path' => './', // 設定Path
@@ -1033,37 +1033,21 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                 // 進入學習點
                 try{
                     $sid = $sact->toInTarget($tId, $is_entity);
-
-                    // 噴出結果
-                    $app->render(200,array(
-                        'token'       => $token,
-                        'user_id'     => $user_id,
-                        'activity_id' => $sact->getId(),
-                        'study_id'    => $sid,
-                        'error'       => false
-                    ));
                 }
                 // 若狀態為正在標的內學習時，強制當成離開標的，重新進入
                 catch (Exception\InLearningException $e) {
-
-                    // 查詢目前所在的標的
-                    $inTId = $sact->getCurrentInTarget();
-
-                    // 登記離開此標的
-                    $sact->toOutTarget($inTId);
-
-                    // 重新登記進入此標的
+                    $sact->toOutTarget($tId);
                     $sid = $sact->toInTarget($tId, $is_entity);
-
-                    // 噴出結果
-                    $app->render(200,array(
-                        'token'       => $token,
-                        'user_id'     => $user_id,
-                        'activity_id' => $sact->getId(),
-                        'study_id'    => $sid,
-                        'error'       => false
-                    ));
                 }
+
+                // 噴出結果
+                $app->render(200,array(
+                    'token'       => $token,
+                    'user_id'     => $user_id,
+                    'activity_id' => $sact->getId(),
+                    'study_id'    => $sid,
+                    'error'       => false
+                ));
 
             }
             // 若非本人所有，則視同無此活動
@@ -1191,8 +1175,8 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
 
                     $currentTId = (int)$currentTId;
 
-                    $tid = $sact->getThemeId(); // 取得此活動的主題
-                    $maxItemTotal = $sact->getLearnStyle(); // 取得最大推薦數
+                    // 取得此活動的主題
+                    $tid = $sact->getThemeId();
 
                     // 取得本次採用的教材風格
                     $materialMode = $sact->getMaterialStyle();
@@ -1229,8 +1213,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                         'user_id'           => $user_id,
                         'activity_id'       => $sact->getId(),
                         'current_target_id' => $currentTId,
-                        'is_end'            => $isEnd,
-                        'recommand_total'   => $result_recommand_total,
+                        'recommand_total'   => $recommand_total,
                         'recommand_target'  => $output_targets,
                         'error'             => false
                     ));
@@ -1270,6 +1253,26 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             ));
         }
     });
+});
+
+// ============================================================================
+
+/*
+ * 推薦學習點
+ * GET http://localhost/api/v2/info
+ */
+$app->get('/info', 'APIrequest', function () use ($app) {
+
+    $db = new Database\DBInfo();
+    $placeInfoResult = $db->queryAllPlaceInfo();
+    $placeMapResult = $db->queryALLPlaceMap();
+
+    // 噴出結果
+    $app->render(200,array(
+        'place_info' => $placeInfoResult,
+        'place_map'  => $placeMapResult,
+        'error'      => false
+    ));
 });
 
 // ============================================================================
