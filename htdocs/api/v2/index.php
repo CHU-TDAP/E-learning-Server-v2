@@ -10,10 +10,12 @@ require_once UELEARNING_LIB_ROOT.'/Study/StudyActivityManager.php';
 require_once UELEARNING_LIB_ROOT.'/Study/StudyManager.php';
 require_once UELEARNING_LIB_ROOT.'/Target/Target.php';
 require_once UELEARNING_LIB_ROOT.'/Target/TargetManager.php';
+require_once UELEARNING_LIB_ROOT.'/Database/DBInfo.php';
 use UElearning\User;
 use UElearning\Study;
 use UElearning\Target;
 use UElearning\Exception;
+use UElearning\Database;
 
 $app = new \Slim\Slim(array(
     'templates.path' => './', // 設定Path
@@ -1235,6 +1237,26 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             ));
         }
     });
+});
+
+// ============================================================================
+
+/*
+ * 推薦學習點
+ * GET http://localhost/api/v2/info
+ */
+$app->get('/info', 'APIrequest', function () use ($app) {
+
+    $db = new Database\DBInfo();
+    $placeInfoResult = $db->queryAllPlaceInfo();
+    $placeMapResult = $db->queryALLPlaceMap();
+
+    // 噴出結果
+    $app->render(200,array(
+        'place_info' => $placeInfoResult,
+        'place_map'  => $placeMapResult,
+        'error'      => false
+    ));
 });
 
 // ============================================================================
