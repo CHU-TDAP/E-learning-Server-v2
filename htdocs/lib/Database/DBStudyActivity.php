@@ -157,7 +157,7 @@ class DBStudyActivity extends Database {
     protected function queryActivityByWhere($where) {
 
         $sqlString = "SELECT `SaID`, `UID`, `ThID`, ".
-                     "(SELECT `ThName` FROM `chu__Theme` AS `th` ".
+                     "(SELECT `ThName` FROM `".$this->table('Theme')."` AS `th` ".
                      "WHERE `th`.`ThID` = `sa`.`ThID`) AS `ThName`, ".
                      "`StartTime`, ".
                      "FROM_UNIXTIME(UNIX_TIMESTAMP(`StartTime`)+(`LearnTime`+`Delay`)*60)".
@@ -172,8 +172,7 @@ class DBStudyActivity extends Database {
 
                      "(SELECT count(DISTINCT `TID`)
                      FROM `".$this->table('Study')."` AS `study`
-                     WHERE `Out_TargetTime` IS NOT NULL
-                     AND `study`.`SaID` = `sa`.`SaID`) AS `LearnedTotal`".
+                     WHERE `study`.`SaID` = `sa`.`SaID`) AS `LearnedTotal`".
 
                      "FROM `".$this->table('StudyActivity')."` AS sa ".
                      "WHERE ".$where;
@@ -754,7 +753,7 @@ SELECT 'study' AS `Type`,
   `LMode`, `LModeForce`, `MMode`, `EnableVirtual`, '1' AS `Lock`,
 
 (SELECT count(`TID`) FROM `".$this->table('TBelong')."` AS `belong` WHERE `belong`.`ThID` = `sa`.`ThID`) AS `  TargetTotal`,
-(SELECT count(DISTINCT `TID`) FROM `".$this->table('Study')."` AS `study` WHERE `Out_TargetTime` IS NOT NULL   AND `study`.`SaID` = `sa`.`SaID`) AS `LearnedTotal`
+(SELECT count(DISTINCT `TID`) FROM `".$this->table('Study')."` AS `study` WHERE `study`.`SaID` = `sa`.`SaID`) AS `LearnedTotal`
 
 FROM `".$this->table('StudyActivity')."` AS `sa`
 LEFT JOIN `".$this->table('Theme')."` AS `th`

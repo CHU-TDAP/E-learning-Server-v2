@@ -163,11 +163,14 @@ class RecommandPoint
                                         "VirtualCost"=>$virtualCost));
         }
 
-        foreach($recommand as $key=>$value)
-        {
-            $tmp[$key] = $value["PathCost"];
+        if(count($recommand) >= 1) {
+            
+            foreach($recommand as $key=>$value)
+            {
+                $tmp[$key] = $value["PathCost"];
+            }
+            array_multisort($tmp,SORT_DESC,$recommand,SORT_DESC);
         }
-        array_multisort($tmp,SORT_DESC,$recommand,SORT_DESC);
 
         return $recommand;
     }

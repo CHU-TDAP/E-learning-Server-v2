@@ -171,7 +171,7 @@ class StudyActivity {
         $total = $this->getPointTotal();
         $learned = $this->getLearnedPointTotal();
 
-        return $total - $learned;
+        return ($total-1) - $learned;
     }
 
     // ========================================================================
