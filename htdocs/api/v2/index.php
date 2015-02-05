@@ -11,9 +11,11 @@ require_once UELEARNING_LIB_ROOT.'/Study/StudyManager.php';
 require_once UELEARNING_LIB_ROOT.'/Target/Target.php';
 require_once UELEARNING_LIB_ROOT.'/Target/TargetManager.php';
 require_once UELEARNING_LIB_ROOT.'/Database/DBInfo.php';
+require_once UELEARNING_LIB_ROOT.'/Recommand/RecommandPoint.php';
 use UElearning\User;
 use UElearning\Study;
 use UElearning\Target;
+use UElearning\Recommand;
 use UElearning\Exception;
 use UElearning\Database;
 
@@ -1033,21 +1035,37 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                 // 進入學習點
                 try{
                     $sid = $sact->toInTarget($tId, $is_entity);
+
+                    // 噴出結果
+                    $app->render(200,array(
+                        'token'       => $token,
+                        'user_id'     => $user_id,
+                        'activity_id' => $sact->getId(),
+                        'study_id'    => $sid,
+                        'error'       => false
+                    ));
                 }
                 // 若狀態為正在標的內學習時，強制當成離開標的，重新進入
                 catch (Exception\InLearningException $e) {
-                    $sact->toOutTarget($tId);
-                    $sid = $sact->toInTarget($tId, $is_entity);
-                }
 
-                // 噴出結果
-                $app->render(200,array(
-                    'token'       => $token,
-                    'user_id'     => $user_id,
-                    'activity_id' => $sact->getId(),
-                    'study_id'    => $sid,
-                    'error'       => false
-                ));
+                    // 查詢目前所在的標的
+                    $inTId = $sact->getCurrentInTarget();
+
+                    // 登記離開此標的
+                    $sact->toOutTarget($inTId);
+
+                    // 重新登記進入此標的
+                    $sid = $sact->toInTarget($tId, $is_entity);
+
+                    // 噴出結果
+                    $app->render(200,array(
+                        'token'       => $token,
+                        'user_id'     => $user_id,
+                        'activity_id' => $sact->getId(),
+                        'study_id'    => $sid,
+                        'error'       => false
+                    ));
+                }
 
             }
             // 若非本人所有，則視同無此活動
@@ -1175,21 +1193,34 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
 
                     $currentTId = (int)$currentTId;
 
-                    // TODO: 動作撰寫區
-
-                    // 取得此活動的主題
-                    $tid = $sact->getThemeId();
+                    $tid = $sact->getThemeId(); // 取得此活動的主題
+                    $maxItemTotal = $sact->getLearnStyle(); // 取得最大推薦數
 
                     // 取得本次採用的教材風格
                     $materialMode = $sact->getMaterialStyle();
 
-                    // 取得主題內所有的標的資訊
-                    $target_manager = new Target\TargetManager();
-                    $output_targets = array( output_the_target_array(3, true, $materialMode),
-                                             output_the_target_array(7, true, $materialMode),
-                                             output_the_target_array(12, true, $materialMode),
-                                        );
-                    $recommand_total = count($output_targets);
+                    // 取得推薦的學習點
+                    $recommand = new Recommand\RecommandPoint();
+                    $recommandResult = $recommand->recommand($currentTId, $saId);
+                    $recommandTotal = count($recommandResult);
+                    if($recommandTotal > $maxItemTotal) {
+                        $result_recommand_total = $maxItemTotal;
+                    }
+                    else {
+                        $result_recommand_total = $recommandTotal;
+                    }
+                    // 是否已經學完了
+                    // TODO: 改以取得已學習標的數來判定
+                    if($recommandTotal <= 0) { $isEnd = true; }
+                    else { $isEnd = false; }
+
+                    // 製作
+                    $output_targets = array();
+                    for($i=0; $i<$result_recommand_total; $i++) {
+                        $target_id = $recommandResult[$i]['nextPoint'];
+                        $isEntity = $recommandResult[$i]['isEntity'];
+                        array_push($output_targets, output_the_target_array($target_id, $isEntity, $materialMode));
+                    }
 
                     // 噴出結果
                     $app->render(200,array(
@@ -1197,7 +1228,8 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                         'user_id'           => $user_id,
                         'activity_id'       => $sact->getId(),
                         'current_target_id' => $currentTId,
-                        'recommand_total'   => $recommand_total,
+                        'is_end'            => $isEnd,
+                        'recommand_total'   => $result_recommand_total,
                         'recommand_target'  => $output_targets,
                         'error'             => false
                     ));
