@@ -1193,13 +1193,8 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
 
                     $currentTId = (int)$currentTId;
 
-<<<<<<< HEAD
                     $tid = $sact->getThemeId(); // 取得此活動的主題
                     $maxItemTotal = $sact->getLearnStyle(); // 取得最大推薦數
-=======
-                    // 取得此活動的主題
-                    $tid = $sact->getThemeId();
->>>>>>> 345e83e160f83e726d8571e101f54f40a63b7a13
 
                     // 取得本次採用的教材風格
                     $materialMode = $sact->getMaterialStyle();
@@ -1215,18 +1210,12 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                         $result_recommand_total = $recommandTotal;
                     }
                     // 是否已經學完了
-<<<<<<< HEAD
-                    // TODO: 改以取得已學習標的數來判定
-                    if($recommandTotal <= 0) { $isEnd = true; }
-                    else { $isEnd = false; }
-=======
                     if($sact->getRemainingPointTotal() <= 0) {
                         $isEnd = true;
                     }
                     else {
                         $isEnd = false;
                     }
->>>>>>> 345e83e160f83e726d8571e101f54f40a63b7a13
 
                     // 製作
                     $output_targets = array();
