@@ -150,4 +150,50 @@ class DBMaterial extends Database {
         return $this->queryMaterialByWhere("1");
     }
 
+    // ========================================================================
+
+    /**
+     * 內部使用的查詢動作
+     * @param string $where 查詢語法
+     * @return array 查詢結果陣列
+     */
+    protected function queryKindByWhere($where) {
+
+        $sqlString = "SELECT * FROM `".$this->table('MaterialKind')."` ".
+                     "WHERE ".$where;
+
+        $query = $this->connDB->prepare($sqlString);
+        $query->execute();
+
+        $queryResultAll = $query->fetchAll();
+        // 如果有查到一筆以上
+        if( count($queryResultAll) >= 1 ) {
+            // 製作回傳結果陣列
+            $result = array();
+            foreach($queryResultAll as $key => $thisResult) {
+
+                array_push($result,
+                    array( 'material_kind_id'   => $thisResult['MkID'],
+                           'material_kind_name' => $thisResult['MkName']
+                ));
+            }
+            return $result;
+        }
+        // 若都沒查到的話
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * 查詢所有教材類別資料
+     *
+     * @return array 教材類別資料陣列
+     *
+     */
+    public function queryAllKind() {
+
+        return $this->queryKindByWhere("1");
+    }
+
 }

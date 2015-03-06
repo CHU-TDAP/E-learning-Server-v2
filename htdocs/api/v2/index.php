@@ -83,8 +83,12 @@ function login($user_id = null) {
         $user = $session->getUser($loginToken);
         $sessionInfo = $session->getTokenInfo($loginToken);
 
-        //取得現在時間，用字串的形式
+        // 取得現在時間，用字串的形式
         $nowDate = date("Y-m-d H:i:s");
+
+        // 取得支援的教材類型
+        $db_material = new Database\DBMaterial();
+        $all_material_kind = $db_material->queryAllKind();
 
         // 輸出結果
         $app->render(201,array(
@@ -111,6 +115,7 @@ function login($user_id = null) {
             ),
             'login_time'   => $sessionInfo['login_date'],
             'current_time' => $nowDate,
+            'material_kind'=> $all_material_kind,
             'error'        => false,
             'msg'          => '\''.$user_id.'\' is logined',
             'msg_cht'      => '\''.$user_id.'\'使用者已登入'
@@ -121,8 +126,8 @@ function login($user_id = null) {
             'user_id'     => $user_id,
             'browser'     => $browser,
             'error'       => true,
-            'msg'     => '\''.$user_id.'\' is not found',
-            'msg_cht' => '找不到\''.$user_id.'\'使用者'
+            'msg'         => '\''.$user_id.'\' is not found',
+            'msg_cht'     => '找不到\''.$user_id.'\'使用者'
         ));
     }
     catch (Exception\UserPasswordErrException $e) {
@@ -130,8 +135,8 @@ function login($user_id = null) {
             'user_id'     => $user_id,
             'browser'     => $browser,
             'error'       => true,
-            'msg'     => 'Input \''.$user_id.'\' password is wrong',
-            'msg_cht' => '\''.$user_id.'\'使用者密碼錯誤',
+            'msg'         => 'Input \''.$user_id.'\' password is wrong',
+            'msg_cht'     => '\''.$user_id.'\'使用者密碼錯誤',
             'substatus'   => 201
         ));
     }
@@ -140,8 +145,8 @@ function login($user_id = null) {
             'user_id'     => $user_id,
             'browser'     => $browser,
             'error'       => true,
-            'msg'     => '\''.$user_id.'\' is not enable',
-            'msg_cht' => '\''.$user_id.'\'帳號目前未啟用',
+            'msg'         => '\''.$user_id.'\' is not enable',
+            'msg_cht'     => '\''.$user_id.'\'帳號目前未啟用',
             'substatus'   => 202
         ));
     }

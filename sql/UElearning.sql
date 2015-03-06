@@ -391,7 +391,7 @@ CREATE TABLE IF NOT EXISTS `chu__Material` (
   `MID` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '教材內部編號',
   `TID` int(10) unsigned NOT NULL COMMENT '標的內部編號',
   `MEntity` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否為實體教材',
-  `MMode` varchar(10) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'normal' COMMENT '教材模式',
+  `MMode` varchar(25) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'normal' COMMENT '教材模式',
   `MUrl` varchar(1000) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材檔案路徑',
   PRIMARY KEY (`MID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='教材' AUTO_INCREMENT=31 ;
@@ -439,7 +439,7 @@ INSERT INTO `chu__Material` (`MID`, `TID`, `MEntity`, `MMode`, `MUrl`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `chu__MaterialKind` (
-  `MkID` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `MkID` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   `MkName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`MkID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -541,7 +541,7 @@ CREATE TABLE IF NOT EXISTS `chu__StudyActivity` (
   `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
   `LModeForce` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否拒絕前往非推薦點進行學習',
   `EnableVirtual` tinyint(1) NOT NULL DEFAULT '0',
-  `MMode` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
+  `MMode` varchar(25) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
   PRIMARY KEY (`SaID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='學習活動' AUTO_INCREMENT=1 ;
 
@@ -562,7 +562,7 @@ CREATE TABLE IF NOT EXISTS `chu__StudyWill` (
   `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
   `LModeForce` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否拒絕前往非推薦點進行學習',
   `EnableVirtual` tinyint(1) NOT NULL DEFAULT '0',
-  `MMode` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
+  `MMode` varchar(25) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
   `Lock` tinyint(1) NOT NULL DEFAULT '1' COMMENT '鎖定不讓學生更改',
   `BuildTime` datetime NOT NULL,
   `ModifyTime` datetime NOT NULL,
@@ -685,7 +685,7 @@ CREATE TABLE IF NOT EXISTS `chu__User` (
   `UBuildTime` datetime NOT NULL COMMENT '帳號建立時間',
   `UModifyTime` datetime NOT NULL COMMENT '帳號資訊修改時間',
   `LMode` int(2) DEFAULT NULL COMMENT '學習導引模式',
-  `MMode` varchar(10) COLLATE utf8_unicode_ci DEFAULT 'normal' COMMENT '教材模式',
+  `MMode` varchar(25) COLLATE utf8_unicode_ci DEFAULT 'normal' COMMENT '教材模式',
   `UEnable_NoAppoint` tinyint(1) NOT NULL DEFAULT '1' COMMENT '開放非預約學習',
   `UNickname` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '暱稱',
   `URealName` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '真實姓名',
