@@ -147,7 +147,7 @@ class RecommandPoint
             if($nextPoint->isFullPeople())
             {
                 $pastCost = 0;
-                $virtualCost = RecommandPoint::ALPHA * $this->gamma * ($wright/$nextPoint->getLearnTime());
+                $virtualCost = RecommandPoint::ALPHA * $this->gamma * ($weight/$nextPoint->getLearnTime());
                 $isEntity=false;
             }
             else
