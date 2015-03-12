@@ -176,23 +176,23 @@ class DBTarget extends Database {
             foreach($queryResultAll as $key => $thisResult) {
 
                 array_push($result,
-                    array( 'theme_id'      => $thisResult['ThID'],
-                           'target_id'     => $thisResult['TID'],
-                           'weights'       => $thisResult['Weights'],
-                           'hall_id'       => $thisResult['HID'],
+                    array( 'theme_id'      => (int)$thisResult['ThID'],
+                           'target_id'     => (int)$thisResult['TID'],
+                           'weights'       => (int)$thisResult['Weights'],
+                           'hall_id'       => (int)$thisResult['HID'],
                            'hall_name'     => $thisResult['HName'],
-                           'area_id'       => $thisResult['AID'],
+                           'area_id'       => (int)$thisResult['AID'],
                            'area_name'     => $thisResult['AName'],
-                           'floor'         => $thisResult['AFloor'],
-                           'area_number'   => $thisResult['ANum'],
-                           'target_number' => $thisResult['TNum'],
+                           'floor'         => (int)$thisResult['AFloor'],
+                           'area_number'   => (int)$thisResult['ANum'],
+                           'target_number' => (int)$thisResult['TNum'],
                            'name'          => $thisResult['TName'],
                            'map_url'       => $thisResult['TMapID'],
-                           'learn_time'    => $thisResult['TLearnTime'],
-                           'PLj'           => $thisResult['PLj'],
-                           'Mj'            => $thisResult['Mj'],
-                           'S'             => $thisResult['S'],
-                           'Fj'            => $thisResult['Fj']
+                           'learn_time'    => (int)$thisResult['TLearnTime'],
+                           'PLj'           => (int)$thisResult['PLj'],
+                           'Mj'            => (int)$thisResult['Mj'],
+                           'S'             => (int)$thisResult['S'],
+                           'Fj'            => (int)$thisResult['Fj']
                 ));
             }
             return $result;
@@ -287,10 +287,10 @@ class DBTarget extends Database {
             foreach($queryResultAll as $key => $thisResult) {
 
                 array_push($result,
-                    array( 'area_id'       => $thisResult['AID'],
-                           'hall_id'       => $thisResult['HID'],
-                           'floor'         => $thisResult['AFloor'],
-                           'area_number'   => $thisResult['ANum'],
+                    array( 'area_id'       => (int)$thisResult['AID'],
+                           'hall_id'       => (int)$thisResult['HID'],
+                           'floor'         => (int)$thisResult['AFloor'],
+                           'area_number'   => (int)$thisResult['ANum'],
                            'name'          => $thisResult['AName'],
                            'map_url'       => $thisResult['AMapID'],
                            'introduction'  => $thisResult['AIntroduction']
