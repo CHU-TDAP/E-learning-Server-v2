@@ -78,9 +78,11 @@ class StudyManager {
 
         // 若沒有任一個點正在學習中
         if($this->getCurrentInTargetId($activity_id) == null) {
-            // 紀錄進資料庫
+
             $db = new Database\DBStudy();
-            $id = $db->toInTaeget($activity_id, $target_id, $is_entity);
+
+            // 紀錄進資料庫
+            $id = $db->toInTarget($activity_id, $target_id, $is_entity);
 
             // 將標的目前人數+1
             if($is_entity) {
@@ -92,6 +94,65 @@ class StudyManager {
         }
         else {
             throw new Exception\InLearningException();
+        }
+    }
+
+    /**
+     * 行進中，準備進入的學習點
+     *
+     * @param int $activity_id 活動編號
+     * @param int $target_id   標的編號
+     * @throw UElearning\Exception\TargetNoFoundException
+     * return int 進出紀錄編號
+     */
+    public function enteringInTarget($activity_id, $target_id) {
+
+        // 若沒有任一個點正在學習中
+        if($this->getCurrentInTargetId($activity_id) == null) {
+            $db = new Database\DBStudy();
+
+            // 紀錄進資料庫
+            $id = $db->enteringInTarget($activity_id, $target_id);
+
+            // 將標的目前人數+1
+            $target = new Target\Target($target_id);
+            $target->addMj(1);
+
+            return $id;
+        }
+        else {
+            throw new Exception\InLearningException();
+        }
+    }
+
+    /**
+     * 取消行進中，準備進入的學習點
+     *
+     * @param int $activity_id 活動編號
+     * @param int $target_id   標的編號
+     */
+    public function outEnteringInTarget($activity_id, $target_id) {
+
+        // 從資料庫取得此活動此標的學習中資料
+        $db = new Database\DBStudy();
+        $learning_array = $db->getEnteringInStudyIdByTargetId($activity_id, $target_id);
+        $target = new Target\Target($target_id);
+
+        // 將所有此標的的進入紀錄全部標示
+        // 找到正在學習中的資料
+        if(isset($learning_array)) {
+
+            foreach($learning_array as $thisArray) {
+
+                // 將此紀錄標示為已離開
+                $db->toOutTarget($thisArray['study_id']);
+
+                // 將標的目前人數-1
+                if($thisArray['is_entity'] = true) {
+                    $target = new Target\Target($target_id);
+                    $target->addMj(-1);
+                }
+            }
         }
     }
 

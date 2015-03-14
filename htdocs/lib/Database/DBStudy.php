@@ -41,7 +41,7 @@ class DBStudy extends Database {
     protected function queryByWhere($where) {
 
         $sqlString = "SELECT `SID`, `SaID`, ".
-                     "`TID`, `IsEntity`, `In_TargetTime`, `Out_TargetTime` ".
+                     "`TID`, `IsEnter`, `IsEntity`, `In_TargetTime`, `Out_TargetTime` ".
                      "FROM `".$this->table('Study')."` ".
                      "WHERE ".$where;
 
@@ -59,11 +59,16 @@ class DBStudy extends Database {
                     $output_entity = true;
                 }
                 else { $output_entity = false; }
+                if($thisResult['IsEnter'] != '0') {
+                    $output_enter = true;
+                }
+                else { $output_enter = false; }
 
                 array_push($result,
                     array( 'study_id'         => (int)$thisResult['SID'],
                            'activity_id'      => (int)$thisResult['SaID'],
                            'target_id'        => (int)$thisResult['TID'],
+                           'is_enter'         => $output_enter,
                            'is_entity'        => $output_entity,
                            'in_target_time'   => $thisResult['In_TargetTime'],
                            'out_target_time'  => $thisResult['Out_TargetTime']
@@ -88,6 +93,7 @@ class DBStudy extends Database {
      *             'study_id'         => <流水編號>,
      *             'activity_id'      => <活動編號>,
      *             'target_id'        => <標的編號>,
+     *             'is_enter'         => <是否為已進入的狀態，若否代表行進中>,
      *             'is_entity'        => <是否為現場學習>,
      *             'in_target_time'   => <進入時間>,
      *             'out_target_time'  => <離開時間>
@@ -118,6 +124,7 @@ class DBStudy extends Database {
      *             'study_id'         => <流水編號>,
      *             'activity_id'      => <活動編號>,
      *             'target_id'        => <標的編號>,
+     *             'is_enter'         => <是否為已進入的狀態，若否代表行進中>,
      *             'is_entity'        => <是否為現場學習>,
      *             'in_target_time'   => <進入時間>,
      *             'out_target_time'  => <離開時間>
@@ -157,6 +164,7 @@ class DBStudy extends Database {
      *
      * @param string $activity_id      活動編號
      * @param string $target_id        標的編號
+     * @param string $is_enter         是否為已進入的狀態，若否代表行進中
      * @param string $is_entity        是否為現場學習
      * @param int    $in_target_time   進入時間
      * @param int    $out_target_time  離開時間
@@ -164,22 +172,26 @@ class DBStudy extends Database {
      * @return int 剛新增的記錄編號
      * @since 2.0.0
      */
-    public function insert($activity_id, $target_id,
+    public function insert($activity_id, $target_id, $is_enter,
                            $is_entity, $in_target_time, $out_target_time)
     {
 
+        if(!isset($is_enter)) {
+            $is_enter = true;
+        }
         if(!isset($is_entity)) {
             $is_entity = true;
         }
 
         // 寫入
         $sqlString = "INSERT INTO `".$this->table('Study').
-            "` (`SaID`, `TID`, `IsEntity`, `In_TargetTime`, `Out_TargetTime`)
+            "` (`SaID`, `TID`, `IsEnter`, `IsEntity`, `In_TargetTime`, `Out_TargetTime`)
             VALUES ( :said , :tid , :entity , :intime , :outtime )";
 
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":said", $activity_id);
         $query->bindParam(":tid", $target_id);
+        $query->bindParam(":enter", $is_enter);
         $query->bindParam(":entity", $is_entity);
         $query->bindParam(":intime", $in_target_time);
         $query->bindParam(":outtime", $out_target_time);
@@ -233,7 +245,7 @@ class DBStudy extends Database {
      * @return int 剛新增的記錄編號
      * @since 2.0.0
      */
-    public function toInTaeget($activity_id, $target_id, $is_entity)
+    public function toInTarget($activity_id, $target_id, $is_entity)
     {
 
         if(!isset($is_entity)) {
@@ -242,8 +254,8 @@ class DBStudy extends Database {
 
         // 寫入
         $sqlString = "INSERT INTO `".$this->table('Study').
-            "` (`SaID`, `TID`, `IsEntity`, `In_TargetTime`, `Out_TargetTime`)
-            VALUES ( :said , :tid , :entity , NOW() , NULL )";
+            "` (`SaID`, `TID`, `IsEnter`, `IsEntity`, `In_TargetTime`, `Out_TargetTime`)
+            VALUES ( :said , :tid , '1' , :entity , NOW() , NULL )";
 
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":said", $activity_id);
@@ -258,6 +270,65 @@ class DBStudy extends Database {
         $resultId = $queryResult[0];
 
         return $resultId;
+    }
+
+    /**
+     * 行進中，準備進入的學習點
+     *
+     * @param string $activity_id 活動編號
+     * @param string $target_id   標的編號
+     * @param string $is_entity   是否為現場學習
+     * @return int 剛新增的記錄編號
+     * @since 2.0.0
+     */
+    public function enteringInTarget($activity_id, $target_id)
+    {
+
+        if(!isset($is_entity)) {
+            $is_entity = true;
+        }
+
+        // 寫入
+        $sqlString = "INSERT INTO `".$this->table('Study').
+            "` (`SaID`, `TID`, `IsEnter`, `IsEntity`, `In_TargetTime`, `Out_TargetTime`)
+            VALUES ( :said , :tid , '0' , '1' , NOW() , NULL )";
+
+        $query = $this->connDB->prepare($sqlString);
+        $query->bindParam(":said", $activity_id);
+        $query->bindParam(":tid", $target_id);
+        $query->execute();
+
+        // 取得剛剛加入的ID
+        $sqlString = "SELECT LAST_INSERT_ID()";
+        $query = $this->connDB->query($sqlString);
+        $queryResult = $query->fetch();
+        $resultId = $queryResult[0];
+
+        return $resultId;
+    }
+
+    /**
+     * 取消所有行進中準備進入的學習點的狀態
+     *
+     * @param string $activity_id 活動編號
+     * @return 影響數
+     * @since 2.0.0
+     */
+    public function allOutEnteringInTarget($activity_id)
+    {
+
+        // 寫入
+        $sqlString = "UPDATE `".$this->table('Study').
+            "` SET `Out_TargetTime` = NOW()
+            WHERE `SaID` = :id ".
+            "AND `IsEnter` = '0'".
+            " AND `Out_TargetTime` IS NULL";
+
+        $query = $this->connDB->prepare($sqlString);
+        $query->bindParam(":id", $activity_id);
+        $query->execute();
+        $count = $query->rowCount();
+        return $count;
     }
 
     /**
@@ -308,7 +379,35 @@ class DBStudy extends Database {
     public function getCurrentInTargetId($activity_id) {
 
         $sqlString = "SELECT `TID` FROM `".$this->table('Study')."` ".
-            "WHERE `Out_TargetTime` IS NULL AND `SaID` = :said ";
+            "WHERE `Out_TargetTime` IS NULL AND `SaID` = :said ".
+            "AND `IsEnter` = '1'";
+
+        $query = $this->connDB->prepare($sqlString);
+        $query->bindParam(":said", $activity_id);
+        $query->execute();
+
+        $queryResult = $query->fetch();
+        // 如果有查到一筆以上
+        if( count($queryResult) >= 1 ) {
+            return (int)$queryResult[0];
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * 取得目前正在行進中標的編號
+     *
+     * @param int $activity_id 活動編號
+     * @return int 標的編號
+     * @since 2.0.0
+     */
+    public function getCurrentEnteringInTargetId($activity_id) {
+
+        $sqlString = "SELECT `TID` FROM `".$this->table('Study')."` ".
+            "WHERE `Out_TargetTime` IS NULL AND `SaID` = :said ".
+            "AND `IsEnter` = '0'";
 
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":said", $activity_id);
@@ -334,7 +433,8 @@ class DBStudy extends Database {
     public function getCurrentInStudyId($activity_id) {
 
         $sqlString = "SELECT `SID` FROM `".$this->table('Study')."` ".
-            "WHERE `Out_TargetTime` IS NULL AND `SaID` = :said ";
+            "WHERE `Out_TargetTime` IS NULL AND `SaID` = :said ".
+            " AND `IsEnter` = '1'";
 
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":said", $activity_id);
@@ -364,7 +464,8 @@ class DBStudy extends Database {
 
         $queryResultAll = $this->queryByWhere(
             "`TID` = ".$this->connDB->quote($target_id).
-            " AND `SaID` = ".$this->connDB->quote($activity_id));
+            " AND `SaID` = ".$this->connDB->quote($activity_id).
+            " AND `IsEnter` = '1'");
 
         return $queryResultAll;
     }
@@ -384,7 +485,29 @@ class DBStudy extends Database {
         $queryResultAll = $this->queryByWhere(
             "`TID` = ".$this->connDB->quote($target_id).
             " AND `SaID` = ".$this->connDB->quote($activity_id).
-            " AND `Out_TargetTime` IS NULL");
+            " AND `Out_TargetTime` IS NULL ".
+            " AND `IsEnter` = '1'");
+
+        return $queryResultAll;
+    }
+
+    /**
+     * 取得在此標學習中的記錄編號
+     *
+     * 正常來說只會有一個，但考量使用者可能在這次活動內同一標的進出兩次以上，故還是以陣列輸出。
+     *
+     * @param int $activity_id 活動編號
+     * @param int $target_id 標的編號
+     * @return array 所有進出記錄資訊陣列
+     * @since 2.0.0
+     */
+    public function getEnteringInStudyIdByTargetId($activity_id, $target_id) {
+
+        $queryResultAll = $this->queryByWhere(
+            "`TID` = ".$this->connDB->quote($target_id).
+            " AND `SaID` = ".$this->connDB->quote($activity_id).
+            " AND `Out_TargetTime` IS NULL ".
+            " AND `IsEnter` = '0'");
 
         return $queryResultAll;
     }

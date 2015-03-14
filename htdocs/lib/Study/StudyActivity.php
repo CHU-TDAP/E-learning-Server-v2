@@ -493,6 +493,31 @@ class StudyActivity {
     }
 
     /**
+     * 行進中，準備進入的學習點
+     *
+     * @param int  $target_id 標的編號
+     * @param bool $is_entity 是否為現場學習
+     * @throw UElearning\Exception\InLearningException
+     * return int 進出紀錄編號
+     */
+    public function enteringInTarget($target_id, $is_entity) {
+
+        // 活動編號
+        $saId = $this->id;
+
+        $sct = new StudyManager();
+        // 進入學習點
+        try{
+            return $sct->enteringInTarget($saId, $target_id, $is_entity);
+        }
+        // 若狀態為正在標的內學習時，送出例外
+        catch (Exception\InLearningException $e) {
+            throw $e;
+        }
+
+    }
+
+    /**
      * 離開標的
      *
      * @param int $target_id 標的編號

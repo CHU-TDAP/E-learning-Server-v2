@@ -1294,6 +1294,144 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             ));
         }
     });
+
+    /*
+     * 推薦學習點
+     * POST http://localhost/api/v2/tokens/{登入Token}/activitys/{學習中活動編號}/recommand?current_point={目前所在的學習點編號}
+     * TODO: 將上方的重複的程式碼片段獨立開來
+     */
+    $app->post('/:token/activitys/:said/recommand', function ($token, $saId) use ($app) {
+        if(isset($_GET['current_point'])) { $currentTId = $_GET['current_point']; }
+
+        function output_the_target_array($tId, $isEntity, $materialMode) {
+            $thisOutput = array();
+            $target = new Target\Target($tId);
+            $thisOutput = array(
+                'target_id'     => $target->getId(),
+                'is_entity'     => $isEntity,
+                'hall_id'       => $target->getHallId(),
+                'area_id'       => $target->getAreaId(),
+                'target_number' => $target->getNumber(),
+                'name'          => $target->getName(),
+                'map_url'       => $target->getMapUrl(),
+                'material_url'  => $target->getMaterialUrl($isEntity, $materialMode),
+                'learn_time'    => $target->getLearnTime(),
+                'PLj'           => $target->getPLj(),
+                'Mj'            => $target->getMj(),
+                'S'             => $target->getS(),
+                'Fj'            => $target->getFj()
+            );
+            return $thisOutput;
+        }
+
+        try {
+            // 查詢使用者
+            $session = new User\UserSession();
+            $user_id = $session->getUserId($token);
+
+            // 取得開始後的學習活動資訊
+            $sact = new Study\StudyActivity($saId);
+
+            // 確認此學習活動是否為本人所有
+            if($sact->getUserId() == $user_id) {
+
+                // 必填參數有填
+                if( isset($currentTId) ) {
+
+                    // 查詢目前所在的標的
+                    $inTId = $sact->getCurrentInTarget();
+                    // 登記離開此標的
+                    if($inTId) {
+                        $sact->toOutTarget($inTId);
+                    }
+
+                    $currentTId = (int)$currentTId;
+
+                    $tid = $sact->getThemeId(); // 取得此活動的主題
+                    $maxItemTotal = $sact->getLearnStyle(); // 取得最大推薦數
+
+                    // 取得本次採用的教材風格
+                    $materialMode = $sact->getMaterialStyle();
+
+                    // 取得推薦的學習點
+                    $recommand = new Recommand\RecommandPoint();
+                    $recommandResult = $recommand->recommand($currentTId, $saId);
+                    $recommandTotal = count($recommandResult);
+                    if($recommandTotal > $maxItemTotal) {
+                        $result_recommand_total = $maxItemTotal;
+                    }
+                    else {
+                        $result_recommand_total = $recommandTotal;
+                    }
+                    // 是否已經學完了
+                    if($sact->getRemainingPointTotal() <= 0) {
+                        $isEnd = true;
+                    }
+                    else {
+                        $isEnd = false;
+                    }
+
+                    // 製作
+                    $output_targets = array();
+                    for($i=0; $i<$result_recommand_total; $i++) {
+                        $target_id = $recommandResult[$i]['nextPoint'];
+                        $isEntity = $recommandResult[$i]['isEntity'];
+                        array_push($output_targets, output_the_target_array($target_id, $isEntity, $materialMode));
+
+                        // TODO: 標的進出資料多增加行進中、確實進入的欄位
+                        if($maxItemTotal == 1) {
+                            $sid = $sact->enteringInTarget($target_id, true);
+                        }
+
+                    }
+
+                    // 噴出結果
+                    $app->render(201,array(
+                        'token'             => $token,
+                        'user_id'           => $user_id,
+                        'activity_id'       => $sact->getId(),
+                        'current_target_id' => $currentTId,
+                        'is_end'            => $isEnd,
+                        'recommand_total'   => $result_recommand_total,
+                        'recommand_target'  => $output_targets,
+                        'error'             => false
+                    ));
+
+                }
+                else {
+                    $app->render(400,array(
+                        'token'   => $token,
+                        'error'   => true,
+                        'msg'     => 'No input \'current_point\' param.',
+                        'msg_cht' => '缺少 \'current_point\' 參數'
+                    ));
+                }
+
+            }
+            // 若非本人所有，則視同無此活動
+            else {
+                throw new Exception\StudyActivityNoFoundException($saId);
+            }
+
+        }
+        catch (Exception\LoginTokenNoFoundException $e) {
+            $app->render(401,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No \''.$token.'\' session. Please login again.',
+                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入',
+                'substatus'   => 204
+            ));
+        }
+        catch (Exception\StudyActivityNoFoundException $e) {
+            $app->render(404,array(
+                'token'   => $token,
+                'error'   => true,
+                'msg'     => 'No found this activity.',
+                'msg_cht' => '沒有此學習活動'
+            ));
+        }
+    });
 });
 
 // ============================================================================
