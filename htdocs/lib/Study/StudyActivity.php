@@ -485,7 +485,7 @@ class StudyActivity {
         try{
             return $sct->toInTarget($saId, $target_id, $is_entity);
         }
-        // 若狀態為正在標的內學習時，強制當成離開標的，重新進入
+        // 若狀態為正在標的內學習時，送出例外
         catch (Exception\InLearningException $e) {
             throw $e;
         }
@@ -496,6 +496,7 @@ class StudyActivity {
      * 離開標的
      *
      * @param int $target_id 標的編號
+     * @throw UElearning\Exception\NoInLearningException
      */
     public function toOutTarget($target_id) {
 

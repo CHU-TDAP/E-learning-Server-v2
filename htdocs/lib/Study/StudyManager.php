@@ -100,6 +100,7 @@ class StudyManager {
      *
      * @param int $activity_id 活動編號
      * @param int $target_id   標的編號
+     * @throw UElearning\Exception\NoInLearningException
      */
     public function toOutTarget($activity_id, $target_id) {
 
@@ -123,6 +124,9 @@ class StudyManager {
                     $target->addMj(-1);
                 }
             }
+        }
+        else {
+            throw new Exception\NoInLearningException();
         }
     }
 }

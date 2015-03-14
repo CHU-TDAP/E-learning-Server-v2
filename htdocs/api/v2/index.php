@@ -1100,7 +1100,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
     });
 
     /*
-     * 進入此學習點
+     * 離開此學習點
      * POST http://localhost/api/v2/tokens/{登入Token}/activitys/{學習中活動編號}/points/{標的編號}/toout
      */
     $app->post('/:token/activitys/:said/points/:tid/toout', function ($token, $saId, $tId) use ($app) {
@@ -1117,15 +1117,32 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             if($sact->getUserId() == $user_id) {
 
                 // 離開學習點
-                $sact->toOutTarget($tId);
+                try {
+                    $sact->toOutTarget($tId);
 
-                // 噴出結果
-                $app->render(201,array(
-                    'token'       => $token,
-                    'user_id'     => $user_id,
-                    'activity_id' => $sact->getId(),
-                    'error'       => false
-                ));
+                    // 噴出結果
+                    $app->render(201,array(
+                        'token'       => $token,
+                        'user_id'     => $user_id,
+                        'activity_id' => $sact->getId(),
+                        'error'       => false
+                    ));
+                }
+                // 如果此標的尚未登記為已進入
+                catch (Exception\NoInLearningException $e) {
+                    // 當作進去此標的
+                    // TODO: 這邊先暫時當成是以實體方式進入，之後要修成Client發出離開訊息時，也一併帶入剛剛的為實體or虛擬
+                    $sact->toInTarget($tId, true);
+                    $sact->toOutTarget($tId);
+
+                    // 噴出結果
+                    $app->render(201,array(
+                        'token'       => $token,
+                        'user_id'     => $user_id,
+                        'activity_id' => $sact->getId(),
+                        'error'       => false
+                    ));
+                }
 
             }
             // 若非本人所有，則視同無此活動
