@@ -47,6 +47,17 @@ class StudyManager {
     }
 
     /**
+     * 取得目前行進中的學習點
+     * @param int $activity_id 活動編號
+     * @return int 標的編號，若無則null
+     */
+    public function getCurrentEnteringTargetId($activity_id) {
+
+        $db = new Database\DBStudy();
+        return $db->getCurrentEnteringTargetId($activity_id);
+    }
+
+    /**
      * 此標的是否已學習過
      *
      * @param int $activity_id 活動編號
@@ -90,10 +101,53 @@ class StudyManager {
                 $target->addMj(1);
             }
 
+            // 取消行進中狀態
+            $enterTId = $this->getCurrentEnteringTargetId($activity_id);
+            $this->outEnteringInTarget($activity_id, $enterTId);
+
             return $id;
         }
         else {
             throw new Exception\InLearningException();
+        }
+    }
+
+    /**
+     * 離開標的
+     *
+     * @param int $activity_id 活動編號
+     * @param int $target_id   標的編號
+     * @throw UElearning\Exception\NoInLearningException
+     */
+    public function toOutTarget($activity_id, $target_id) {
+
+        // 從資料庫取得此活動此標的學習中資料
+        $db = new Database\DBStudy();
+        $learning_array = $db->getInStudyIdByTargetId($activity_id, $target_id);
+        $target = new Target\Target($target_id);
+
+        // 找到正在學習中的資料
+        if(isset($learning_array)) {
+
+            // 將所有此標的的進入紀錄全部標示
+            foreach($learning_array as $thisArray) {
+
+                // 將此紀錄標示為已離開
+                $db->toOutTarget($thisArray['study_id']);
+
+                // 將標的目前人數-1
+                if($thisArray['is_entity'] = true) {
+                    $target = new Target\Target($target_id);
+                    $target->addMj(-1);
+                }
+            }
+
+            // 取消行進中狀態
+            $enterTId = $this->getCurrentEnteringTargetId($activity_id);
+            $this->outEnteringInTarget($activity_id, $enterTId);
+        }
+        else {
+            throw new Exception\NoInLearningException();
         }
     }
 
@@ -110,6 +164,10 @@ class StudyManager {
         // 若沒有任一個點正在學習中
         if($this->getCurrentInTargetId($activity_id) == null) {
             $db = new Database\DBStudy();
+
+            // 取消行進中狀態
+            $enterTId = $this->getCurrentEnteringTargetId($activity_id);
+            $this->outEnteringInTarget($activity_id, $enterTId);
 
             // 紀錄進資料庫
             $id = $db->enteringInTarget($activity_id, $target_id);
@@ -148,46 +206,9 @@ class StudyManager {
                 $db->toOutTarget($thisArray['study_id']);
 
                 // 將標的目前人數-1
-                if($thisArray['is_entity'] = true) {
-                    $target = new Target\Target($target_id);
-                    $target->addMj(-1);
-                }
+                $target = new Target\Target($target_id);
+                $target->addMj(-1);
             }
-        }
-    }
-
-    /**
-     * 離開標的
-     *
-     * @param int $activity_id 活動編號
-     * @param int $target_id   標的編號
-     * @throw UElearning\Exception\NoInLearningException
-     */
-    public function toOutTarget($activity_id, $target_id) {
-
-        // 從資料庫取得此活動此標的學習中資料
-        $db = new Database\DBStudy();
-        $learning_array = $db->getInStudyIdByTargetId($activity_id, $target_id);
-        $target = new Target\Target($target_id);
-
-        // 找到正在學習中的資料
-        if(isset($learning_array)) {
-
-            // 將所有此標的的進入紀錄全部標示
-            foreach($learning_array as $thisArray) {
-
-                // 將此紀錄標示為已離開
-                $db->toOutTarget($thisArray['study_id']);
-
-                // 將標的目前人數-1
-                if($thisArray['is_entity'] = true) {
-                    $target = new Target\Target($target_id);
-                    $target->addMj(-1);
-                }
-            }
-        }
-        else {
-            throw new Exception\NoInLearningException();
         }
     }
 }
