@@ -114,6 +114,15 @@ class StudyActivity {
 
         // 此活動還在進行中
         if($this->isLearning()) {
+
+            // 確定目前有無進行中的學習點
+            $cur_inTId = $this->getCurrentInTarget();
+            $cur_inEnTId = $this->getCurrentEnteringTargetId();
+            if($cur_inTId) { $this->toOutTarget($cur_inTId); }
+            if($cur_inEnTId) { $this->outEnteringInTarget($cur_inEnTId); }
+
+
+            // 標記結束時間
             $db = new Database\DBStudyActivity();
             $db->setEndTimeNow($this->id);
         }
@@ -453,6 +462,20 @@ class StudyActivity {
     }
 
     /**
+     * 取得目前行進中的學習點
+     *
+     * @return int 標的編號，若無則null
+     */
+    public function getCurrentEnteringTargetId() {
+
+        // 活動編號
+        $saId = $this->id;
+
+        $sct = new StudyManager();
+        return $sct->getCurrentEnteringTargetId($saId);
+    }
+
+    /**
      * 此標的是否已學習過
      *
      * @param string $target_id 標的編號
@@ -493,6 +516,22 @@ class StudyActivity {
     }
 
     /**
+     * 離開標的
+     *
+     * @param int $target_id 標的編號
+     * @throw UElearning\Exception\NoInLearningException
+     */
+    public function toOutTarget($target_id) {
+
+        // 活動編號
+        $saId = $this->id;
+
+        $sct = new StudyManager();
+        // 離開學習點
+        $sct->toOutTarget($saId, $target_id);
+    }
+
+    /**
      * 行進中，準備進入的學習點
      *
      * @param int  $target_id 標的編號
@@ -518,19 +557,27 @@ class StudyActivity {
     }
 
     /**
-     * 離開標的
+     * 取消行進中，準備進入的學習點
      *
-     * @param int $target_id 標的編號
-     * @throw UElearning\Exception\NoInLearningException
+     * @param int  $target_id 標的編號
+     * @param bool $is_entity 是否為現場學習
+     * @throw UElearning\Exception\InLearningException
+     * return int 進出紀錄編號
      */
-    public function toOutTarget($target_id) {
+    public function outEnteringInTarget($target_id) {
 
         // 活動編號
         $saId = $this->id;
 
         $sct = new StudyManager();
-        // 離開學習點
-        $sct->toOutTarget($saId, $target_id);
-    }
+        // 進入學習點
+        try{
+            return $sct->outEnteringInTarget($saId, $target_id);
+        }
+        // 若狀態為正在標的內學習時，送出例外
+        catch (Exception\InLearningException $e) {
+            throw $e;
+        }
 
+    }
 }
