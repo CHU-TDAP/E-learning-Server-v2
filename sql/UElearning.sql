@@ -377,9 +377,15 @@ CREATE TABLE IF NOT EXISTS `chu__Log` (
   `LID` int(11) NOT NULL AUTO_INCREMENT,
   `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `Date` datetime NOT NULL,
+  `SaID` int(10) DEFAULT NULL,
+  `TID` int(10) DEFAULT NULL,
+  `ActionGroup` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `Encode` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  `QID` int(10) DEFAULT NULL,
+  `Aswer` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Other` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`LID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4 ;
 
 -- --------------------------------------------------------
 
