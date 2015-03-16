@@ -1221,22 +1221,33 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     // 取得本次採用的教材風格
                     $materialMode = $sact->getMaterialStyle();
 
-                    // 取得推薦的學習點
-                    $recommand = new Recommand\RecommandPoint();
-                    $recommandResult = $recommand->recommand($currentTId, $saId);
-                    $recommandTotal = count($recommandResult);
-                    if($recommandTotal > $maxItemTotal) {
-                        $result_recommand_total = $maxItemTotal;
-                    }
-                    else {
-                        $result_recommand_total = $recommandTotal;
+                    // 學習時間已過並設強制結束
+                    if($sact->isForceLearnTime() && $sact->getRemainingTime() <= 0) {
+                        $isEnd = true;
+
+                        $recommandResult = array();
+                        $recommandTotal = 0;
                     }
                     // 是否已經學完了
-                    if($sact->getRemainingPointTotal() <= 0) {
+                    else if($sact->getRemainingPointTotal() <= 0) {
                         $isEnd = true;
+
+                        $recommandResult = array();
+                        $recommandTotal = 0;
                     }
                     else {
                         $isEnd = false;
+
+                        // 取得推薦的學習點
+                        $recommand = new Recommand\RecommandPoint();
+                        $recommandResult = $recommand->recommand($currentTId, $saId);
+                        $recommandTotal = count($recommandResult);
+                        if($recommandTotal > $maxItemTotal) {
+                            $result_recommand_total = $maxItemTotal;
+                        }
+                        else {
+                            $result_recommand_total = $recommandTotal;
+                        }
                     }
 
                     // 製作
@@ -1353,8 +1364,15 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     // 取得本次採用的教材風格
                     $materialMode = $sact->getMaterialStyle();
 
+                    // 學習時間已過並設強制結束
+                    if($sact->isForceLearnTime() && $sact->getRemainingTime() <= 0) {
+                        $isEnd = true;
+
+                        $recommandResult = array();
+                        $recommandTotal = 0;
+                    }
                     // 是否已經學完了
-                    if($sact->getRemainingPointTotal() <= 0) {
+                    else if($sact->getRemainingPointTotal() <= 0) {
                         $isEnd = true;
 
                         $recommandResult = array();
