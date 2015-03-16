@@ -1225,17 +1225,15 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     if($sact->isForceLearnTime() && $sact->getRemainingTime() <= 0) {
                         $isEnd = true;
 
-                        $recommandResult = array();
-                        $result_recommand_total = array();
-                        $recommandTotal = 0;
+                        $result_recommand_total = 0;
+                        $output_targets = array();
                     }
                     // 是否已經學完了
                     else if($sact->getRemainingPointTotal() <= 0) {
                         $isEnd = true;
 
-                        $recommandResult = array();
-                        $result_recommand_total = array();
-                        $recommandTotal = 0;
+                        $result_recommand_total = 0;
+                        $output_targets = array();
                     }
                     else {
                         $isEnd = false;
@@ -1250,14 +1248,14 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                         else {
                             $result_recommand_total = $recommandTotal;
                         }
-                    }
 
-                    // 製作
-                    $output_targets = array();
-                    for($i=0; $i<$result_recommand_total; $i++) {
-                        $target_id = $recommandResult[$i]['nextPoint'];
-                        $isEntity = $recommandResult[$i]['isEntity'];
-                        array_push($output_targets, output_the_target_array($target_id, $isEntity, $materialMode));
+                        // 製作
+                        $output_targets = array();
+                        for($i=0; $i<$result_recommand_total; $i++) {
+                            $target_id = $recommandResult[$i]['nextPoint'];
+                            $isEntity = $recommandResult[$i]['isEntity'];
+                            array_push($output_targets, output_the_target_array($target_id, $isEntity, $materialMode));
+                        }
                     }
 
                     // 噴出結果
@@ -1370,17 +1368,15 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     if($sact->isForceLearnTime() && $sact->getRemainingTime() <= 0) {
                         $isEnd = true;
 
-                        $recommandResult = array();
-                        $result_recommand_total = array();
-                        $recommandTotal = 0;
+                        $result_recommand_total = 0;
+                        $output_targets = array();
                     }
                     // 是否已經學完了
                     else if($sact->getRemainingPointTotal() <= 0) {
                         $isEnd = true;
 
-                        $recommandResult = array();
-                        $result_recommand_total = array();
-                        $recommandTotal = 0;
+                        $result_recommand_total = 0;
+                        $output_targets = array();
                     }
                     else {
                         $isEnd = false;
