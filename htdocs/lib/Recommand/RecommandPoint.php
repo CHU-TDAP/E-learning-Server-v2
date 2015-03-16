@@ -128,6 +128,7 @@ class RecommandPoint
     {
         $this->activity = new Study\StudyActivity($activity_number);
         $themeID = $this->activity->getThemeId();
+        $enableVirtual = $this->activity->isEnableVirtual();
         $this->theme = new Study\Theme($themeID);
         $this->gamma = $this->computeNormalizationParameter($themeID);
         $pointList = $this->recommand->queryEdgeByID($current_point);
@@ -137,34 +138,44 @@ class RecommandPoint
         $pathCost = 0;
         $VirtualPathCost = 0;
         $recommand = array();
-        $isEntity = true;
         for($i=0;$i<count($targetList);$i++)
         {
             $next_point = $targetList[$i]["next_point"];
             $moveTime = $targetList[$i]["move_time"];
             $nextPoint = new Target\Target($next_point);
             $weight = $this->theme->getWeightByNextTarget($next_point);
+
             if($nextPoint->isFullPeople())
             {
-                $pastCost = 0;
+                $pathCost = 0;
                 $virtualCost = RecommandPoint::ALPHA * $this->gamma * ($weight/$nextPoint->getLearnTime());
                 $isEntity=false;
+
+                if($enableVirtual) {
+                    array_push($recommand,array("nextPoint" => $next_point,
+                                        "isEntity" => $isEntity,
+                                        "PathCost" => $pathCost,
+                                        "VirtualCost" => $virtualCost));
+                }
             }
             else
             {
+                $isEntity=true;
                 if($nextPoint->isNumberOfPeopleZero()) $Rj = 0;
                 else $Rj = $nextPoint->getMj()/$nextPoint->getPLj();
                 $pathCost = RecommandPoint::ALPHA * $this->gamma * ($weight * ($nextPoint->getS()-$Rj+1)/($moveTime + $nextPoint->getLearnTime()));
                 $virtualCost = RecommandPoint::ALPHA * $this->gamma * ($weight/$nextPoint->getLearnTime());
-            }
-            array_push($recommand,array("nextPoint"=>$next_point,
+
+                array_push($recommand,array("nextPoint" => $next_point,
                                         "isEntity" => $isEntity,
-                                        "PathCost"=>$pathCost,
-                                        "VirtualCost"=>$virtualCost));
+                                        "PathCost" => $pathCost,
+                                        "VirtualCost" => $virtualCost));
+            }
+
         }
 
         if(count($recommand) >= 1) {
-            
+
             foreach($recommand as $key=>$value)
             {
                 $tmp[$key] = $value["PathCost"];

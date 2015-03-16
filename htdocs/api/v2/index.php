@@ -1353,22 +1353,26 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     // 取得本次採用的教材風格
                     $materialMode = $sact->getMaterialStyle();
 
-                    // 取得推薦的學習點
-                    $recommand = new Recommand\RecommandPoint();
-                    $recommandResult = $recommand->recommand($currentTId, $saId);
-                    $recommandTotal = count($recommandResult);
-                    if($recommandTotal > $maxItemTotal) {
-                        $result_recommand_total = $maxItemTotal;
-                    }
-                    else {
-                        $result_recommand_total = $recommandTotal;
-                    }
                     // 是否已經學完了
                     if($sact->getRemainingPointTotal() <= 0) {
                         $isEnd = true;
+
+                        $recommandResult = array();
+                        $recommandTotal = 0;
                     }
                     else {
                         $isEnd = false;
+
+                        // 取得推薦的學習點
+                        $recommand = new Recommand\RecommandPoint();
+                        $recommandResult = $recommand->recommand($currentTId, $saId);
+                        $recommandTotal = count($recommandResult);
+                        if($recommandTotal > $maxItemTotal) {
+                            $result_recommand_total = $maxItemTotal;
+                        }
+                        else {
+                            $result_recommand_total = $recommandTotal;
+                        }
                     }
 
                     // 製作
