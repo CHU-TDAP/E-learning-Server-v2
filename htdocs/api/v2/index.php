@@ -1225,6 +1225,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     if($sact->isForceLearnTime() && $sact->getRemainingTime() <= 0) {
                         $isEnd = true;
 
+                        $recommandResult = array();
                         $result_recommand_total = array();
                         $recommandTotal = 0;
                     }
@@ -1232,6 +1233,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     else if($sact->getRemainingPointTotal() <= 0) {
                         $isEnd = true;
 
+                        $recommandResult = array();
                         $result_recommand_total = array();
                         $recommandTotal = 0;
                     }
@@ -1368,6 +1370,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     if($sact->isForceLearnTime() && $sact->getRemainingTime() <= 0) {
                         $isEnd = true;
 
+                        $recommandResult = array();
                         $result_recommand_total = array();
                         $recommandTotal = 0;
                     }
@@ -1375,6 +1378,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     else if($sact->getRemainingPointTotal() <= 0) {
                         $isEnd = true;
 
+                        $recommandResult = array();
                         $result_recommand_total = array();
                         $recommandTotal = 0;
                     }
