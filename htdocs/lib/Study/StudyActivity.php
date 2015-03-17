@@ -313,15 +313,25 @@ class StudyActivity {
      */
     public function getRemainingTime() {
 
-        // TODO: 取得這次學習還剩下多少學習時間
-
         // 計算總共學習時間（包含延長時間）
-        $haveTime = $this->getLearnTime() - $this->getDelay();
+        $haveTime = $this->getRealLearnTime();
 
-        // 取得現在時間
-        // 開始時間+學習時間 = 應結束時間
+        // 現在時間-開始時間 = 已經過了多久
+        $nowDate = strtotime("now");
+        $startDate = strtotime($this->getStartTime());
+        $elapsedDate = $nowDate - $startDate;
+        $elapsedMinute = (int)(date('H', $elapsedDate)*60);
+        // 取得目前時區差（分鐘）
+        $timeZoneMinute = ((int)date('O')/100)*60;
+        // 扣除時區時間差
+        $elapsedMinute = $elapsedMinute - $timeZoneMinute;
+        // 加上分鐘
+        $elapsedMinute = $elapsedMinute + (int)(date('i', $elapsedDate));
 
-        // 應結束時間-現在時間 = 剩餘時間
+        // 可學習時間 - 已經過了多久 = 剩餘時間
+        $remainingMinute = $haveTime - $elapsedMinute;
+
+        return (int)$remainingMinute;
     }
 
     /**
