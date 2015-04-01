@@ -33,7 +33,6 @@ class DBLog extends Database {
             $array['other'] = null;
         }
         // TODO: 不填enable, enable_noAppoint也要能操作
-
         $LID          = $array['lid'];
         $UId          = $array['uid'];
         $Date         = $array['date'];
