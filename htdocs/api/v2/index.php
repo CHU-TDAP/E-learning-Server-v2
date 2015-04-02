@@ -12,12 +12,14 @@ require_once UELEARNING_LIB_ROOT.'/Target/Target.php';
 require_once UELEARNING_LIB_ROOT.'/Target/TargetManager.php';
 require_once UELEARNING_LIB_ROOT.'/Database/DBInfo.php';
 require_once UELEARNING_LIB_ROOT.'/Recommand/RecommandPoint.php';
+require_once UELEARNING_LIB_ROOT.'/Log/Log.php';
 use UElearning\User;
 use UElearning\Study;
 use UElearning\Target;
 use UElearning\Recommand;
 use UElearning\Exception;
 use UElearning\Database;
+use UElearning\Log;
 
 $app = new \Slim\Slim(array(
     'templates.path' => './', // 設定Path
@@ -1463,7 +1465,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
  * 輸入所有紀錄
  * GET http://localhost/api/v2/logs
  */
-$app->post('/logs', /*'APIrequest',*/ function () use ($app) {
+$app->post('/logs', 'APIrequest', function () use ($app) {
     $app = \Slim\Slim::getInstance();
 
     // 取得帶來的參數
@@ -1476,27 +1478,53 @@ $app->post('/logs', /*'APIrequest',*/ function () use ($app) {
         $logs_json = $postDataJson->logs_data;
     }
 
+    $log_utils = new Log\Log();
+
     for($i=0; $i<count($logs_json); $i++) {
         $lid = $logs_json[$i]->LID;
         $uid = $logs_json[$i]->UID;
         $date = $logs_json[$i]->Date;
         if(isset($logs_json[$i]->SaID)) {
             $said = $logs_json[$i]->SaID;
+        } else {
+            $said = null;
         }
         $actiongroup = $logs_json[$i]->ActionGroup;
         $encode = $logs_json[$i]->Encode;
         if(isset($logs_json[$i]->TID)) {
             $tid = $logs_json[$i]->TID;
+        } else {
+            $tid = null;
         }
         if(isset($logs_json[$i]->QID)) {
             $qid = $logs_json[$i]->QID;
+        } else {
+            $qid = null;
         }
         if(isset($logs_json[$i]->Answer)) {
             $answer = $logs_json[$i]->Answer;
+        } else {
+            $answer = null;
         }
         if(isset($logs_json[$i]->Other)) {
             $other = $logs_json[$i]->Other;
+        } else {
+            $other = null;
         }
+
+        // 新增此筆記錄到資料庫裡
+        $log_utils->insert( array(  'LID' => $lid,
+                                    'UID' => $uid,
+                                    'Date' => $date,
+                                    'SaID' => $said,
+                                    'TID' => $tid,
+                                    'ActionGroup' => $actiongroup,
+                                    'Encode' => $encode,
+                                    'QID' => $qid,
+                                    'Answer' => $answer,
+                                    'Other' => $other)
+
+        );
     }
 
     $app->render(201,array(
