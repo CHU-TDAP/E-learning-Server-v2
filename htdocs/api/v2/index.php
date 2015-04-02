@@ -49,18 +49,19 @@ $app->get('/hello/:name', 'APIrequest', function ($name) use ($app) {
 function login($user_id = null) {
     $app = \Slim\Slim::getInstance();
 
-    if(!isset($user_id)) {
-        $user_id = $_POST['user_id'];
-    }
     // 取得帶來的參數
     $cType = $app->request->getContentType();
     if($cType == 'application/x-www-form-urlencoded') {
+        if(!isset($user_id)) {
+            $user_id = $_POST['user_id'];
+        }
         $password = $_POST['password'];
         $browser  = isset($_POST['browser']) ? $_POST['browser'] : 'api';
     }
     else /*if($cType == 'application/json')*/ {
         $postData = $app->request->getBody();
         $postDataArray = json_decode($postData);
+        $user_id = $postDataArray->user_id;
         $password = $postDataArray->password;
         $browser  = isset($postDataArray->browser)
                         ? $postDataArray->browser : 'api';
@@ -1459,7 +1460,54 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
 // ============================================================================
 
 /*
- * 推薦學習點
+ * 輸入所有紀錄
+ * GET http://localhost/api/v2/logs
+ */
+$app->post('/logs', /*'APIrequest',*/ function () use ($app) {
+    $app = \Slim\Slim::getInstance();
+
+    // 取得帶來的參數
+    $cType = $app->request->getContentType();
+
+    if($cType == 'application/json') {
+        $postData = $app->request->getBody();
+        $postDataJson = json_decode($postData);
+
+        $logs_json = $postDataJson->logs_data;
+    }
+
+    for($i=0; $i<count($logs_json); $i++) {
+        $lid = $logs_json[$i]->LID;
+        $uid = $logs_json[$i]->UID;
+        $date = $logs_json[$i]->Date;
+        if(isset($logs_json[$i]->SaID)) {
+            $said = $logs_json[$i]->SaID;
+        }
+        $actiongroup = $logs_json[$i]->ActionGroup;
+        $encode = $logs_json[$i]->Encode;
+        if(isset($logs_json[$i]->TID)) {
+            $tid = $logs_json[$i]->TID;
+        }
+        if(isset($logs_json[$i]->QID)) {
+            $qid = $logs_json[$i]->QID;
+        }
+        if(isset($logs_json[$i]->Answer)) {
+            $answer = $logs_json[$i]->Answer;
+        }
+        if(isset($logs_json[$i]->Other)) {
+            $other = $logs_json[$i]->Other;
+        }
+    }
+
+    $app->render(201,array(
+        'error'      => false
+    ));
+});
+
+// ============================================================================
+
+/*
+ * 取得館場資訊
  * GET http://localhost/api/v2/info
  */
 $app->get('/info', 'APIrequest', function () use ($app) {
