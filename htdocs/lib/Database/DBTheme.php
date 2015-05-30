@@ -30,9 +30,9 @@ class DBTheme extends Database {
         $sqlString = "SELECT `ThID`, `ThName`, ".
                      "`ThLearnTime`, `StartTID`, `ThIntroduction`, ".
                      "`ThBuildTime`, `ThModifyTime`, ".
-                     "(SELECT count(`TID`) FROM `".$this->table('TBelong')."` AS `belong`
+                     "(SELECT count(`TID`) FROM `".$this->table('learn_topic_belong')."` AS `belong`
                      WHERE `belong`.`ThID` = `theme`.`ThID`) AS `TargetTotal`".
-                     "FROM `".$this->table('Theme')."` AS `theme` ".
+                     "FROM `".$this->table('learn_topic')."` AS `theme` ".
                      "WHERE ".$where;
 
         $query = $this->connDB->prepare($sqlString);
@@ -156,7 +156,7 @@ class DBTheme extends Database {
 //        }
 //
 //
-//        $sqlString = "UPDATE ".$this->table('Target').
+//        $sqlString = "UPDATE ".$this->table('learn_target').
 //                     " SET `".$sqlField."` = :value".
 //                     " WHERE `TID` = :tid";
 //

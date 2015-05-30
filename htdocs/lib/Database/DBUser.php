@@ -119,7 +119,7 @@ class DBUser extends Database {
         $memo     = $array['memo'];
 
         //紀錄使用者帳號進資料庫
-        $sqlString = "INSERT INTO ".$this->table('User').
+        $sqlString = "INSERT INTO ".$this->table('user').
             " (`UID`, `UPassword`, `GID`, `CID`, `UEnabled`,
             `UBuildTime`, `UModifyTime`,
             `LMode`, `MMode`, `UEnable_NoAppoint`,
@@ -178,10 +178,10 @@ class DBUser extends Database {
                      "`UEnabled`, `UBuildTime`, `UModifyTime`, ".
                      "`LMode`, `MMode`, `UEnable_NoAppoint`, ".
                      "`UNickname`, `URealName`, `UEmail`, `UMemo` ".
-                     "FROM `".$this->table('User')."` AS `user` ".
-                     "LEFT JOIN `".$this->table('AGroup')."` as `group` ".
+                     "FROM `".$this->table('user')."` AS `user` ".
+                     "LEFT JOIN `".$this->table('user_auth_group')."` as `group` ".
                      "ON `group`.`GID` = `user`.`GID`".
-                     "LEFT JOIN `".$this->table('CGroup')."` as `class` ".
+                     "LEFT JOIN `".$this->table('user_class')."` as `class` ".
                      "ON `class`.`CID` = `user`.`CID`".
                      "WHERE ".$where;
 
@@ -356,7 +356,7 @@ class DBUser extends Database {
         }
 
 
-        $sqlString = "UPDATE ".$this->table('User').
+        $sqlString = "UPDATE ".$this->table('user').
                      " SET `".$sqlField."` = :value".
                      " , `UModifyTime` = NOW()".
                      " WHERE `UID` = :uid";
@@ -407,7 +407,7 @@ class DBUser extends Database {
         $auth_clientAdmin = $array['auth_clientAdmin'];
 
         // 紀錄使用者帳號進資料庫
-        $sqlString = "INSERT INTO ".$this->table('AGroup').
+        $sqlString = "INSERT INTO ".$this->table('user_auth_group').
             " (`GID`, `GName`, `GMemo`,
             `GBuildTime`, `GModifyTime`,
             `GAuth_Admin`, `GAuth_ClientAdmin`)
@@ -430,7 +430,7 @@ class DBUser extends Database {
      */
     public function deleteGroup($gId) {
 
-        $sqlString = "DELETE FROM ".$this->table('AGroup').
+        $sqlString = "DELETE FROM ".$this->table('user_auth_group').
                          " WHERE `GID` = :id ";
 
         $query = $this->connDB->prepare($sqlString);
@@ -444,7 +444,7 @@ class DBUser extends Database {
      * @return array 查詢結果陣列
      */
     protected function queryGroupByWhere($where) {
-        $sqlString = "SELECT * FROM ".$this->table('AGroup').
+        $sqlString = "SELECT * FROM ".$this->table('user_auth_group').
                      " WHERE ".$where;
 
         $query = $this->connDB->prepare($sqlString);
@@ -565,7 +565,7 @@ class DBUser extends Database {
         }
 
 
-        $sqlString = "UPDATE ".$this->table('AGroup').
+        $sqlString = "UPDATE ".$this->table('user_auth_group').
                      " SET `".$sqlField."` = :value".
                      " , `GModifyTime` = NOW()".
                      " WHERE `GID` = :gid";
@@ -598,7 +598,7 @@ class DBUser extends Database {
         $memo = $array['memo'];
 
         // 紀錄使用者帳號進資料庫
-        $sqlString = "INSERT INTO ".$this->table('CGroup').
+        $sqlString = "INSERT INTO ".$this->table('user_class').
             " (`CID`, `CName`, `CMemo`,
             `CBuildTime`, `CModifyTime`)
             VALUES ( :id , :name , :memo ,
@@ -625,7 +625,7 @@ class DBUser extends Database {
      */
     public function deleteClassGroup($cId) {
 
-        $sqlString = "DELETE FROM ".$this->table('CGroup').
+        $sqlString = "DELETE FROM ".$this->table('user_class').
                          " WHERE `CID` = :id ";
 
         $query = $this->connDB->prepare($sqlString);
@@ -639,7 +639,7 @@ class DBUser extends Database {
      * @return array 查詢結果陣列
      */
     protected function queryClassByWhere($where) {
-        $sqlString = "SELECT * FROM ".$this->table('CGroup').
+        $sqlString = "SELECT * FROM ".$this->table('user_class').
                      " WHERE ".$where;
 
         $query = $this->connDB->prepare($sqlString);
@@ -741,7 +741,7 @@ class DBUser extends Database {
         }
 
 
-        $sqlString = "UPDATE ".$this->table('CGroup').
+        $sqlString = "UPDATE ".$this->table('user_class').
                      " SET `".$sqlField."` = :value".
                      " , `CModifyTime` = NOW()".
                      " WHERE `CID` = :cid";
@@ -759,7 +759,7 @@ class DBUser extends Database {
     public function setClassGroupIDAutoIncrement($num) {
 
         // TODO: 不帶值的話，以最後編號為起頭
-        $sqlString = "ALTER TABLE ".$this->table('CGroup').
+        $sqlString = "ALTER TABLE ".$this->table('user_class').
                      " AUTO_INCREMENT = $num";
 
         $this->connDB->exec($sqlString);

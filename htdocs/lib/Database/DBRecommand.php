@@ -24,8 +24,8 @@ class DBRecommand extends Database
 
     protected function queryEdgeByWhere($where)
     {
-        $sqlString = "SELECT DISTINCT ".$this->table('Edge').".Ti, ".$this->table('Edge').".Tj, ".$this->table('Edge').".MoveTime".
-                     " FROM ".$this->table('Edge')." WHERE ".$where;
+        $sqlString = "SELECT DISTINCT ".$this->table('learn_path').".Ti, ".$this->table('learn_path').".Tj, ".$this->table('learn_path').".MoveTime".
+                     " FROM ".$this->table('learn_path')." WHERE ".$where;
         $query = $this->connDB->prepare($sqlString);
         $query->execute();
 
@@ -54,7 +54,7 @@ class DBRecommand extends Database
      */
     protected function queryBelongByWhere($where)
     {
-        $sqlString = "SELECT ".$this->table('TBelong').".Weights FROM ".$this->table('TBelong')." WHERE ".$where;
+        $sqlString = "SELECT ".$this->table('learn_topic_belong').".Weights FROM ".$this->table('learn_topic_belong')." WHERE ".$where;
         $query = $this->connDB->prepare($sqlString);
         $query->execute();
 
@@ -79,7 +79,7 @@ class DBRecommand extends Database
      */
     public function queryBelongByID($next_point,$theme_number)
     {
-        $whereClause = $this->table('TBelong').".ThID = ".$this->connDB->quote($theme_number)." AND ".$this->table('TBelong').".TID = ".$this->connDB->quote($next_point);
+        $whereClause = $this->table('learn_topic_belong').".ThID = ".$this->connDB->quote($theme_number)." AND ".$this->table('learn_topic_belong').".TID = ".$this->connDB->quote($next_point);
         $AllOfResult = $this->queryBelongByWhere($whereClause);
 
         if(count($AllOfResult) != 0) return $AllOfResult[0];
@@ -94,7 +94,7 @@ class DBRecommand extends Database
     public function queryEdgeByID($currentPoint)
     {
         //echo "EEEEEEEEE";
-        $AllOfResult = $this->queryEdgeByWhere($this->table('Edge').".Ti = ".$this->connDB->quote($currentPoint));
+        $AllOfResult = $this->queryEdgeByWhere($this->table('learn_path').".Ti = ".$this->connDB->quote($currentPoint));
         if(count($AllOfResult) != 0) return $AllOfResult;
         else return null;
     }

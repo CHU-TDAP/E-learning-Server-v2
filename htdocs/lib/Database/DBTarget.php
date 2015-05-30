@@ -35,8 +35,8 @@ class DBTarget extends Database {
         $sqlString = "SELECT `TID`, Target.`AID`, Area.`HID`, ".
                      "`TNum`, `TName`, `TMapID`, `TLearnTime`, ".
                      "`PLj`, `Mj`, `S`, IF(`Mj` >= `PLj`, 1, 0) AS Fj ".
-                     "FROM `".$this->table('Target')."` as Target ".
-                     "LEFT JOIN `".$this->table('Area')."` as Area ".
+                     "FROM `".$this->table('learn_target')."` as Target ".
+                     "LEFT JOIN `".$this->table('learn_area')."` as Area ".
                      "ON Area.`AID` = Target.`AID` ".
                      "WHERE ".$where;
 
@@ -156,12 +156,12 @@ class DBTarget extends Database {
             "Target.`AID`, Area.`AName`, Area.`AFloor`, Area.`ANum`, ".
             "`TNum`, `TName`, `TMapID`, `TLearnTime`, ".
             "`PLj`, `Mj`, `S`, IF(`Mj` >= `PLj`, 1, 0) AS Fj ".
-            "FROM `".$this->table('TBelong')."` AS Belong ".
-            "LEFT JOIN `".$this->table('Target')."` as Target ".
+            "FROM `".$this->table('learn_topic_belong')."` AS Belong ".
+            "LEFT JOIN `".$this->table('learn_target')."` as Target ".
             "ON Belong.`TID` = Target.`TID` ".
-            "LEFT JOIN `".$this->table('Area')."` as Area ".
+            "LEFT JOIN `".$this->table('learn_area')."` as Area ".
             "ON Area.`AID` = Target.`AID` ".
-            "LEFT JOIN `".$this->table('Hall')."` as Hall ".
+            "LEFT JOIN `".$this->table('learn_hall')."` as Hall ".
             "ON Area.`HID` = Hall.`HID`".
             "WHERE `ThID` = ".$this->connDB->quote($thID);
 
@@ -254,7 +254,7 @@ class DBTarget extends Database {
         }
 
 
-        $sqlString = "UPDATE ".$this->table('Target').
+        $sqlString = "UPDATE ".$this->table('learn_target').
                      " SET `".$sqlField."` = :value".
                      " WHERE `TID` = :tid";
 
@@ -273,7 +273,7 @@ class DBTarget extends Database {
      */
     protected function queryAreaByWhere($where) {
 
-        $sqlString = "SELECT * FROM `".$this->table('Area')."`".
+        $sqlString = "SELECT * FROM `".$this->table('learn_area')."`".
                      "WHERE ".$where;
 
         $query = $this->connDB->prepare($sqlString);
@@ -395,7 +395,7 @@ class DBTarget extends Database {
     //    }
     //
     //
-    //    $sqlString = "UPDATE ".$this->table('Target').
+    //    $sqlString = "UPDATE ".$this->table('learn_target').
     //                 " SET `".$sqlField."` = :value".
     //                 " WHERE `TID` = :tid";
     //
@@ -414,7 +414,7 @@ class DBTarget extends Database {
      */
     protected function queryHallByWhere($where) {
 
-        $sqlString = "SELECT * FROM `".$this->table('Hall')."`".
+        $sqlString = "SELECT * FROM `".$this->table('learn_hall')."`".
                      "WHERE ".$where;
 
         $query = $this->connDB->prepare($sqlString);
@@ -526,7 +526,7 @@ class DBTarget extends Database {
     //    }
     //
     //
-    //    $sqlString = "UPDATE ".$this->table('Target').
+    //    $sqlString = "UPDATE ".$this->table('learn_target').
     //                 " SET `".$sqlField."` = :value".
     //                 " WHERE `TID` = :tid";
     //

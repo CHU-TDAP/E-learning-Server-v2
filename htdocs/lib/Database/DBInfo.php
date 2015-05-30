@@ -26,7 +26,7 @@ require_once UELEARNING_LIB_ROOT.'/Database/Exception.php';
 class DBInfo extends Database {
 
     public function queryAllPlaceInfo() {
-        $sqlString = "SELECT * FROM `".$this->table('PlaceInfo')."` WHERE 1";
+        $sqlString = "SELECT * FROM `".$this->table('place_info')."` WHERE 1";
 
         $query = $this->connDB->prepare($sqlString);
         $query->execute();
@@ -55,7 +55,7 @@ class DBInfo extends Database {
         }
     }
     public function queryALLPlaceMap() {
-        $sqlString = "SELECT * FROM `".$this->table('PlaceMap')."` WHERE 1";
+        $sqlString = "SELECT * FROM `".$this->table('place_map')."` WHERE 1";
 
         $query = $this->connDB->prepare($sqlString);
         $query->execute();

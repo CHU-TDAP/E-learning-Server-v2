@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.0.4.2
+-- version 4.1.6
 -- http://www.phpmyadmin.net
 --
 -- 主機: localhost
--- 產生日期: 2015 年 02 月 06 日 09:46
--- 伺服器版本: 5.6.13
--- PHP 版本: 5.4.17
+-- 產生時間： 2015 年 05 月 30 日 13:05
+-- 伺服器版本: 5.6.16
+-- PHP 版本： 5.5.9
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,45 +17,16 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- 資料庫: `uelearning`
+-- 資料庫： `UElearning`
 --
-CREATE DATABASE IF NOT EXISTS `uelearning` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-USE `uelearning`;
 
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__AGroup`
+-- 資料表結構 `chu__learn_area`
 --
 
-CREATE TABLE IF NOT EXISTS `chu__AGroup` (
-  `GID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `GName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `GMemo` tinytext COLLATE utf8_unicode_ci,
-  `GBuildTime` datetime NOT NULL,
-  `GModifyTime` datetime NOT NULL COMMENT '權限群組資訊修改時間',
-  `GAuth_Admin` tinyint(1) NOT NULL,
-  `GAuth_ClientAdmin` tinyint(1) NOT NULL,
-  PRIMARY KEY (`GID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者群組權限管理分類';
-
---
--- 轉存資料表中的資料 `chu__AGroup`
---
-
-INSERT INTO `chu__AGroup` (`GID`, `GName`, `GMemo`, `GBuildTime`, `GModifyTime`, `GAuth_Admin`, `GAuth_ClientAdmin`) VALUES
-('admin', '管理員', NULL, '2014-10-07 16:38:03', '2014-10-23 13:33:32', 0, 0),
-('student', '學生', NULL, '2014-10-07 16:38:03', '2014-10-23 13:33:32', 0, 0),
-('teacher', '老師', NULL, '2014-10-07 16:38:03', '2014-10-23 13:33:32', 0, 0),
-('user', '一般使用者', NULL, '2014-10-24 04:14:52', '2014-10-24 04:14:52', 0, 1);
-
--- --------------------------------------------------------
-
---
--- 表的結構 `chu__Area`
---
-
-CREATE TABLE IF NOT EXISTS `chu__Area` (
+CREATE TABLE IF NOT EXISTS `chu__learn_area` (
   `AID` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '區域編號',
   `HID` int(10) DEFAULT NULL COMMENT '屬於哪個廳',
   `AFloor` int(3) DEFAULT NULL COMMENT '區域所在樓層',
@@ -67,10 +38,10 @@ CREATE TABLE IF NOT EXISTS `chu__Area` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='標的所在的區域分類' AUTO_INCREMENT=15 ;
 
 --
--- 轉存資料表中的資料 `chu__Area`
+-- 資料表的匯出資料 `chu__learn_area`
 --
 
-INSERT INTO `chu__Area` (`AID`, `HID`, `AFloor`, `ANum`, `AName`, `AMapID`, `AIntroduction`) VALUES
+INSERT INTO `chu__learn_area` (`AID`, `HID`, `AFloor`, `ANum`, `AName`, `AMapID`, `AIntroduction`) VALUES
 (1, 1, 1, 1, '眾妙之門', NULL, NULL),
 (2, 1, 1, 2, '生命的起源', NULL, NULL),
 (3, 1, 1, 3, '生命上的陸地', NULL, NULL),
@@ -89,25 +60,31 @@ INSERT INTO `chu__Area` (`AID`, `HID`, `AFloor`, `ANum`, `AName`, `AMapID`, `AIn
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__CGroup`
+-- 資料表結構 `chu__learn_hall`
 --
 
-CREATE TABLE IF NOT EXISTS `chu__CGroup` (
-  `CID` int(11) NOT NULL AUTO_INCREMENT,
-  `CName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `CMemo` tinytext COLLATE utf8_unicode_ci,
-  `CBuildTime` datetime NOT NULL,
-  `CModifyTime` datetime NOT NULL,
-  PRIMARY KEY (`CID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者班級分類' AUTO_INCREMENT=1 ;
+CREATE TABLE IF NOT EXISTS `chu__learn_hall` (
+  `HID` int(10) NOT NULL AUTO_INCREMENT,
+  `HName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '廳的名稱',
+  `HMapID` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '廳的地圖編號',
+  `HIntroduction` tinytext COLLATE utf8_unicode_ci COMMENT '廳的簡介',
+  PRIMARY KEY (`HID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='區域所在的廳分類' AUTO_INCREMENT=2 ;
+
+--
+-- 資料表的匯出資料 `chu__learn_hall`
+--
+
+INSERT INTO `chu__learn_hall` (`HID`, `HName`, `HMapID`, `HIntroduction`) VALUES
+(1, '生命科學廳', NULL, '人類從何而來？與自然的關係為何？而自然又是如何發展它的生命？諸多疑惑，自古以來，未曾停歇。\r\n\r\n本廳以大自然的奧祕為總主題，利用13個展示區分別呈現大自然的現象及演化的動態。從');
 
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Edge`
+-- 資料表結構 `chu__learn_path`
 --
 
-CREATE TABLE IF NOT EXISTS `chu__Edge` (
+CREATE TABLE IF NOT EXISTS `chu__learn_path` (
   `Ti` int(11) NOT NULL,
   `Tj` int(11) NOT NULL,
   `MoveTime` int(4) NOT NULL COMMENT '移動時間(分鐘)',
@@ -116,10 +93,10 @@ CREATE TABLE IF NOT EXISTS `chu__Edge` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='標的和標的之間';
 
 --
--- 轉存資料表中的資料 `chu__Edge`
+-- 資料表的匯出資料 `chu__learn_path`
 --
 
-INSERT INTO `chu__Edge` (`Ti`, `Tj`, `MoveTime`, `Distance`) VALUES
+INSERT INTO `chu__learn_path` (`Ti`, `Tj`, `MoveTime`, `Distance`) VALUES
 (0, 1, 0, 2),
 (0, 2, 1, 2),
 (0, 3, 1, 2),
@@ -349,51 +326,111 @@ INSERT INTO `chu__Edge` (`Ti`, `Tj`, `MoveTime`, `Distance`) VALUES
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Hall`
+-- 資料表結構 `chu__learn_target`
 --
 
-CREATE TABLE IF NOT EXISTS `chu__Hall` (
-  `HID` int(10) NOT NULL AUTO_INCREMENT,
-  `HName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '廳的名稱',
-  `HMapID` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '廳的地圖編號',
-  `HIntroduction` tinytext COLLATE utf8_unicode_ci COMMENT '廳的簡介',
-  PRIMARY KEY (`HID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='區域所在的廳分類' AUTO_INCREMENT=2 ;
+CREATE TABLE IF NOT EXISTS `chu__learn_target` (
+  `TID` int(10) unsigned NOT NULL COMMENT '標的內部編號',
+  `AID` int(10) DEFAULT NULL COMMENT '標的所在的區域編號',
+  `TNum` int(10) DEFAULT NULL COMMENT '標的地圖上的編號',
+  `TName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '標的名稱',
+  `TMapID` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '地圖圖檔名稱',
+  `TLearnTime` int(4) unsigned NOT NULL COMMENT '預估此標的應該學習的時間',
+  `PLj` int(11) unsigned NOT NULL COMMENT '學習標的的人數限制',
+  `Mj` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '目前人數',
+  `S` int(11) unsigned DEFAULT NULL COMMENT '學習標的飽和率上限',
+  PRIMARY KEY (`TID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='標的資訊';
 
 --
--- 轉存資料表中的資料 `chu__Hall`
+-- 資料表的匯出資料 `chu__learn_target`
 --
 
-INSERT INTO `chu__Hall` (`HID`, `HName`, `HMapID`, `HIntroduction`) VALUES
-(1, '生命科學廳', NULL, '人類從何而來？與自然的關係為何？而自然又是如何發展它的生命？諸多疑惑，自古以來，未曾停歇。\r\n\r\n本廳以大自然的奧祕為總主題，利用13個展示區分別呈現大自然的現象及演化的動態。從');
+INSERT INTO `chu__learn_target` (`TID`, `AID`, `TNum`, `TName`, `TMapID`, `TLearnTime`, `PLj`, `Mj`, `S`) VALUES
+(0, 1, NULL, '入口', '1F.gif', 0, 1000000000, 0, NULL),
+(1, 1, NULL, '含有生物遺跡的岩石', 'map_01_02_03.png', 7, 2, 0, 1),
+(2, 1, NULL, '岩石中的紀錄', 'map_01_02_03.png', 8, 2, 0, 1),
+(3, 4, NULL, '生命在水中的演化', 'map_01_02_03.png', 3, 2, 0, 1),
+(4, 4, NULL, '最早的森林', 'map_04.jpg', 3, 2, 0, 1),
+(5, 3, NULL, '古代的兩棲類', 'map_05.jpg', 5, 2, 0, 1),
+(6, 5, NULL, '恐龍時代', 'map_06.jpg', 6, 2, 0, 1),
+(7, 5, NULL, '蒙古的恐龍', 'map_07.jpg', 4, 2, 0, 1),
+(8, 5, NULL, '恐龍再現', 'map_08.jpg', 4, 2, 0, 1),
+(9, 5, NULL, '竊蛋龍', 'map_09.jpg', 4, 2, 0, 1),
+(10, 5, NULL, '巨龍的腳印', 'map_10.jpg', 4, 2, 0, 1),
+(11, 6, NULL, '始祖鳥與帶有羽毛的恐龍', 'map_11.jpg', 8, 2, 0, 1),
+(12, 8, NULL, '阿法南猿', 'map_12.jpg', 4, 2, 0, 1),
+(13, 9, NULL, '探索人類的過去', 'map_13.jpg', 5, 1, 0, 1),
+(14, 9, NULL, '周口店北京人', 'map_14.jpg', 3, 2, 0, 1),
+(15, 10, NULL, '木乃伊', 'map_15.jpg', 8, 2, 0, 1);
 
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Log`
+-- 資料表結構 `chu__learn_topic`
 --
 
-CREATE TABLE IF NOT EXISTS `chu__Log` (
-  `LID` int(11) NOT NULL AUTO_INCREMENT,
-  `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `Date` datetime NOT NULL,
-  `SaID` int(10) DEFAULT NULL,
-  `TID` int(10) DEFAULT NULL,
-  `ActionGroup` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `Encode` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
-  `QID` int(10) DEFAULT NULL,
-  `Aswer` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `Other` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`LID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4 ;
+CREATE TABLE IF NOT EXISTS `chu__learn_topic` (
+  `ThID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ThName` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '主題名稱',
+  `ThLearnTime` int(4) NOT NULL COMMENT '學習此主題要花的總時間(m)',
+  `StartTID` int(10) NOT NULL COMMENT '此主題的標的起始點',
+  `ThIntroduction` tinytext COLLATE utf8_unicode_ci COMMENT '介紹',
+  `ThBuildTime` datetime NOT NULL,
+  `ThModifyTime` datetime NOT NULL,
+  PRIMARY KEY (`ThID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='主題' AUTO_INCREMENT=3 ;
+
+--
+-- 資料表的匯出資料 `chu__learn_topic`
+--
+
+INSERT INTO `chu__learn_topic` (`ThID`, `ThName`, `ThLearnTime`, `StartTID`, `ThIntroduction`, `ThBuildTime`, `ThModifyTime`) VALUES
+(1, '生命科學', 40, 0, NULL, '2014-10-23 17:21:03', '2014-10-23 17:21:03');
 
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Material`
+-- 資料表結構 `chu__learn_topic_belong`
 --
 
-CREATE TABLE IF NOT EXISTS `chu__Material` (
+CREATE TABLE IF NOT EXISTS `chu__learn_topic_belong` (
+  `ThID` int(10) NOT NULL COMMENT '主題編號',
+  `TID` int(10) NOT NULL COMMENT '標的編號',
+  `Weights` int(3) NOT NULL COMMENT '當次學習主題的某一個學習標的之權重',
+  PRIMARY KEY (`TID`,`ThID`),
+  KEY `TID` (`TID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='標的和主題之間';
+
+--
+-- 資料表的匯出資料 `chu__learn_topic_belong`
+--
+
+INSERT INTO `chu__learn_topic_belong` (`ThID`, `TID`, `Weights`) VALUES
+(1, 0, 0),
+(1, 1, 1),
+(1, 2, 2),
+(1, 3, 4),
+(1, 4, 7),
+(1, 5, 4),
+(1, 6, 5),
+(1, 7, 2),
+(1, 8, 6),
+(1, 9, 7),
+(1, 10, 9),
+(1, 11, 6),
+(1, 12, 4),
+(1, 13, 5),
+(1, 14, 5),
+(1, 15, 9);
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `chu__material`
+--
+
+CREATE TABLE IF NOT EXISTS `chu__material` (
   `MID` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '教材內部編號',
   `TID` int(10) unsigned NOT NULL COMMENT '標的內部編號',
   `MEntity` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否為實體教材',
@@ -403,10 +440,10 @@ CREATE TABLE IF NOT EXISTS `chu__Material` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='教材' AUTO_INCREMENT=31 ;
 
 --
--- 轉存資料表中的資料 `chu__Material`
+-- 資料表的匯出資料 `chu__material`
 --
 
-INSERT INTO `chu__Material` (`MID`, `TID`, `MEntity`, `MMode`, `MUrl`) VALUES
+INSERT INTO `chu__material` (`MID`, `TID`, `MEntity`, `MMode`, `MUrl`) VALUES
 (1, 1, 1, 'normal', '01.html'),
 (2, 2, 1, 'normal', '02.html'),
 (3, 3, 1, 'normal', '03.html'),
@@ -441,29 +478,29 @@ INSERT INTO `chu__Material` (`MID`, `TID`, `MEntity`, `MMode`, `MUrl`) VALUES
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__MaterialKind`
+-- 資料表結構 `chu__material_kind`
 --
 
-CREATE TABLE IF NOT EXISTS `chu__MaterialKind` (
+CREATE TABLE IF NOT EXISTS `chu__material_kind` (
   `MkID` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   `MkName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`MkID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- 轉存資料表中的資料 `chu__MaterialKind`
+-- 資料表的匯出資料 `chu__material_kind`
 --
 
-INSERT INTO `chu__MaterialKind` (`MkID`, `MkName`) VALUES
+INSERT INTO `chu__material_kind` (`MkID`, `MkName`) VALUES
 ('normal', '一般教材');
 
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__PlaceInfo`
+-- 資料表結構 `chu__place_info`
 --
 
-CREATE TABLE IF NOT EXISTS `chu__PlaceInfo` (
+CREATE TABLE IF NOT EXISTS `chu__place_info` (
   `IID` int(11) NOT NULL,
   `IName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `IContent` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
@@ -471,10 +508,10 @@ CREATE TABLE IF NOT EXISTS `chu__PlaceInfo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- 轉存資料表中的資料 `chu__PlaceInfo`
+-- 資料表的匯出資料 `chu__place_info`
 --
 
-INSERT INTO `chu__PlaceInfo` (`IID`, `IName`, `IContent`) VALUES
+INSERT INTO `chu__place_info` (`IID`, `IName`, `IContent`) VALUES
 (1, '開館時間', '10:00~16:00<br>'),
 (2, '票價', '成人票 : 100元<br>兒童票 : 50元<br>'),
 (3, '商店', '精品區 : 各式紀念品<br>');
@@ -482,10 +519,10 @@ INSERT INTO `chu__PlaceInfo` (`IID`, `IName`, `IContent`) VALUES
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__PlaceMap`
+-- 資料表結構 `chu__place_map`
 --
 
-CREATE TABLE IF NOT EXISTS `chu__PlaceMap` (
+CREATE TABLE IF NOT EXISTS `chu__place_map` (
   `PID` int(11) NOT NULL,
   `PName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `PURL` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
@@ -493,10 +530,10 @@ CREATE TABLE IF NOT EXISTS `chu__PlaceMap` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- 轉存資料表中的資料 `chu__PlaceMap`
+-- 資料表的匯出資料 `chu__place_map`
 --
 
-INSERT INTO `chu__PlaceMap` (`PID`, `PName`, `PURL`) VALUES
+INSERT INTO `chu__place_map` (`PID`, `PName`, `PURL`) VALUES
 (1, '1F', '1F.gif'),
 (2, '2F', '2F.gif'),
 (3, '1F+2F', '1F+2F.gif');
@@ -504,185 +541,10 @@ INSERT INTO `chu__PlaceMap` (`PID`, `PName`, `PURL`) VALUES
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__Recommand`
+-- 資料表結構 `chu__user`
 --
 
-CREATE TABLE IF NOT EXISTS `chu__Recommand` (
-  `TID` int(3) NOT NULL COMMENT '標的內部編號',
-  `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT '使用者帳號',
-  `gradation` int(11) NOT NULL COMMENT '系統推薦標地順序'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='推薦';
-
--- --------------------------------------------------------
-
---
--- 表的結構 `chu__Study`
---
-
-CREATE TABLE IF NOT EXISTS `chu__Study` (
-  `SID` int(10) NOT NULL AUTO_INCREMENT,
-  `SaID` int(10) NOT NULL,
-  `TID` int(10) NOT NULL COMMENT '標的編號',
-  `IsEntity` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否為實際抵達學習點',
-  `In_TargetTime` datetime NOT NULL COMMENT '進入標的時間',
-  `Out_TargetTime` datetime DEFAULT NULL COMMENT '離開標的時間',
-  PRIMARY KEY (`SID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者經過哪些標的的紀錄' AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- 表的結構 `chu__StudyActivity`
---
-
-CREATE TABLE IF NOT EXISTS `chu__StudyActivity` (
-  `SaID` int(10) NOT NULL AUTO_INCREMENT COMMENT '學習活動流水編號',
-  `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT '使用者ID',
-  `ThID` int(10) NOT NULL COMMENT '主題編號',
-  `StartTime` datetime NOT NULL COMMENT '開始學習時間',
-  `EndTime` datetime DEFAULT NULL COMMENT '結束學習時間（學習中為NULL）',
-  `LearnTime` int(4) NOT NULL COMMENT '預定學習所需時間',
-  `Delay` int(11) NOT NULL DEFAULT '0' COMMENT '時間延長',
-  `TimeForce` tinyint(1) NOT NULL DEFAULT '0' COMMENT '學習時間已過是否強制中止學習',
-  `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
-  `LModeForce` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否拒絕前往非推薦點進行學習',
-  `EnableVirtual` tinyint(1) NOT NULL DEFAULT '0',
-  `MMode` varchar(25) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
-  PRIMARY KEY (`SaID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='學習活動' AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- 表的結構 `chu__StudyWill`
---
-
-CREATE TABLE IF NOT EXISTS `chu__StudyWill` (
-  `SwID` int(10) NOT NULL AUTO_INCREMENT COMMENT '預約學習活動流水編號',
-  `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `ThID` int(10) NOT NULL COMMENT '主題編號',
-  `StartTime` datetime NOT NULL COMMENT '預約生效時間',
-  `ExpiredTime` datetime DEFAULT NULL COMMENT '過期時間',
-  `LearnTime` int(4) NOT NULL,
-  `TimeForce` tinyint(1) NOT NULL DEFAULT '1' COMMENT '學習時間已過是否強制中止學習',
-  `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
-  `LModeForce` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否拒絕前往非推薦點進行學習',
-  `EnableVirtual` tinyint(1) NOT NULL DEFAULT '0',
-  `MMode` varchar(25) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
-  `Lock` tinyint(1) NOT NULL DEFAULT '1' COMMENT '鎖定不讓學生更改',
-  `BuildTime` datetime NOT NULL,
-  `ModifyTime` datetime NOT NULL,
-  PRIMARY KEY (`SwID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='預約學習活動' AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- 表的結構 `chu__Target`
---
-
-CREATE TABLE IF NOT EXISTS `chu__Target` (
-  `TID` int(10) unsigned NOT NULL COMMENT '標的內部編號',
-  `AID` int(10) DEFAULT NULL COMMENT '標的所在的區域編號',
-  `TNum` int(10) DEFAULT NULL COMMENT '標的地圖上的編號',
-  `TName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '標的名稱',
-  `TMapID` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '地圖圖檔名稱',
-  `TLearnTime` int(4) unsigned NOT NULL COMMENT '預估此標的應該學習的時間',
-  `PLj` int(11) unsigned NOT NULL COMMENT '學習標的的人數限制',
-  `Mj` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '目前人數',
-  `S` int(11) unsigned DEFAULT NULL COMMENT '學習標的飽和率上限',
-  PRIMARY KEY (`TID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='標的資訊';
-
---
--- 轉存資料表中的資料 `chu__Target`
---
-
-INSERT INTO `chu__Target` (`TID`, `AID`, `TNum`, `TName`, `TMapID`, `TLearnTime`, `PLj`, `Mj`, `S`) VALUES
-(0, 1, NULL, '入口', '1F.gif', 0, 1000000000, 0, NULL),
-(1, 1, NULL, '含有生物遺跡的岩石', 'map_01_02_03.png', 7, 2, 0, 1),
-(2, 1, NULL, '岩石中的紀錄', 'map_01_02_03.png', 8, 2, 0, 1),
-(3, 4, NULL, '生命在水中的演化', 'map_01_02_03.png', 3, 2, 0, 1),
-(4, 4, NULL, '最早的森林', 'map_04.jpg', 3, 2, 0, 1),
-(5, 3, NULL, '古代的兩棲類', 'map_05.jpg', 5, 2, 0, 1),
-(6, 5, NULL, '恐龍時代', 'map_06.jpg', 6, 2, 0, 1),
-(7, 5, NULL, '蒙古的恐龍', 'map_07.jpg', 4, 2, 0, 1),
-(8, 5, NULL, '恐龍再現', 'map_08.jpg', 4, 2, 0, 1),
-(9, 5, NULL, '竊蛋龍', 'map_09.jpg', 4, 2, 0, 1),
-(10, 5, NULL, '巨龍的腳印', 'map_10.jpg', 4, 2, 0, 1),
-(11, 6, NULL, '始祖鳥與帶有羽毛的恐龍', 'map_11.jpg', 8, 2, 0, 1),
-(12, 8, NULL, '阿法南猿', 'map_12.jpg', 4, 2, 0, 1),
-(13, 9, NULL, '探索人類的過去', 'map_13.jpg', 5, 1, 0, 1),
-(14, 9, NULL, '周口店北京人', 'map_14.jpg', 3, 2, 0, 1),
-(15, 10, NULL, '木乃伊', 'map_15.jpg', 8, 2, 0, 1);
-
--- --------------------------------------------------------
-
---
--- 表的結構 `chu__TBelong`
---
-
-CREATE TABLE IF NOT EXISTS `chu__TBelong` (
-  `ThID` int(10) NOT NULL COMMENT '主題編號',
-  `TID` int(10) NOT NULL COMMENT '標的編號',
-  `Weights` int(3) NOT NULL COMMENT '當次學習主題的某一個學習標的之權重',
-  PRIMARY KEY (`TID`,`ThID`),
-  KEY `TID` (`TID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='標的和主題之間';
-
---
--- 轉存資料表中的資料 `chu__TBelong`
---
-
-INSERT INTO `chu__TBelong` (`ThID`, `TID`, `Weights`) VALUES
-(1, 0, 0),
-(1, 1, 1),
-(1, 2, 2),
-(1, 3, 4),
-(1, 4, 7),
-(1, 5, 4),
-(1, 6, 5),
-(1, 7, 2),
-(1, 8, 6),
-(1, 9, 7),
-(1, 10, 9),
-(1, 11, 6),
-(1, 12, 4),
-(1, 13, 5),
-(1, 14, 5),
-(1, 15, 9);
-
--- --------------------------------------------------------
-
---
--- 表的結構 `chu__Theme`
---
-
-CREATE TABLE IF NOT EXISTS `chu__Theme` (
-  `ThID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ThName` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '主題名稱',
-  `ThLearnTime` int(4) NOT NULL COMMENT '學習此主題要花的總時間(m)',
-  `StartTID` int(10) NOT NULL COMMENT '此主題的標的起始點',
-  `ThIntroduction` tinytext COLLATE utf8_unicode_ci COMMENT '介紹',
-  `ThBuildTime` datetime NOT NULL,
-  `ThModifyTime` datetime NOT NULL,
-  PRIMARY KEY (`ThID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='主題' AUTO_INCREMENT=3 ;
-
---
--- 轉存資料表中的資料 `chu__Theme`
---
-
-INSERT INTO `chu__Theme` (`ThID`, `ThName`, `ThLearnTime`, `StartTID`, `ThIntroduction`, `ThBuildTime`, `ThModifyTime`) VALUES
-(1, '生命科學', 40, 0, NULL, '2014-10-23 17:21:03', '2014-10-23 17:21:03');
-
--- --------------------------------------------------------
-
---
--- 表的結構 `chu__User`
---
-
-CREATE TABLE IF NOT EXISTS `chu__User` (
+CREATE TABLE IF NOT EXISTS `chu__user` (
   `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT '使用者帳號',
   `UPassword` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '密碼',
   `GID` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT '使用者群組',
@@ -703,10 +565,134 @@ CREATE TABLE IF NOT EXISTS `chu__User` (
 -- --------------------------------------------------------
 
 --
--- 表的結構 `chu__UserSession`
+-- 資料表結構 `chu__user_activity`
 --
 
-CREATE TABLE IF NOT EXISTS `chu__UserSession` (
+CREATE TABLE IF NOT EXISTS `chu__user_activity` (
+  `SaID` int(10) NOT NULL AUTO_INCREMENT COMMENT '學習活動流水編號',
+  `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT '使用者ID',
+  `ThID` int(10) NOT NULL COMMENT '主題編號',
+  `StartTime` datetime NOT NULL COMMENT '開始學習時間',
+  `EndTime` datetime DEFAULT NULL COMMENT '結束學習時間（學習中為NULL）',
+  `LearnTime` int(4) NOT NULL COMMENT '預定學習所需時間',
+  `Delay` int(11) NOT NULL DEFAULT '0' COMMENT '時間延長',
+  `TimeForce` tinyint(1) NOT NULL DEFAULT '0' COMMENT '學習時間已過是否強制中止學習',
+  `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
+  `LModeForce` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否拒絕前往非推薦點進行學習',
+  `EnableVirtual` tinyint(1) NOT NULL DEFAULT '0',
+  `MMode` varchar(25) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
+  PRIMARY KEY (`SaID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='學習活動' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `chu__user_activity_will`
+--
+
+CREATE TABLE IF NOT EXISTS `chu__user_activity_will` (
+  `SwID` int(10) NOT NULL AUTO_INCREMENT COMMENT '預約學習活動流水編號',
+  `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `ThID` int(10) NOT NULL COMMENT '主題編號',
+  `StartTime` datetime NOT NULL COMMENT '預約生效時間',
+  `ExpiredTime` datetime DEFAULT NULL COMMENT '過期時間',
+  `LearnTime` int(4) NOT NULL,
+  `TimeForce` tinyint(1) NOT NULL DEFAULT '1' COMMENT '學習時間已過是否強制中止學習',
+  `LMode` int(2) NOT NULL DEFAULT '1' COMMENT '學習導引模式',
+  `LModeForce` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否拒絕前往非推薦點進行學習',
+  `EnableVirtual` tinyint(1) NOT NULL DEFAULT '0',
+  `MMode` varchar(25) COLLATE utf8_unicode_ci NOT NULL COMMENT '教材模式',
+  `Lock` tinyint(1) NOT NULL DEFAULT '1' COMMENT '鎖定不讓學生更改',
+  `BuildTime` datetime NOT NULL,
+  `ModifyTime` datetime NOT NULL,
+  PRIMARY KEY (`SwID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='預約學習活動' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `chu__user_auth_group`
+--
+
+CREATE TABLE IF NOT EXISTS `chu__user_auth_group` (
+  `GID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `GName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `GMemo` tinytext COLLATE utf8_unicode_ci,
+  `GBuildTime` datetime NOT NULL,
+  `GModifyTime` datetime NOT NULL COMMENT '權限群組資訊修改時間',
+  `GAuth_Admin` tinyint(1) NOT NULL,
+  `GAuth_ClientAdmin` tinyint(1) NOT NULL,
+  PRIMARY KEY (`GID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者群組權限管理分類';
+
+--
+-- 資料表的匯出資料 `chu__user_auth_group`
+--
+
+INSERT INTO `chu__user_auth_group` (`GID`, `GName`, `GMemo`, `GBuildTime`, `GModifyTime`, `GAuth_Admin`, `GAuth_ClientAdmin`) VALUES
+('admin', '管理員', NULL, '2014-10-07 16:38:03', '2014-10-23 13:33:32', 0, 0),
+('student', '學生', NULL, '2014-10-07 16:38:03', '2014-10-23 13:33:32', 0, 0),
+('teacher', '老師', NULL, '2014-10-07 16:38:03', '2014-10-23 13:33:32', 0, 0),
+('user', '一般使用者', NULL, '2014-10-24 04:14:52', '2014-10-24 04:14:52', 0, 1);
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `chu__user_class`
+--
+
+CREATE TABLE IF NOT EXISTS `chu__user_class` (
+  `CID` int(11) NOT NULL AUTO_INCREMENT,
+  `CName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `CMemo` tinytext COLLATE utf8_unicode_ci,
+  `CBuildTime` datetime NOT NULL,
+  `CModifyTime` datetime NOT NULL,
+  PRIMARY KEY (`CID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者班級分類' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `chu__user_history`
+--
+
+CREATE TABLE IF NOT EXISTS `chu__user_history` (
+  `SID` int(10) NOT NULL AUTO_INCREMENT,
+  `SaID` int(10) NOT NULL,
+  `TID` int(10) NOT NULL COMMENT '標的編號',
+  `IsEntity` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否為實際抵達學習點',
+  `In_TargetTime` datetime NOT NULL COMMENT '進入標的時間',
+  `Out_TargetTime` datetime DEFAULT NULL COMMENT '離開標的時間',
+  PRIMARY KEY (`SID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者經過哪些標的的紀錄' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `chu__user_log`
+--
+
+CREATE TABLE IF NOT EXISTS `chu__user_log` (
+  `LID` int(11) NOT NULL AUTO_INCREMENT,
+  `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `Date` datetime NOT NULL,
+  `SaID` int(10) DEFAULT NULL,
+  `TID` int(10) DEFAULT NULL,
+  `ActionGroup` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `Encode` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  `QID` int(10) DEFAULT NULL,
+  `Aswer` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Other` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`LID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4 ;
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `chu__user_session`
+--
+
+CREATE TABLE IF NOT EXISTS `chu__user_session` (
   `UsID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `UToken` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '此登入階段的token',
   `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
@@ -716,6 +702,18 @@ CREATE TABLE IF NOT EXISTS `chu__UserSession` (
   PRIMARY KEY (`UsID`),
   UNIQUE KEY `UToken` (`UToken`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者登入紀錄' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `chu__user_target_choose`
+--
+
+CREATE TABLE IF NOT EXISTS `chu__user_target_choose` (
+  `TID` int(3) NOT NULL COMMENT '標的內部編號',
+  `UID` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT '使用者帳號',
+  `gradation` int(11) NOT NULL COMMENT '系統推薦標地順序'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='推薦';
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

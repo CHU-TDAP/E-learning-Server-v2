@@ -32,7 +32,7 @@ class DBUserSession extends Database {
     public function login($token, $uId, $agent) {
 
         //紀錄登入階段進資料庫
-        $sqlString = "INSERT INTO ".$this->table('UserSession').
+        $sqlString = "INSERT INTO ".$this->table('user_session').
          " (`UsID`, `UToken`, `UID`, `UAgent`, `ULoginDate`, `ULogoutDate`)
          VALUES (NULL , :token, :uid , :agent , NOW() , NULL)";
 
@@ -49,7 +49,7 @@ class DBUserSession extends Database {
      */
     public function logout($token) {
 
-        $sqlString = "UPDATE ".$this->table('UserSession').
+        $sqlString = "UPDATE ".$this->table('user_session').
          " SET `UToken` = NULL, `ULogoutDate` = NOW()
          WHERE `UToken` = :token";
 
@@ -65,7 +65,7 @@ class DBUserSession extends Database {
      */
     public function logoutByUserId($uid) {
 
-        $sqlString = "UPDATE ".$this->table('UserSession').
+        $sqlString = "UPDATE ".$this->table('user_session').
          " SET `UToken` = NULL, `ULogoutDate` = NOW()
          WHERE `UID` = :uid AND `UToken` IS NOT NULL";
 
@@ -89,7 +89,7 @@ class DBUserSession extends Database {
      *     );
      */
     public function queryByToken($token) {
-        $sqlString = "SELECT * FROM ".$this->table('UserSession').
+        $sqlString = "SELECT * FROM ".$this->table('user_session').
                      " WHERE `UToken` = :token";
 
         $query = $this->connDB->prepare($sqlString);
@@ -131,7 +131,7 @@ class DBUserSession extends Database {
      *     );
      */
     public function queryByUserId($uId) {
-        $sqlString = "SELECT * FROM ".$this->table('UserSession').
+        $sqlString = "SELECT * FROM ".$this->table('user_session').
                      " WHERE `UID` = :uid";
 
         $query = $this->connDB->prepare($sqlString);
@@ -177,7 +177,7 @@ class DBUserSession extends Database {
      *     );
      */
     public function queryLoginByUserId($uId) {
-        $sqlString = "SELECT * FROM ".$this->table('UserSession').
+        $sqlString = "SELECT * FROM ".$this->table('user_session').
                      " WHERE `UID` = :uid AND `UToken` IS NOT NULL";
 
         $query = $this->connDB->prepare($sqlString);

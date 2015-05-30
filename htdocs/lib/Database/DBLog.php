@@ -45,7 +45,7 @@ class DBLog extends Database {
         $Other        = $array['other'];
 
         //紀錄使用者帳號進資料庫
-        $sqlString = "INSERT INTO ".$this->table('Log').
+        $sqlString = "INSERT INTO ".$this->table('user_log').
             " (`LID`, `UID`, `Date`, `SaID`, `TID`,
             `ActionGroup`, `Encode`,
             `QID`, `Aswer`, `Other`)
@@ -75,7 +75,7 @@ class DBLog extends Database {
      */
     protected function queryLogByWhere($where) {
 
-        $sqlString = "SELECT * FROM `".$this->table('Log')."` ".
+        $sqlString = "SELECT * FROM `".$this->table('user_log')."` ".
                      "WHERE ".$where;
 
         $query = $this->connDB->prepare($sqlString);

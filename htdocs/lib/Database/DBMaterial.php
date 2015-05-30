@@ -32,7 +32,7 @@ class DBMaterial extends Database {
      */
     protected function queryMaterialByWhere($where) {
 
-        $sqlString = "SELECT * FROM `".$this->table('Material')."` ".
+        $sqlString = "SELECT * FROM `".$this->table('material')."` ".
                      "WHERE ".$where;
 
         $query = $this->connDB->prepare($sqlString);
@@ -159,7 +159,7 @@ class DBMaterial extends Database {
      */
     protected function queryKindByWhere($where) {
 
-        $sqlString = "SELECT * FROM `".$this->table('MaterialKind')."` ".
+        $sqlString = "SELECT * FROM `".$this->table('material_kind')."` ".
                      "WHERE ".$where;
 
         $query = $this->connDB->prepare($sqlString);

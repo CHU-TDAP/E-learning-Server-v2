@@ -77,14 +77,14 @@ class DBStudyActivity extends Database {
         if(isset($learnTime))
             $to_learnTime = $this->connDB->quote($learnTime);
         else $to_learnTime =
-            "(SELECT `ThLearnTime` FROM `".$this->table('Theme').
+            "(SELECT `ThLearnTime` FROM `".$this->table('learn_topic').
             "` WHERE `ThID` = ".$this->connDB->quote($themeId).")";
 
         // 未填入學習風格，將會取用使用者偏好的風格，若帳號未設定，將取用系統預設的學習風格
         $queryResult = array();
         if(!isset($learnStyle) || !isset($materialMode)) {
             $sqlSUser = "SELECT `LMode`, `MMode` ".
-                        "FROM `".$this->table('User')."` ".
+                        "FROM `".$this->table('user')."` ".
                         "WHERE `UID`=".$this->connDB->quote($userId);
 
             $query = $this->connDB->prepare($sqlSUser);
@@ -108,7 +108,7 @@ class DBStudyActivity extends Database {
 
 
         // 寫入學習活動資料
-        $sqlString = "INSERT INTO `".$this->table('StudyActivity').
+        $sqlString = "INSERT INTO `".$this->table('user_activity').
             "` (`UID`, `ThID`,
             `StartTime`, `EndTime`, `LearnTime`, `Delay`, `TimeForce`,
             `LMode`, `LModeForce`, `EnableVirtual`, `MMode`)
@@ -141,7 +141,7 @@ class DBStudyActivity extends Database {
      */
     public function deleteActivity($id) {
 
-        $sqlString = "DELETE FROM ".$this->table('StudyActivity').
+        $sqlString = "DELETE FROM ".$this->table('user_activity').
                      " WHERE `SaID` = :id ";
 
         $query = $this->connDB->prepare($sqlString);
@@ -157,7 +157,7 @@ class DBStudyActivity extends Database {
     protected function queryActivityByWhere($where) {
 
         $sqlString = "SELECT `SaID`, `UID`, `ThID`, ".
-                     "(SELECT `ThName` FROM `".$this->table('Theme')."` AS `th` ".
+                     "(SELECT `ThName` FROM `".$this->table('learn_topic')."` AS `th` ".
                      "WHERE `th`.`ThID` = `sa`.`ThID`) AS `ThName`, ".
                      "`StartTime`, ".
                      "FROM_UNIXTIME(UNIX_TIMESTAMP(`StartTime`)+(`LearnTime`+`Delay`)*60)".
@@ -167,14 +167,14 @@ class DBStudyActivity extends Database {
                      "`LMode`, `LModeForce`, `EnableVirtual`, `MMode`, ".
 
                      "(SELECT count(`TID`)
-                     FROM `".$this->table('TBelong')."` AS `belong`
+                     FROM `".$this->table('learn_topic_belong')."` AS `belong`
                      WHERE `belong`.`ThID` = `sa`.`ThID`) AS `TargetTotal`, ".
 
                      "(SELECT count(DISTINCT `TID`)
-                     FROM `".$this->table('Study')."` AS `study`
+                     FROM `".$this->table('user_history')."` AS `study`
                      WHERE `study`.`SaID` = `sa`.`SaID`) AS `LearnedTotal`".
 
-                     "FROM `".$this->table('StudyActivity')."` AS sa ".
+                     "FROM `".$this->table('user_activity')."` AS sa ".
                      "WHERE ".$where;
 
         $query = $this->connDB->prepare($sqlString);
@@ -349,7 +349,7 @@ class DBStudyActivity extends Database {
      * @param string $endTime     時間
      */
     public function setEndTime($activity_id, $endTime) {
-        $sqlString = "UPDATE ".$this->table('StudyActivity').
+        $sqlString = "UPDATE ".$this->table('user_activity').
                      " SET `EndTime` = :value".
                      " WHERE `SaID` = :id";
 
@@ -366,7 +366,7 @@ class DBStudyActivity extends Database {
      * @param int    $activity_id 活動編號
      */
     public function setEndTimeNow($activity_id) {
-        $sqlString = "UPDATE ".$this->table('StudyActivity').
+        $sqlString = "UPDATE ".$this->table('user_activity').
                      " SET `EndTime` = NOW()".
                      " WHERE `SaID` = :id";
 
@@ -383,7 +383,7 @@ class DBStudyActivity extends Database {
      * @param int $delay       延後時間(分)
      */
     public function setDelay($activity_id, $delay) {
-        $sqlString = "UPDATE ".$this->table('StudyActivity').
+        $sqlString = "UPDATE ".$this->table('user_activity').
                      " SET `Delay` = :value".
                      " WHERE `SaID` = :id";
 
@@ -432,14 +432,14 @@ class DBStudyActivity extends Database {
         if(isset($learnTime))
             $to_learnTime = $this->connDB->quote($learnTime);
         else $to_learnTime =
-            "(SELECT `ThLearnTime` FROM `".$this->table('Theme').
+            "(SELECT `ThLearnTime` FROM `".$this->table('learn_topic').
             "` WHERE `ThID` = ".$this->connDB->quote($themeId).")";
 
         // 未填入學習風格，將會取用使用者偏好的風格，若帳號未設定，將取用系統預設的學習風格
         $queryResult = array();
         if(!isset($learnStyle) || !isset($materialMode)) {
             $sqlSUser = "SELECT `LMode`, `MMode` ".
-                        "FROM `".$this->table('User')."` ".
+                        "FROM `".$this->table('user')."` ".
                         "WHERE `UID`=".$this->connDB->quote($userId);
 
             $query = $this->connDB->prepare($sqlSUser);
@@ -462,7 +462,7 @@ class DBStudyActivity extends Database {
             $to_materialMode = "'".MMODE."'";
 
         // 寫入學習活動資料
-        $sqlString = "INSERT INTO `".$this->table('StudyWill').
+        $sqlString = "INSERT INTO `".$this->table('user_activity_will').
             "` (`UID`, `ThID`,
             `StartTime`, `ExpiredTime`, `LearnTime`, `TimeForce`,
             `LMode`, `LModeForce`, `EnableVirtual`, `MMode`, `Lock`)
@@ -496,7 +496,7 @@ class DBStudyActivity extends Database {
      */
     public function deleteWillActivity($id) {
 
-        $sqlString = "DELETE FROM ".$this->table('StudyWill').
+        $sqlString = "DELETE FROM ".$this->table('user_activity_will').
                      " WHERE `SwID` = :id ";
 
         $query = $this->connDB->prepare($sqlString);
@@ -516,12 +516,12 @@ class DBStudyActivity extends Database {
                      "`LMode`, `LModeForce`, `EnableVirtual`, `MMode`, `Lock`, ".
 
                      "(SELECT count(`TID`)
-                     FROM `".$this->table('TBelong')."` AS `belong`
+                     FROM `".$this->table('learn_topic_belong')."` AS `belong`
                      WHERE `belong`.`ThID` = `sw`.`ThID`) AS `TargetTotal`, ".
 
                      "`BuildTime`, `ModifyTime` ".
 
-                     "FROM `".$this->table('StudyWill')."` AS `sw` ".
+                     "FROM `".$this->table('user_activity_will')."` AS `sw` ".
                      "WHERE ".$where;
 
         $query = $this->connDB->prepare($sqlString);
@@ -721,7 +721,7 @@ class DBStudyActivity extends Database {
             default:                 $sqlField = $field;          break;
         }
 
-        $sqlString = "UPDATE ".$this->table('StudyWill').
+        $sqlString = "UPDATE ".$this->table('user_activity_will').
                      " SET `".$sqlField."` = :value".
                      " , `ModifyTime` = NOW()".
                      " WHERE `SwID` = :id";
@@ -752,11 +752,11 @@ SELECT 'study' AS `Type`,
 
   `LMode`, `LModeForce`, `MMode`, `EnableVirtual`, '1' AS `Lock`,
 
-(SELECT count(`TID`) FROM `".$this->table('TBelong')."` AS `belong` WHERE `belong`.`ThID` = `sa`.`ThID`) AS `  TargetTotal`,
-(SELECT count(DISTINCT `TID`) FROM `".$this->table('Study')."` AS `study` WHERE `study`.`SaID` = `sa`.`SaID`) AS `LearnedTotal`
+(SELECT count(`TID`) FROM `".$this->table('learn_topic_belong')."` AS `belong` WHERE `belong`.`ThID` = `sa`.`ThID`) AS `  TargetTotal`,
+(SELECT count(DISTINCT `TID`) FROM `".$this->table('user_history')."` AS `study` WHERE `study`.`SaID` = `sa`.`SaID`) AS `LearnedTotal`
 
-FROM `".$this->table('StudyActivity')."` AS `sa`
-LEFT JOIN `".$this->table('Theme')."` AS `th`
+FROM `".$this->table('user_activity')."` AS `sa`
+LEFT JOIN `".$this->table('learn_topic')."` AS `th`
 ON `th`.`ThID` = `sa`.`ThID`
 WHERE `EndTime` IS NULL AND `UID` = :uid ";
 
@@ -771,11 +771,11 @@ SELECT 'will' AS `Type`,
 
   `LMode`, `LModeForce`, `MMode`, `EnableVirtual`, `Lock`,
 
-  (SELECT count(`TID`) FROM `".$this->table('TBelong')."` AS `belong` WHERE `belong`.`ThID` = `sw`.`ThID`) AS `TargetTotal`,
+  (SELECT count(`TID`) FROM `".$this->table('learn_topic_belong')."` AS `belong` WHERE `belong`.`ThID` = `sw`.`ThID`) AS `TargetTotal`,
   0 AS `LearnedTotal`
 
-FROM `".$this->table('StudyWill')."` AS `sw`
-LEFT JOIN `".$this->table('Theme')."` AS `th`
+FROM `".$this->table('user_activity_will')."` AS `sw`
+LEFT JOIN `".$this->table('learn_topic')."` AS `th`
 ON `th`.`ThID` = `sw`.`ThID`
 WHERE NOW()>=`StartTime` AND NOW()<`ExpiredTime` AND `UID` = :uid
 ";
@@ -791,10 +791,10 @@ SELECT 'theme' AS `Type`,
 
   NULL, NULL, NULL, 0 AS `EnableVirtual`, 0 AS `Lock`,
 
-  (SELECT count(`TID`) FROM `".$this->table('TBelong')."` AS `belong` WHERE `belong`.`ThID` = `th`.`ThID`) AS `TargetTotal`,
+  (SELECT count(`TID`) FROM `".$this->table('learn_topic_belong')."` AS `belong` WHERE `belong`.`ThID` = `th`.`ThID`) AS `TargetTotal`,
   0 AS `LearnedTotal`
 
-FROM `".$this->table('Theme')."` AS `th` WHERE (SELECT `UEnable_NoAppoint` FROM `".$this->table('User')."` WHERE `UID`= :uid ) = '1'
+FROM `".$this->table('learn_topic')."` AS `th` WHERE (SELECT `UEnable_NoAppoint` FROM `".$this->table('user')."` WHERE `UID`= :uid ) = '1'
 ";
 
 $sqlString = $sqlString_SA." UNION ".$sqlString_SW." UNION ".$sqlString_TG;

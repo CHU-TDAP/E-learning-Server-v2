@@ -42,7 +42,7 @@ class DBStudy extends Database {
 
         $sqlString = "SELECT `SID`, `SaID`, ".
                      "`TID`, `IsEnter`, `IsEntity`, `In_TargetTime`, `Out_TargetTime` ".
-                     "FROM `".$this->table('Study')."` ".
+                     "FROM `".$this->table('user_history')."` ".
                      "WHERE ".$where;
 
         $query = $this->connDB->prepare($sqlString);
@@ -184,7 +184,7 @@ class DBStudy extends Database {
         }
 
         // 寫入
-        $sqlString = "INSERT INTO `".$this->table('Study').
+        $sqlString = "INSERT INTO `".$this->table('user_history').
             "` (`SaID`, `TID`, `IsEnter`, `IsEntity`, `In_TargetTime`, `Out_TargetTime`)
             VALUES ( :said , :tid , :entity , :intime , :outtime )";
 
@@ -213,7 +213,7 @@ class DBStudy extends Database {
      */
     public function delete($id) {
 
-        $sqlString = "DELETE FROM ".$this->table('Study').
+        $sqlString = "DELETE FROM ".$this->table('user_history').
                      " WHERE `SID` = :id ";
 
         $query = $this->connDB->prepare($sqlString);
@@ -228,7 +228,7 @@ class DBStudy extends Database {
      */
     public function deleteByActivityId($id) {
 
-        $sqlString = "DELETE FROM ".$this->table('Study').
+        $sqlString = "DELETE FROM ".$this->table('user_history').
                      " WHERE `SaID` = :id ";
 
         $query = $this->connDB->prepare($sqlString);
@@ -253,7 +253,7 @@ class DBStudy extends Database {
         }
 
         // 寫入
-        $sqlString = "INSERT INTO `".$this->table('Study').
+        $sqlString = "INSERT INTO `".$this->table('user_history').
             "` (`SaID`, `TID`, `IsEnter`, `IsEntity`, `In_TargetTime`, `Out_TargetTime`)
             VALUES ( :said , :tid , '1' , :entity , NOW() , NULL )";
 
@@ -282,7 +282,7 @@ class DBStudy extends Database {
     {
 
         // 寫入
-        $sqlString = "UPDATE `".$this->table('Study').
+        $sqlString = "UPDATE `".$this->table('user_history').
             "` SET `Out_TargetTime` = NOW()
             WHERE `SID` = :id ";
 
@@ -301,7 +301,7 @@ class DBStudy extends Database {
     {
 
         // 寫入
-        $sqlString = "UPDATE `".$this->table('Study').
+        $sqlString = "UPDATE `".$this->table('user_history').
             "` SET `Out_TargetTime` = NOW()
             WHERE `SaID` = :id ";
 
@@ -327,7 +327,7 @@ class DBStudy extends Database {
         }
 
         // 寫入
-        $sqlString = "INSERT INTO `".$this->table('Study').
+        $sqlString = "INSERT INTO `".$this->table('user_history').
             "` (`SaID`, `TID`, `IsEnter`, `IsEntity`, `In_TargetTime`, `Out_TargetTime`)
             VALUES ( :said , :tid , '0' , '1' , NOW() , NULL )";
 
@@ -354,7 +354,7 @@ class DBStudy extends Database {
      */
     public function getCurrentInTargetId($activity_id) {
 
-        $sqlString = "SELECT `TID` FROM `".$this->table('Study')."` ".
+        $sqlString = "SELECT `TID` FROM `".$this->table('user_history')."` ".
             "WHERE `Out_TargetTime` IS NULL AND `SaID` = :said ".
             "AND `IsEnter` = '1'";
 
@@ -381,7 +381,7 @@ class DBStudy extends Database {
      */
     public function getCurrentEnteringTargetId($activity_id) {
 
-        $sqlString = "SELECT `TID` FROM `".$this->table('Study')."` ".
+        $sqlString = "SELECT `TID` FROM `".$this->table('user_history')."` ".
             "WHERE `Out_TargetTime` IS NULL AND `SaID` = :said ".
             "AND `IsEnter` = '0'";
 
@@ -408,7 +408,7 @@ class DBStudy extends Database {
      */
     public function getCurrentEnteringInTargetId($activity_id) {
 
-        $sqlString = "SELECT `TID` FROM `".$this->table('Study')."` ".
+        $sqlString = "SELECT `TID` FROM `".$this->table('user_history')."` ".
             "WHERE `Out_TargetTime` IS NULL AND `SaID` = :said ".
             "AND `IsEnter` = '0'";
 
@@ -435,7 +435,7 @@ class DBStudy extends Database {
      */
     public function getCurrentInStudyId($activity_id) {
 
-        $sqlString = "SELECT `SID` FROM `".$this->table('Study')."` ".
+        $sqlString = "SELECT `SID` FROM `".$this->table('user_history')."` ".
             "WHERE `Out_TargetTime` IS NULL AND `SaID` = :said ".
             " AND `IsEnter` = '1'";
 
