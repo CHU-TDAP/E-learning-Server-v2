@@ -120,9 +120,9 @@ class DBStudyActivity extends Database {
         $query->bindParam(":uid", $userId);
         $query->bindParam(":thid", $themeId);
         $query->bindParam(":delay", $delay);
-        $query->bindParam(":timeforce", $timeForce);
-        $query->bindParam(":lstyle_force", $learnStyle_force);
-        $query->bindParam(":enable_virtual", $enable_virtual);
+        $query->bindParam(":timeforce", $timeForce, \PDO::PARAM_BOOL);
+        $query->bindParam(":lstyle_force", $learnStyle_force, \PDO::PARAM_BOOL);
+        $query->bindParam(":enable_virtual", $enable_virtual, \PDO::PARAM_BOOL);
         $query->execute();
 
         // 取得剛剛加入的ID

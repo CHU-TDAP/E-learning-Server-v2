@@ -134,10 +134,10 @@ class DBUser extends Database {
         $query->bindParam(":passwd", $password);
         $query->bindParam(":gid", $gId);
         $query->bindParam(":cid", $cId);
-        $query->bindParam(":enable", $enable);
+        $query->bindParam(":enable", $enable, \PDO::PARAM_BOOL);
         $query->bindParam(":lmode", $l_mode);
         $query->bindParam(":mmode", $m_mode);
-        $query->bindParam(":enpublic", $enPublic);
+        $query->bindParam(":enpublic", $enPublic, \PDO::PARAM_BOOL);
         $query->bindParam(":nickname", $nickName);
         $query->bindParam(":realname", $realName);
         $query->bindParam(":email", $email);
