@@ -6,9 +6,9 @@
 #
 
 # Mac用的通知中心
-notification :growl
+#notification :growl
 # Linux用的通知中心
-notification :libnotify
+#notification :libnotify
 scope groups: [:build, :livereload, :test]
 
 group :build do
@@ -32,7 +32,7 @@ group :test do
   guard :phpunit2, :all_on_start => false, :tests_path => 'tests/', :cli => '--colors -c phpunit.xml' do
     # Run any test in app/tests upon save.
     watch(%r{^tests/.+Test\.php$})
-  
+
     # When a file is edited, try to run its associated test.
     watch(%r{^htdocs/lib/(.+)\.php}) { |m| "tests/#{m[1]}Test.php" }
   end
