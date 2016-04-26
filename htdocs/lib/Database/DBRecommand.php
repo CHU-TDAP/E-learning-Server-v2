@@ -93,10 +93,27 @@ class DBRecommand extends Database
      */
     public function queryEdgeByID($currentPoint)
     {
-        //echo "EEEEEEEEE";
         $AllOfResult = $this->queryEdgeByWhere($this->table('learn_path').".Ti = ".$this->connDB->quote($currentPoint));
         if(count($AllOfResult) != 0) return $AllOfResult;
         else return null;
+    }
+
+    // ========================================================================
+
+    public function insertRecommandHistory($activity_id, $target_ids) {
+
+        $nowDateQuery = $this->connDB->query("SELECT NOW()");
+        $nowDate = $nowDateQuery->fetch()[0];
+
+        foreach($target_ids as $target_id) {
+            $sqlString = "INSERT INTO ".$this->table('user_history_recommand')." (`SaID`, `Date`, `TID`) VALUES ( :said , :now , :tid )";
+            $query = $this->connDB->prepare($sqlString);
+            $query->bindParam(":said", $activity_id);
+            $query->bindParam(":now", $nowDate);
+            $query->bindParam(":tid", $target_id);
+            $query->execute();
+
+        }
     }
 
 }

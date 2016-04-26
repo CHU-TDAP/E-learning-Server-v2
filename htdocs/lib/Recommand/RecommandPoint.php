@@ -185,4 +185,9 @@ class RecommandPoint
 
         return $recommand;
     }
+
+    public function insertRecommandHistory($activity_id, $target_ids) {
+
+        return $this->recommand->insertRecommandHistory($activity_id, $target_ids);
+    }
 }
