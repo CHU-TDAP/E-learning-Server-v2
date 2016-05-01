@@ -93,7 +93,8 @@ class DBRecommand extends Database
      */
     public function queryEdgeByID($currentPoint)
     {
-        $AllOfResult = $this->queryEdgeByWhere($this->table('learn_path').".Ti = ".$this->connDB->quote($currentPoint));
+        $AllOfResult = $this->queryEdgeByWhere($this->table('learn_path').".Ti = ".$this->connDB->quote($currentPoint)." OR ".
+                                              $this->table('learn_path').".Tj = ".$this->connDB->quote($currentPoint));
         if(count($AllOfResult) != 0) return $AllOfResult;
         else return null;
     }
