@@ -41,7 +41,7 @@ class DBStudy extends Database {
     protected function queryByWhere($where) {
 
         $sqlString = "SELECT `SID`, `SaID`, ".
-                     "`TID`, `IsEnter`, `IsEntity`, `In_TargetTime`, `Out_TargetTime` ".
+                     "`TID`, IF(ISNULL(`Out_TargetTime`),1,0) AS `IsEnter`, `IsEntity`, `In_TargetTime`, `Out_TargetTime` ".
                      "FROM `".$this->table('user_history')."` ".
                      "WHERE ".$where;
 
@@ -253,9 +253,7 @@ class DBStudy extends Database {
         }
 
         // 寫入
-        $sqlString = "INSERT INTO `".$this->table('user_history').
-            "` (`SaID`, `TID`, `IsEnter`, `IsEntity`, `In_TargetTime`, `Out_TargetTime`)
-            VALUES ( :said , :tid , '1' , :entity , NOW() , NULL )";
+        $sqlString = "INSERT INTO `".$this->table('user_history')."` (`SID`, `SaID`, `TID`, `IsEntity`, `In_TargetTime`, `Out_TargetTime`) VALUES (NULL, :said , :tid , :entity , NOW(), NULL)";
 
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":said", $activity_id);
@@ -488,8 +486,7 @@ class DBStudy extends Database {
         $queryResultAll = $this->queryByWhere(
             "`TID` = ".$this->connDB->quote($target_id).
             " AND `SaID` = ".$this->connDB->quote($activity_id).
-            " AND `Out_TargetTime` IS NULL ".
-            " AND `IsEnter` = '1'");
+            " AND `Out_TargetTime` IS NULL ");
 
         return $queryResultAll;
     }
