@@ -24,7 +24,7 @@ class DBRecommand extends Database
 
     protected function queryEdgeByWhere($where)
     {
-        $sqlString = "SELECT DISTINCT ".$this->table('learn_path').".Ti, ".$this->table('learn_path').".Tj, ".$this->table('learn_path').".MoveTime".
+        $sqlString = "SELECT DISTINCT Ti, Tj, MoveTime".
                      " FROM ".$this->table('learn_path')." WHERE ".$where;
         $query = $this->connDB->prepare($sqlString);
         $query->execute();
@@ -93,8 +93,7 @@ class DBRecommand extends Database
      */
     public function queryEdgeByID($currentPoint)
     {
-        $AllOfResult = $this->queryEdgeByWhere($this->table('learn_path').".Ti = ".$this->connDB->quote($currentPoint)." OR ".
-                                              $this->table('learn_path').".Tj = ".$this->connDB->quote($currentPoint));
+        $AllOfResult = $this->queryEdgeByWhere($this->table('learn_path').".Ti = ".$this->connDB->quote($currentPoint));
         if(count($AllOfResult) != 0) return $AllOfResult;
         else return null;
     }

@@ -465,8 +465,7 @@ class DBStudy extends Database {
 
         $queryResultAll = $this->queryByWhere(
             "`TID` = ".$this->connDB->quote($target_id).
-            " AND `SaID` = ".$this->connDB->quote($activity_id).
-            " AND `IsEnter` = '1'");
+            " AND `SaID` = ".$this->connDB->quote($activity_id));
 
         return $queryResultAll;
     }

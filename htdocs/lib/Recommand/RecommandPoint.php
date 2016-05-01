@@ -187,7 +187,8 @@ class RecommandPoint
     }
 
     public function insertRecommandHistory($activity_id, $target_ids) {
-
-        return $this->recommand->insertRecommandHistory($activity_id, $target_ids);
+        if( count($target_ids) > 0 ) {
+            return $this->recommand->insertRecommandHistory($activity_id, $target_ids);
+        }
     }
 }
