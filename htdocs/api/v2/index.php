@@ -1403,10 +1403,12 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
 
                     // 製作
                     $output_targets = array();
+                    $output_target_ids = array();
                     for($i=0; $i<$result_recommand_total; $i++) {
                         $target_id = $recommandResult[$i]['nextPoint'];
                         $isEntity = $recommandResult[$i]['isEntity'];
                         array_push($output_targets, output_the_target_array($target_id, $isEntity, $materialMode));
+                        array_push($output_target_ids, $target_id);
 
                         // TODO: 標的進出資料多增加行進中、確實進入的欄位
                         if($maxItemTotal == 1) {
@@ -1414,6 +1416,9 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                         }
 
                     }
+
+                    // 紀錄所有推薦進歷程
+                    $recommand->insertRecommandHistory($saId, $output_target_ids);
 
                     // 噴出結果
                     $app->render(201,array(
