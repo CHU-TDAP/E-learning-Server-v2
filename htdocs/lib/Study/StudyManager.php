@@ -58,6 +58,31 @@ class StudyManager {
     }
 
     /**
+     * 取得所有已學習過學習點編號陣列
+     *
+     * @param int $activity_id 活動編號
+     * @param string $target_id 標的編號
+     * @return bool 是否已學習過
+     */
+    public function getLearnedTargetId($activity_id) {
+
+        $db = new Database\DBStudy();
+        $query = $db->getLearnedByActivityId($activity_id);
+        $ids = array();
+        if(count($query)>0) {
+            foreach($query as $theQuery) {
+                array_push($ids, $theQuery['target_id']);
+            }
+            $ids = array_unique($ids);
+            asort($ids);
+            return $ids;
+        }
+        else {
+            return array();
+        }
+    }
+
+    /**
      * 此標的是否已學習過
      *
      * @param int $activity_id 活動編號

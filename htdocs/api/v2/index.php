@@ -1211,146 +1211,6 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
 
     /*
      * 推薦學習點
-     * GET http://localhost/api/v2/tokens/{登入Token}/activitys/{學習中活動編號}/recommand?current_point={目前所在的學習點編號}
-     */
-    $app->get('/:token/activitys/:said/recommand', function ($token, $saId) use ($app) {
-        if(isset($_GET['current_point'])) { $currentTId = $_GET['current_point']; }
-
-        function output_the_target_array($tId, $isEntity, $materialMode) {
-            $thisOutput = array();
-            $target = new Target\Target($tId);
-            $thisOutput = array(
-                'target_id'     => $target->getId(),
-                'is_entity'     => $isEntity,
-                'hall_id'       => $target->getHallId(),
-                'area_id'       => $target->getAreaId(),
-                'target_number' => $target->getNumber(),
-                'name'          => $target->getName(),
-                'map_url'       => $target->getMapUrl(),
-                'material_url'  => $target->getMaterialUrl($isEntity, $materialMode),
-                'learn_time'    => $target->getLearnTime(),
-                'PLj'           => $target->getPLj(),
-                'Mj'            => $target->getMj(),
-                'S'             => $target->getS(),
-                'Fj'            => $target->getFj()
-            );
-            return $thisOutput;
-        }
-
-        try {
-            // 查詢使用者
-            $session = new User\UserSession();
-            $user_id = $session->getUserId($token);
-
-            // 取得開始後的學習活動資訊
-            $sact = new Study\StudyActivity($saId);
-
-            // 確認此學習活動是否為本人所有
-            if($sact->getUserId() == $user_id) {
-
-                // 必填參數有填
-                if( isset($currentTId) ) {
-
-                    $currentTId = (int)$currentTId;
-
-                    $tid = $sact->getThemeId(); // 取得此活動的主題
-                    $maxItemTotal = $sact->getLearnStyle(); // 取得最大推薦數
-
-                    // 取得本次採用的教材風格
-                    $materialMode = $sact->getMaterialStyle();
-
-                    // 學習時間已過並設強制結束
-                    if($sact->isForceLearnTime() && $sact->getRemainingTime() <= 0) {
-                        $isEnd = true;
-
-                        $result_recommand_total = 0;
-                        $output_targets = array();
-                    }
-                    // 是否已經學完了
-                    else if($sact->getRemainingPointTotal() <= 0) {
-                        $isEnd = true;
-
-                        $result_recommand_total = 0;
-                        $output_targets = array();
-                    }
-                    else {
-                        $isEnd = false;
-
-                        // 取得推薦的學習點
-                        $recommand = new Recommand\RecommandPoint();
-                        $recommandResult = $recommand->recommand($currentTId, $saId);
-                        $recommandTotal = count($recommandResult);
-                        if($recommandTotal > $maxItemTotal) {
-                            $result_recommand_total = $maxItemTotal;
-                        }
-                        else {
-                            $result_recommand_total = $recommandTotal;
-                        }
-
-                        // 製作
-                        $output_targets = array();
-                        $output_target_ids = array();
-                        for($i=0; $i<$result_recommand_total; $i++) {
-                            $target_id = $recommandResult[$i]['nextPoint'];
-                            $isEntity = $recommandResult[$i]['isEntity'];
-                            array_push($output_targets, output_the_target_array($target_id, $isEntity, $materialMode));
-                            array_push($output_target_ids, $target_id);
-                        }
-
-                        // 紀錄所有推薦進歷程
-                        $recommand->insertRecommandHistory($saId, $output_target_ids);
-                    }
-
-                    // 噴出結果
-                    $app->render(200,array(
-                        'token'             => $token,
-                        'user_id'           => $user_id,
-                        'activity_id'       => $sact->getId(),
-                        'current_target_id' => $currentTId,
-                        'is_end'            => $isEnd,
-                        'recommand_total'   => $result_recommand_total,
-                        'recommand_target'  => $output_targets,
-                        'error'             => false
-                    ));
-
-                }
-                else {
-                    $app->render(400,array(
-                        'token'   => $token,
-                        'error'   => true,
-                        'msg'     => 'No input \'current_point\' param.',
-                        'msg_cht' => '缺少 \'current_point\' 參數'
-                    ));
-                }
-
-            }
-            // 若非本人所有，則視同無此活動
-            else {
-                throw new Exception\StudyActivityNoFoundException($saId);
-            }
-
-        }
-        catch (Exception\LoginTokenNoFoundException $e) {
-            $app->render(401,array(
-                'token'   => $token,
-                'error'   => true,
-                'msg'     => 'No \''.$token.'\' session. Please login again.',
-                'msg_cht' => '沒有\''.$token.'\'登入階段，請重新登入',
-                'substatus'   => 204
-            ));
-        }
-        catch (Exception\StudyActivityNoFoundException $e) {
-            $app->render(404,array(
-                'token'   => $token,
-                'error'   => true,
-                'msg'     => 'No found this activity.',
-                'msg_cht' => '沒有此學習活動'
-            ));
-        }
-    });
-
-    /*
-     * 推薦學習點
      * POST http://localhost/api/v2/tokens/{登入Token}/activitys/{學習中活動編號}/recommand?current_point={目前所在的學習點編號}
      * TODO: 將上方的重複的程式碼片段獨立開來
      */
@@ -1424,35 +1284,69 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     else {
                         $isEnd = false;
 
-                        // 取得推薦的學習點
-                        $recommand = new Recommand\RecommandPoint();
-                        $recommandResult = $recommand->recommand($currentTId, $saId);
-                        $recommandTotal = count($recommandResult);
-                        if($recommandTotal > $maxItemTotal) {
-                            $result_recommand_total = $maxItemTotal;
-                        }
-                        else {
-                            $result_recommand_total = $recommandTotal;
-                        }
+                        // 若設定為自由探索
+                        if($maxItemTotal == 0) {
 
-                        // 製作
-                        $output_targets = array();
-                        $output_target_ids = array();
-                        for($i=0; $i<$result_recommand_total; $i++) {
-                            $target_id = $recommandResult[$i]['nextPoint'];
-                            $isEntity = $recommandResult[$i]['isEntity'];
-                            array_push($output_targets, output_the_target_array($target_id, $isEntity, $materialMode));
-                            array_push($output_target_ids, $target_id);
+                            // 取得主題內所有的標的資訊
+                            $target_manager = new Target\TargetManager();
+                            $all_targets = $target_manager->getAllTargetInfoByTheme($tid);
 
-                            // TODO: 標的進出資料多增加行進中、確實進入的欄位
-                            if($maxItemTotal == 1) {
-                                $sid = $sact->enteringInTarget($target_id, true);
+                            $theme_ids = array();
+                            foreach($all_targets as $the_target) {
+                                array_push($theme_ids, $the_target['target_id']);
+                            }
+
+                            // 過濾已學習過標的
+                            $studyMng = new Study\StudyManager();
+                            $learn_ids = $studyMng->getLearnedTargetId($saId);
+
+                            if(count($learn_ids)>0) {
+                                $recommandResult = array_diff($theme_ids,$learn_ids);
+                                $result_recommand_total = count($theme_ids) - count($learn_ids);
+
+                            }
+                            else {
+                                $recommandResult = $theme_ids;
+                                $result_recommand_total = count($theme_ids);
+                            }
+                            $output_targets = array();
+                            foreach($recommandResult as $theresult) {
+                                array_push($output_targets, output_the_target_array($theresult, true, $materialMode));
                             }
 
                         }
+                        else {
+                            // 取得推薦的學習點
+                            $recommand = new Recommand\RecommandPoint();
+                            $recommandResult = $recommand->recommand($currentTId, $saId);
+                            $recommandTotal = count($recommandResult);
+                            if($recommandTotal > $maxItemTotal) {
+                                $result_recommand_total = $maxItemTotal;
+                            }
+                            else {
+                                $result_recommand_total = $recommandTotal;
+                            }
 
-                        // 紀錄所有推薦進歷程
-                        $recommand->insertRecommandHistory($saId, $output_target_ids);
+                            // 製作
+                            $output_targets = array();
+                            $output_target_ids = array();
+                            for($i=0; $i<$result_recommand_total; $i++) {
+                                $target_id = $recommandResult[$i]['nextPoint'];
+                                $isEntity = $recommandResult[$i]['isEntity'];
+                                array_push($output_targets, output_the_target_array($target_id, $isEntity, $materialMode));
+                                array_push($output_target_ids, $target_id);
+
+                                // TODO: 標的進出資料多增加行進中、確實進入的欄位
+                                if($maxItemTotal == 1) {
+                                    $sid = $sact->enteringInTarget($target_id, true);
+                                }
+
+                            }
+
+                            // 紀錄所有推薦進歷程
+                            $recommand->insertRecommandHistory($saId, $output_target_ids);
+                        }
+
                     }
 
 

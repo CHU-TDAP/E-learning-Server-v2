@@ -510,4 +510,20 @@ class DBStudy extends Database {
 
         return $queryResultAll;
     }
+
+    /**
+     * 取得在標學習中已學過的資料
+     *
+     * @param int $activity_id 活動編號
+     * @return array 所有進出記錄資訊陣列
+     * @since 2.0.0
+     */
+    public function getLearnedByActivityId($activity_id) {
+
+        $queryResultAll = $this->queryByWhere(
+            "`SaID` = ".$this->connDB->quote($activity_id).
+            " AND `Out_TargetTime` IS NOT NULL ");
+
+        return $queryResultAll;
+    }
 }
