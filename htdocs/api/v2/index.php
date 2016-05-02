@@ -11,6 +11,7 @@ require_once UELEARNING_LIB_ROOT.'/Study/StudyManager.php';
 require_once UELEARNING_LIB_ROOT.'/Target/Target.php';
 require_once UELEARNING_LIB_ROOT.'/Target/TargetManager.php';
 require_once UELEARNING_LIB_ROOT.'/Database/DBInfo.php';
+require_once UELEARNING_LIB_ROOT.'/Database/DBQuestion.php';
 require_once UELEARNING_LIB_ROOT.'/Recommand/RecommandPoint.php';
 require_once UELEARNING_LIB_ROOT.'/Log/Log.php';
 use UElearning\User;
@@ -1108,6 +1109,18 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
      */
     $app->post('/:token/activitys/:said/points/:tid/toout', function ($token, $saId, $tId) use ($app) {
 
+        $app = \Slim\Slim::getInstance();
+
+        // 取得帶來的參數
+        $cType = $app->request->getContentType();
+
+        if($cType == 'application/json') {
+            $postData = $app->request->getBody();
+            $postDataJson = json_decode($postData);
+
+            $ans_json = $postDataJson->answers;
+        }
+
         try {
             // 查詢使用者
             $session = new User\UserSession();
@@ -1123,10 +1136,17 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                 try {
                     $sact->toOutTarget($tId);
 
+                    // 紀錄回答問題
+                    $db_recommend = new Database\DBQuestion();
+                    foreach($ans_json as $the_ans) {
+                        $db_recommend->insert($saId, $the_ans->target_id, $the_ans->question_time, $the_ans->answer_time, $the_ans->quest_id, $the_ans->answer, $the_ans->correct);
+                    }
+
                     // 噴出結果
                     $app->render(201,array(
                         'token'       => $token,
                         'user_id'     => $user_id,
+                        'answers'     => $ans_json,
                         'activity_id' => $sact->getId(),
                         'error'       => false
                     ));
@@ -1137,6 +1157,21 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     // TODO: 這邊先暫時當成是以實體方式進入，之後要修成Client發出離開訊息時，也一併帶入剛剛的為實體or虛擬
                     $sact->toInTarget($tId, true);
                     $sact->toOutTarget($tId);
+
+                    // 紀錄回答問題
+                    $db_recommend = new Database\DBQuestion();
+                    foreach($ans_json as $the_ans) {
+                        $db_recommend->insert($saId, $the_ans->target_id, $the_ans->question_time, $the_ans->answer_time, $the_ans->quest_id, $the_ans->answer, $the_ans->correct);
+                    }
+
+                    // 噴出結果
+                    $app->render(201,array(
+                        'token'       => $token,
+                        'user_id'     => $user_id,
+                        'answers'     => $ans_json,
+                        'activity_id' => $sact->getId(),
+                        'error'       => false
+                    ));
 
                     // 噴出結果
                     $app->render(201,array(
