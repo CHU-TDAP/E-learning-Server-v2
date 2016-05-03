@@ -212,6 +212,25 @@ class StudyActivityManager {
     public function getEnableActivityByUserId($user_id) {
 
         $db = new Database\DBStudyActivity();
-        return $db->getEnableActivityByUserId($user_id);
+        $list = $db->getEnableActivityByUserId($user_id);
+
+        // 若有任何一項學習中活動
+        $have_study = false;
+        foreach($list as $theActA) {
+            if ($theActA['type'] == 'study') {
+                $have_study = true;
+            }
+        }
+
+        if ($have_study) {
+            foreach($list as $key => $theActB) {
+                if ($theActB['type'] != 'study') {
+                    unset($list[$key]);
+                }
+            }
+        }
+
+//        return $have_study;
+        return $list;
     }
 }
