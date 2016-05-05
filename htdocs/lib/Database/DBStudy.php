@@ -353,8 +353,7 @@ class DBStudy extends Database {
     public function getCurrentInTargetId($activity_id) {
 
         $sqlString = "SELECT `TID` FROM `".$this->table('user_history')."` ".
-            "WHERE `Out_TargetTime` IS NULL AND `SaID` = :said ".
-            "AND `IsEnter` = '1'";
+            "WHERE `Out_TargetTime` IS NULL AND `SaID` = :said";
 
         $query = $this->connDB->prepare($sqlString);
         $query->bindParam(":said", $activity_id);
