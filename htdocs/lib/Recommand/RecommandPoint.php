@@ -126,17 +126,26 @@ class RecommandPoint
      */
     public function recommand($current_point,$activity_number)
     {
+        // 取得活動物件
         $this->activity = new Study\StudyActivity($activity_number);
+        // 取得主題編號
         $themeID = $this->activity->getThemeId();
+        // 取得這次活動是否使用虛擬學習點
         $enableVirtual = $this->activity->isEnableVirtual();
+
         $this->theme = new Study\Theme($themeID);
+        // 計算正規化參數gamma值
         $this->gamma = $this->computeNormalizationParameter($themeID);
+        // 取得這個點到所有下一個點的資訊
         $pointList = $this->recommand->queryEdgeByID($current_point);
+        // 過濾不合法的學習點
         $targetList = $this->excludeIrregularTarget($pointList,$this->activity);
 
         //計算路徑的權重值
-        $pathCost = 0;
-        $VirtualPathCost = 0;
+        $pathCost = 0;        // 實體推薦度分數
+        $VirtualPathCost = 0; // 虛擬學習點推薦分數
+
+        // 整理可用的學習點清單
         $recommand = array();
         for($i=0;$i<count($targetList);$i++)
         {
@@ -145,19 +154,23 @@ class RecommandPoint
             $nextPoint = new Target\Target($next_point);
             $weight = $this->theme->getWeightByNextTarget($next_point);
 
+            // 這個學習點目前人數已滿
             if($nextPoint->isFullPeople())
             {
                 $pathCost = 0;
                 $virtualCost = RecommandPoint::ALPHA * $this->gamma * ($weight/$nextPoint->getLearnTime());
                 $isEntity=false;
 
+                // 若啟用虛擬學習點推薦
                 if($enableVirtual) {
+                    // 加入可推薦的學習點清單
                     array_push($recommand,array("nextPoint" => $next_point,
                                         "isEntity" => $isEntity,
                                         "PathCost" => $pathCost,
                                         "VirtualCost" => $virtualCost));
                 }
             }
+            // 這個學習點目前人數沒有滿
             else
             {
                 $isEntity=true;
@@ -166,6 +179,7 @@ class RecommandPoint
                 $pathCost = RecommandPoint::ALPHA * $this->gamma * ($weight * ($nextPoint->getS()-$Rj+1)/($moveTime + $nextPoint->getLearnTime()));
                 $virtualCost = RecommandPoint::ALPHA * $this->gamma * ($weight/$nextPoint->getLearnTime());
 
+                // 加入可推薦的學習點清單
                 array_push($recommand,array("nextPoint" => $next_point,
                                         "isEntity" => $isEntity,
                                         "PathCost" => $pathCost,
@@ -174,6 +188,7 @@ class RecommandPoint
 
         }
 
+        // 依照算出來的推薦度分數PathCost排序
         if(count($recommand) >= 1) {
 
             foreach($recommand as $key=>$value)
