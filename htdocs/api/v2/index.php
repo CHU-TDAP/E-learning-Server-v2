@@ -14,6 +14,8 @@ require_once UELEARNING_LIB_ROOT.'/Database/DBInfo.php';
 require_once UELEARNING_LIB_ROOT.'/Database/DBQuestion.php';
 require_once UELEARNING_LIB_ROOT.'/Recommand/RecommandPoint.php';
 require_once UELEARNING_LIB_ROOT.'/Log/Log.php';
+require_once UELEARNING_LIB_ROOT.'/Log/XApi.php';
+require_once UELEARNING_LIB_ROOT.'/Util/UEHBase.php';
 use UElearning\User;
 use UElearning\Study;
 use UElearning\Target;
@@ -21,6 +23,7 @@ use UElearning\Recommand;
 use UElearning\Exception;
 use UElearning\Database;
 use UElearning\Log;
+use UElearning\Util;
 
 $app = new \Slim\Slim(array(
     'templates.path' => './', // 設定Path
@@ -93,6 +96,20 @@ function login($user_id = null) {
         // 取得支援的教材類型
         $db_material = new Database\DBMaterial();
         $all_material_kind = $db_material->queryAllKind();
+
+        // 紀錄進HBase
+        if(UELEARNING_UEHBASE_ENABLE) {
+            $xapi = new Log\XApi();
+            $uname = $user->getName();
+            $umail = $user->getEmail();
+            $cname = $user->getClassName();
+            $lmode = $user->getLearnStyle();
+            $post_data = $xapi->login($nowDate,$loginToken,$uname,$umail,$cname,$lmode);
+
+            $hbase = new Util\UEHBase();
+            $hbase->sendLog($post_data);
+        }
+
 
         // 輸出結果
         $app->render(201,array(

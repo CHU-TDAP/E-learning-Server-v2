@@ -125,3 +125,15 @@
      * 這份設定檔的路徑
      */
     define('UELEARNING_CONFIG_PATH', __FILE__);
+
+// 連接HBase伺服器 =============================================================
+
+    /**
+     * 是否啟用介接學習歷程紀錄伺服器
+     */
+    define('UELEARNING_UEHBASE_ENABLE', false);
+
+    /**
+     * 介接學習歷程紀錄伺服器紀錄模組網址
+     */
+    define('UELEARNING_UEHBASE_URL', 'http://localhost/');
