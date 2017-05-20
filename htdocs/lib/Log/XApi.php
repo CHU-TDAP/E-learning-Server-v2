@@ -26,6 +26,7 @@ class XApi {
      * @param  string $c_name     班級名稱
      * @param  int    $lmode      導覽模式
      * @return array              轉換後XAPI陣列
+     * @deprecated 此版本將不使用
      */
     public function login($login_date, $token, $u_name, $u_email, $c_name, $lmode)
     {
@@ -96,6 +97,7 @@ class XApi {
      * @param  [type] $theme_name [description]
      * @param  [type] $l_mode     [description]
      * @return [type]             [description]
+     * @deprecated 此版本將不使用
      */
     public function createStudyActivity($date, $token, $u_name, $u_email, $c_name, $theme_id, $theme_name, $l_mode)
     {
@@ -166,6 +168,7 @@ class XApi {
      * @param  [type] $t_name  [description]
      * @param  [type] $l_mode  [description]
      * @return [type]          [description]
+     * @deprecated 此版本將不使用
      */
     public function getRecommandPoints($date, $token, $u_name, $u_email, $c_name, $t_id, $t_name, $l_mode)
     {
@@ -237,6 +240,7 @@ class XApi {
      * @param  [type] $m_id    [description]
      * @param  [type] $l_mode  [description]
      * @return [type]          [description]
+     * @deprecated 此版本將不使用
      */
     public function scanToMaterial($date, $token, $u_name, $u_email, $c_name, $t_id, $t_name, $m_id, $l_mode)
     {
@@ -306,6 +310,7 @@ class XApi {
      * @param  [type] $t_name  [description]
      * @param  [type] $l_mode  [description]
      * @return [type]          [description]
+     * @deprecated 此版本將不使用
      */
     public function browseTarget($date, $token, $u_name, $u_email, $c_name, $t_id, $t_name, $l_mode)
     {
@@ -375,6 +380,7 @@ class XApi {
      * @param  [type] $t_name  [description]
      * @param  [type] $l_mode  [description]
      * @return [type]          [description]
+     * @deprecated 此版本將不使用
      */
     public function chooseTarget($date, $token, $u_name, $u_email, $c_name, $t_id, $t_name, $l_mode)
     {
@@ -442,6 +448,7 @@ class XApi {
      * @param  [type] $c_name  [description]
      * @param  [type] $l_mode  [description]
      * @return [type]          [description]
+     * @deprecated 此版本將不使用
      */
     public function pressScanButton($date, $token, $u_name, $u_email, $c_name, $l_mode)
     {
@@ -511,6 +518,7 @@ class XApi {
      * @param  [type] $m_id    [description]
      * @param  [type] $l_mode  [description]
      * @return [type]          [description]
+     * @deprecated 此版本將不使用
      */
     public function pressStartAnswer($date, $token, $u_name, $u_email, $c_name, $m_id, $l_mode)
     {
@@ -580,6 +588,7 @@ class XApi {
      * @param  [type] $m_id    [description]
      * @param  [type] $l_mode  [description]
      * @return [type]          [description]
+     * @deprecated 此版本將不使用
      */
     public function readMaterial($date, $token, $u_name, $u_email, $c_name, $m_id, $l_mode)
     {
@@ -648,6 +657,7 @@ class XApi {
      * @param  [type] $c_name  [description]
      * @param  [type] $l_mode  [description]
      * @return [type]          [description]
+     * @deprecated 此版本將不使用
      */
     public function endStudyActivity($date, $token, $u_name, $u_email, $c_name, $l_mode)
     {
@@ -702,6 +712,6 @@ class XApi {
             )
           ),
           "timestamp"=> $date //資料表=>user_session的ULogoutDate
-        )
+        );
     }
 }
