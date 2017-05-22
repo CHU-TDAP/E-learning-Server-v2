@@ -1160,7 +1160,7 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                     $the_study = new Study\Study($the_study_id);
                     $sact->toOutTarget($tId);
 
-//                    // 紀錄回答問題
+                    // 紀錄回答問題
                     $db_recommend = new Database\DBQuestion();
                     foreach($ans_json as $the_ans) {
                         $db_recommend->insert($saId, $the_ans->target_id, $the_ans->question_time, $the_ans->answer_time, $the_ans->quest_id, $the_ans->answer, $the_ans->correct);
