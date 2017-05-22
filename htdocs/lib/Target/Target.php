@@ -8,6 +8,8 @@ namespace UElearning\Target;
 require_once UELEARNING_LIB_ROOT.'/Database/DBTarget.php';
 require_once UELEARNING_LIB_ROOT.'/Database/DBMaterial.php';
 require_once UELEARNING_LIB_ROOT.'/Target/Exception.php';
+require_once UELEARNING_LIB_ROOT.'/Target/Area.php';
+require_once UELEARNING_LIB_ROOT.'/Target/Hall.php';
 use UElearning\Database;
 use UElearning\Exception;
 
@@ -133,6 +135,28 @@ class Target {
     }
 
     /**
+     * 取得標的所在的區域名稱
+     *
+     * @return string 標的所在的區域名稱
+     * @since 2.0.0
+     */
+    public function getAreaName(){
+        $area = new Area($this->getAreaId());
+        return $area->getName();
+    }
+
+    /**
+     * 取得標的所在的樓層
+     *
+     * @return int 標的所在的樓層
+     * @since 2.0.0
+     */
+    public function getFloor(){
+        $area = new Area($this->getAreaId());
+        return $area->getFloor();
+    }
+
+    /**
      * 取得標的所在的廳ID
      *
      * @return int 標的所在的廳ID
@@ -140,6 +164,17 @@ class Target {
      */
     public function getHallId(){
         return $this->queryResultArray['hall_id'];
+    }
+
+    /**
+     * 取得標的所在的廳名稱
+     *
+     * @return string 標的所在的廳名稱
+     * @since 2.0.0
+     */
+    public function getHallName(){
+        $hall = new Hall($this->getHallId());
+        return $hall->getName();
     }
 
     /**

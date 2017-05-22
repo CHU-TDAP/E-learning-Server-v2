@@ -4,7 +4,7 @@
  */
 namespace UElearning\Util;
 
-use GuzzleHttp\Client;
+use \GuzzleHttp\Client;
 
 class UEHBase {
 
@@ -12,7 +12,7 @@ class UEHBase {
     {
         $client = new \GuzzleHttp\Client();
         $response = $client->request('POST', UELEARNING_UEHBASE_URL, [
-            'json' => $result
+            'json' => $xapi_array
         ]);
     }
 }

@@ -97,20 +97,6 @@ function login($user_id = null) {
         $db_material = new Database\DBMaterial();
         $all_material_kind = $db_material->queryAllKind();
 
-        // 紀錄進HBase
-        if(UELEARNING_UEHBASE_ENABLE) {
-            $xapi = new Log\XApi();
-            $uname = $user->getName();
-            $umail = $user->getEmail();
-            $cname = $user->getClassName();
-            $lmode = $user->getLearnStyle();
-            $post_data = $xapi->login($nowDate,$loginToken,$uname,$umail,$cname,$lmode);
-
-            $hbase = new Util\UEHBase();
-            $hbase->sendLog($post_data);
-        }
-
-
         // 輸出結果
         $app->render(201,array(
             'user_id'      => $user_id,
@@ -758,8 +744,26 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
             if($sact->getUserId() == $user_id) {
 
                 // 結束學習活動
-
                 $sact->finishActivity();
+
+                // 傳送紀錄給紀錄模組伺服器
+                if(UELEARNING_UEHBASE_ENABLE) {
+                    $user = new User\User($user_id);
+                    $xapi = new Log\XApi();
+                    $u_name = $user->getName();
+                    $u_email = $user->getEmail();
+                    $c_name = $user->getClassName();
+                    $lmode = $user->getLearnStyle();
+
+                    //$date = strtotime("now");
+                    $date = date('Y-m-d H:i:s');
+                    $duration = 1; // TODO: 期間
+                    $post_data = $xapi->endStudyActivity($date, $token, $duration, $u_name, $u_email, $c_name,
+                    $saId, $lmode);
+
+                    $hbase = new Util\UEHBase();
+                    $hbase->sendLog($post_data);
+                }
 
                 // 噴出學習完畢後的活動資料
                 $app->render(201,array(
@@ -1151,12 +1155,59 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
 
                 // 離開學習點
                 try {
+                    $smang = new Study\StudyManager();
+                    $the_study_id = $smang->getCurrentInStudyId($saId);
+                    $the_study = new Study\Study($the_study_id);
                     $sact->toOutTarget($tId);
 
-                    // 紀錄回答問題
+//                    // 紀錄回答問題
                     $db_recommend = new Database\DBQuestion();
                     foreach($ans_json as $the_ans) {
                         $db_recommend->insert($saId, $the_ans->target_id, $the_ans->question_time, $the_ans->answer_time, $the_ans->quest_id, $the_ans->answer, $the_ans->correct);
+                    }
+
+                    // 傳送紀錄給紀錄模組伺服器
+                    if(UELEARNING_UEHBASE_ENABLE) {
+                        $user = new User\User($user_id);
+                        $xapi = new Log\XApi();
+                        $u_name = $user->getName();
+                        $u_email = $user->getEmail();
+                        $c_name = $user->getClassName();
+                        $lmode = $user->getLearnStyle();
+                        $target_id = $the_study->getTargetId();
+                        $target = new Target\Target($target_id);
+                        $target_name = $target->getName();
+                        $floor = $target->getFloor();
+                        $hall_id = $target->getHallId();
+                        $hall_name = $target->getHallName();
+                        $area_id = $target->getAreaId();
+                        $area_name = $target->getAreaName();
+
+                        //$date = strtotime("now");
+                        $date = date('Y-m-d H:i:s');
+                        $duration = $the_study->getElapsedSec();
+                        // TODO: Material ID
+                        $post_data = $xapi->readMaterial($date, $token, $duration, $u_name, $u_email, $c_name,
+                        $saId, $lmode,
+                        $hall_id, $hall_name, $area_id, $area_name, $floor, $target_id, $target_name, '1');
+
+                        $hbase = new Util\UEHBase();
+                        $hbase->sendLog($post_data);
+
+                        $debug_array = array();
+                        foreach($ans_json as $the_ans) {
+                            $qDate = strtotime($the_ans->question_time);
+                            $aDate = strtotime($the_ans->answer_time);
+                            $ans_duration = (int)$aDate - (int)$qDate;
+
+                            $post_ans_data = $xapi->answerQuestion($the_ans->question_time, $token, $ans_duration, $u_name, $u_email, $c_name,
+                            $saId, $lmode,
+                            $hall_id, $hall_name, $area_id, $area_name, $floor, $target_id, $target_name,
+                            $the_ans->quest_id, $the_ans->answer, $the_ans->correct);
+
+                            array_push($debug_array, $post_ans_data);
+                            $hbase->sendLog($post_ans_data);
+                        }
                     }
 
                     // 噴出結果
@@ -1165,7 +1216,8 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                         'user_id'     => $user_id,
                         'answers'     => $ans_json,
                         'activity_id' => $sact->getId(),
-                        'error'       => false
+                        'error'       => false,
+                        'debug' => $debug_array
                     ));
                 }
                 // 如果此標的尚未登記為已進入

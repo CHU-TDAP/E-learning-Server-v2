@@ -170,6 +170,35 @@ class Study {
     }
 
     /**
+     * 取得學習點時間
+     *
+     * @return string 學習點時間
+     * @since 2.0.0
+     */
+    public function getElapsedSec(){
+
+        // 假如還在學習點內當中
+        if($this->isIn()) {
+            // 現在時間-開始時間 = 已經過了多久
+            $nowDate = strtotime("now");
+            $startDate = strtotime($this->getInTime());
+            $elapsedDate = $nowDate - $startDate;
+            $elapsedSec = (int)($elapsedDate);
+
+            return $elapsedSec;
+        }
+        else {
+            // 結束時間-開始時間 = 已經過了多久
+            $endDate = strtotime($this->getOutTime());
+            $startDate = strtotime($this->getInTime());
+            $elapsedDate = $endDate - $startDate;
+            $elapsedSec = (int)($elapsedDate);
+
+            return $elapsedSec;
+        }
+    }
+
+    /**
      * 離開學習點
      *
      * @since 2.0.0
