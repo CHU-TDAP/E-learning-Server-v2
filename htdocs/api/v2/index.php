@@ -1404,12 +1404,6 @@ $app->group('/tokens', 'APIrequest', function () use ($app, $app_template) {
                                 $isEntity = $recommandResult[$i]['isEntity'];
                                 array_push($output_targets, output_the_target_array($target_id, $isEntity, $materialMode));
                                 array_push($output_target_ids, $target_id);
-
-                                // TODO: 標的進出資料多增加行進中、確實進入的欄位
-                                if($maxItemTotal == 1) {
-                                    $sid = $sact->enteringInTarget($target_id, true);
-                                }
-
                             }
 
                             // 紀錄所有推薦進歷程
